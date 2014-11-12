@@ -34,7 +34,7 @@ class WheelEncoderGeneratorApp(QMainWindow):
 
         # Actions
         # Exit
-        self.exit_action = QAction(QIcon('exit.png'), 'Exit', self)
+        self.exit_action = QAction(QIcon('icons/Exit.png'), 'Exit', self)
         self.exit_action.setStatusTip('Exit application')
         self.exit_action.setShortcut('Ctrl+Q')
         self.exit_action.triggered.connect(self.do_exit)
