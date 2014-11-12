@@ -94,7 +94,6 @@ class WheelEncoderGeneratorApp(QMainWindow):
 
         # Script file variables
         self.filename = ''
-        self.cwd = '.'
 
         # Controls
 
@@ -294,15 +293,21 @@ class WheelEncoderGeneratorApp(QMainWindow):
 
 ## TODO Implement Inverse
 
+    def display_filename(self):
+        if self.filename:
+            return self.filename
+        else:
+            return 'Untitled.weg'
+
     def sync_changed(self):
         self.saved = False
         self.save_action.setEnabled(True)
-        self.setWindowTitle('WEG - *' + self.filename)
+        self.setWindowTitle('WEG - *' + self.display_filename())
 
     def sync_saved(self):
         self.saved = True
         self.save_action.setDisabled(True)
-        self.setWindowTitle('WEG - ' + self.filename)
+        self.setWindowTitle('WEG - ' + self.display_filename())
 
     def set_encoder_type(self, evt):
         if evt == self.abs_index:
@@ -426,7 +431,7 @@ class WheelEncoderGeneratorApp(QMainWindow):
 
     def do_new(self):
         if self.check_modified():
-            self.filename = 'Untitled.weg'
+            self.filename = ''
 
             # Defaults
             self.type = self.STANDARD
@@ -448,29 +453,40 @@ class WheelEncoderGeneratorApp(QMainWindow):
         if self.check_modified():
             ## TODO remember last cwd; check changed
             os.chdir(self.cwd)
-            filename = QFileDialog().getOpenFileName(parent=self,
-                                                   caption=self.tr('Wheel Encoder Generator File'),
-                                                   directory=self.cwd,
-                                                   filter=self.tr("WEG Files (*.weg)"))
+            filename = QFileDialog(self).getOpenFileName(parent=self,
+                                                         caption=self.tr('Open Wheel Encoder Generator File'),
+                                                         directory=self.cwd,
+                                                         filter=self.tr("WEG Files (*.weg)"))
             if filename:
                 try:
                     self.load_encoder(filename)
                 except (IOError, OSError) as e:
                     QErrorMessage(self).showMessage('Error opening file %s ' % e)
                 else:
-                    self.filename = str(filename)
+                    self.filename = os.path.basename(str(filename))
                     self.encoder_saved.emit()
 
     def do_export(self):
         print('unsupported')
 
-    def do_save(self):
-        print('unsupported')
-        self.encoder_saved.emit()
+    def do_save(self, save_as=False):
+        if save_as:
+            filename = ''
+        else:
+            filename = self.filename
+
+        if not filename:
+            filename = QFileDialog(self).getSaveFileName(parent=self,
+                                                         caption=self.tr('Save Wheel Encoder Generator File'),
+                                                         directory=self.cwd,
+                                                         filter=self.tr("WEG Files (*.weg)"))
+        if filename:
+            print("saving now")
+            self.filename = os.path.basename(str(filename))
+            self.encoder_saved.emit()
 
     def do_save_as(self):
-        print('unsupported')
-        self.encoder_saved.emit()
+        self.do_save(True)
 
     def do_print(self):
         printer = QPrinter()
