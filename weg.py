@@ -23,7 +23,7 @@ class WheelEncoderGeneratorApp(QMainWindow):
     def __init__(self):
         super(WheelEncoderGeneratorApp, self).__init__()
 
-        self.saved = False
+        self.saved = True
 
         self.cwd = os.path.expanduser("~")+'/Documents'
         print(self.cwd)
@@ -402,39 +402,64 @@ class WheelEncoderGeneratorApp(QMainWindow):
 
         ## TODO fix inverted
 
+    def check_modified(self):
+        result = True
+        if not self.saved:
+            msg = QMessageBox(self)
+            msg.setText('The encoder has been modified.')
+            msg.setIcon(QMessageBox.Warning)
+            msg.setInformativeText('Do you want to save your changes?')
+            msg.setStandardButtons(QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel)
+            msg.setDefaultButton(QMessageBox.Save)
+            msg.exec_()
+            ret = msg.result()
+            if ret == QMessageBox.Save:
+                self.do_save()
+                result = True
+            elif ret == QMessageBox.Discard:
+                result = True
+            elif ret == QMessageBox.Cancel:
+                result = False
+            else:
+                print('%s' % ret)
+        return result
+
     def do_new(self):
-        self.filename = 'Untitled.weg'
+        if self.check_modified():
+            self.filename = 'Untitled.weg'
 
-        # Defaults
-        self.type = self.STANDARD
+            # Defaults
+            self.type = self.STANDARD
 
-        self.abs_encoder.set_resolution(64)
-        self.abs_encoder.set_outer(50.0)
-        self.abs_encoder.set_inner(10.0)
-        self.abs_encoder.set_code(AbsoluteEncoder.Binary)
+            self.abs_encoder.set_resolution(64)
+            self.abs_encoder.set_outer(50.0)
+            self.abs_encoder.set_inner(10.0)
+            self.abs_encoder.set_code(AbsoluteEncoder.Binary)
 
-        self.std_encoder.set_resolution(32)
-        self.std_encoder.set_outer(50.0)
-        self.std_encoder.set_inner(40.0)
-        self.std_encoder.set_quadrature(False)
-        self.std_encoder.set_index(False)
+            self.std_encoder.set_resolution(32)
+            self.std_encoder.set_outer(50.0)
+            self.std_encoder.set_inner(40.0)
+            self.std_encoder.set_quadrature(False)
+            self.std_encoder.set_index(False)
 
-        self.encoder_saved.emit()
+            self.encoder_saved.emit()
 
     def do_open(self):
-        ## TODO remember last cwd; check changed
-        os.chdir(self.cwd)
-        filename = QFileDialog.getOpenFileName(parent=self,
-                                               caption=self.tr('Wheel Encoder Generator File'),
-                                               directory=self.cwd,
-                                               filter=self.tr("WEG Files (*.weg)"))
-        try:
-            self.load_encoder(filename)
-        except (IOError, OSError) as e:
-            QErrorMessage(self).showMessage('Error opening file %s ' % e)
-        else:
-            self.filename = str(filename)
-            self.encoder_saved.emit()
+        if self.check_modified():
+            ## TODO remember last cwd; check changed
+            os.chdir(self.cwd)
+            filename = QFileDialog().getOpenFileName(parent=self,
+                                                   caption=self.tr('Wheel Encoder Generator File'),
+                                                   directory=self.cwd,
+                                                   filter=self.tr("WEG Files (*.weg)"))
+            if filename:
+                try:
+                    self.load_encoder(filename)
+                except (IOError, OSError) as e:
+                    QErrorMessage(self).showMessage('Error opening file %s ' % e)
+                else:
+                    self.filename = str(filename)
+                    self.encoder_saved.emit()
 
     def do_export(self):
         print('unsupported')
@@ -459,7 +484,8 @@ class WheelEncoderGeneratorApp(QMainWindow):
             del painter
 
     def do_exit(self):
-        QApplication.quit()
+        if self.check_modified():
+            QApplication.quit()
 
 
 ## TODO: error checking with raise if incorrect inputs provided
@@ -548,6 +574,8 @@ class EncoderWidget(QWidget):
     def update_image(self, encoder):
         self.encoder = encoder
         self.repaint()
+
+    ## TODO: Convert to drawing on a QImage and deal with "real" resolution/scaling
 
     def draw_track(self, paint, x, y, d, resolution=16, offset=False, color=Qt.black, index=False):
         assert isinstance(paint, QPainter)
