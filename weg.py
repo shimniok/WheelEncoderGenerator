@@ -448,7 +448,15 @@ class WheelEncoderGeneratorApp(QMainWindow):
         self.encoder_saved.emit()
 
     def do_print(self):
-        print('unsupported')
+        printer = QPrinter()
+        dialog = QPrintDialog(printer)
+        dialog.setModal(True)
+        dialog.setWindowTitle("Print Encoder")
+        if dialog.exec_() == QDialog.Accepted:
+            pixmap = QPixmap.grabWidget(self.drawing_frame)
+            painter = QPainter(printer)
+            painter.drawPixmap(0, 0, pixmap)
+            del painter
 
     def do_exit(self):
         QApplication.quit()
@@ -530,12 +538,12 @@ class AbsoluteEncoder(Encoder):
 class EncoderWidget(QWidget):
     def __init__(self, parent=None):
         super(EncoderWidget, self).__init__(parent)
-        self.image = QImage(self)
+        # self.img = QImage(self)
         self.encoder = None
         self.paint = QPainter()
 
-    def image(self):
-        return self.image
+    # def image(self):
+    #     return self.img
 
     def update_image(self, encoder):
         self.encoder = encoder
