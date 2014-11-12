@@ -183,6 +183,7 @@ class WheelEncoderGeneratorApp(QMainWindow):
         # Units
         self.units_mm = QRadioButton('mm')
         self.units_mm.setChecked(True)
+        self.units_mm.setDisabled(True)
         self.units_in = QRadioButton('inch')
         self.units_in.setEnabled(False)
         units = QButtonGroup()
@@ -252,12 +253,39 @@ class WheelEncoderGeneratorApp(QMainWindow):
         self.dim_inner.editingFinished.connect(self.set_inner)
         self.dim_outer.editingFinished.connect(self.set_outer)
 
+        self.std_encoder.changed.connect(self.std_changed)
+        self.abs_encoder.changed.connect(self.abs_changed)
+
         self.do_new()
 
         # Geometry
         self.setGeometry(50, 50, self.default_width, self.default_height)
 
         self.show()
+
+    def abs_changed(self):
+        print("Absolute changed")
+        self.type = self.ABSOLUTE
+        self.drawing_frame.update_image(self.abs_encoder)
+        self.dim_inner.setText(str(self.abs_encoder.inner()))
+        self.dim_outer.setText(str(self.abs_encoder.outer()))
+        self.abs_res.setValue(self.abs_encoder.resolution())
+        if self.abs_encoder.code() == AbsoluteEncoder.Binary:
+            self.abs_code_binary.setChecked(True)
+        elif self.abs_encoder.code() == AbsoluteEncoder.Gray:
+            self.abs_code_gray.setChecked(True)
+        self.controls_tabs.setCurrentIndex(self.abs_index)
+
+    def std_changed(self):
+        print("Standard changed")
+        self.type = self.STANDARD
+        self.drawing_frame.update_image(self.std_encoder)
+        self.dim_inner.setText(str(self.std_encoder.inner()))
+        self.dim_outer.setText(str(self.std_encoder.outer()))
+        self.std_res.setValue(self.std_encoder.resolution())
+        self.std_quadrature_track.setChecked(self.std_encoder.quadrature())
+        self.std_index_track.setChecked(self.std_encoder.index())
+        self.controls_tabs.setCurrentIndex(self.std_index)
 
 ## TODO Implement Inverse
 
@@ -269,116 +297,44 @@ class WheelEncoderGeneratorApp(QMainWindow):
             fn = os.path.basename(self.filename)
         self.setWindowTitle('WEG - ' + fn)
 
-    def sync_type(self):
-        if self.type == self.ABSOLUTE:
-            self.controls_tabs.setCurrentIndex(self.abs_index)
-        elif self.controls_tabs.currentIndex() != self.std_index:
-            self.controls_tabs.setCurrentIndex(self.std_index)
-
-    def sync_drawing(self):
-        if self.type == self.ABSOLUTE:
-            self.drawing_frame.update_image(self.abs_encoder)
-        elif self.type == self.STANDARD:
-            self.drawing_frame.update_image(self.std_encoder)
-
-    def sync_resolution(self):
-        if self.type == self.ABSOLUTE:
-            self.abs_res.setValue(self.abs_encoder.resolution())
-        elif self.type == self.STANDARD:
-            self.std_res.setValue(self.std_encoder.resolution())
-
-    def sync_outer(self):
-        if self.type == self.ABSOLUTE:
-            self.dim_outer.setText(str(self.abs_encoder.outer()))
-        elif self.type == self.STANDARD:
-            self.dim_outer.setText(str(self.std_encoder.outer()))
-
-    def sync_inner(self):
-        if self.type == self.ABSOLUTE:
-            self.dim_inner.setText(str(self.abs_encoder.inner()))
-        elif self.type == self.STANDARD:
-            self.dim_inner.setText(str(self.std_encoder.inner()))
-
-    def sync_index(self):
-        self.std_index_track.setChecked(self.std_encoder.index())
-
-    def sync_quadrature(self):
-        self.std_quadrature_track.setChecked(self.std_encoder.quadrature())
-
-    def sync_code(self):
-        if self.abs_encoder.code() == AbsoluteEncoder.Binary:
-            self.abs_code_binary.setChecked(True)
-        elif self.abs_encoder.code() == AbsoluteEncoder.Gray:
-            self.abs_code_gray.setChecked(True)
-
     def set_encoder_type(self, evt):
         if evt == self.abs_index:
-            self.type = self.ABSOLUTE
-            self.sync_type()
-            self.sync_resolution()
-            self.sync_outer()
-            self.sync_inner()
-            self.sync_code()
-            self.sync_drawing()
+            self.abs_changed()
 
         elif evt == self.std_index:
-            self.type = self.STANDARD
-            self.sync_type()
-            self.sync_resolution()
-            self.sync_outer()
-            self.sync_inner()
-            self.sync_quadrature()
-            self.sync_index()
-            self.sync_drawing()
+            self.std_changed()
 
     def set_std_resolution(self):
         ## TODO: input validation, no odd numbers
         self.std_encoder.set_resolution(self.std_res.value())
-        self.sync_resolution()
-        self.sync_drawing()
 
     def set_abs_resolution(self):
         ## TODO: input validation: only 2^N values
         self.abs_encoder.set_resolution(self.abs_res.value())
-        self.sync_resolution()
-        self.sync_drawing()
 
     def set_inner(self):
         if self.type == self.ABSOLUTE:
             self.abs_encoder.set_inner(float(self.dim_inner.text()))
-            self.sync_inner()
-            self.sync_drawing()
-            self.repaint()
         elif self.type == self.STANDARD:
             self.std_encoder.set_inner(float(self.dim_inner.text()))
-            self.sync_drawing()
-            self.sync_inner()
 
     def set_outer(self):
         if self.type == self.ABSOLUTE:
             self.abs_encoder.set_outer(float(self.dim_outer.text()))
-            self.sync_drawing()
-            self.sync_outer()
         elif self.type == self.STANDARD:
             self.std_encoder.set_outer(float(self.dim_outer.text()))
-            self.sync_drawing()
-            self.sync_outer()
 
     def set_quadrature(self):
         self.std_encoder.set_quadrature(self.std_quadrature_track.checkState() == Qt.Checked)
-        self.sync_drawing()
 
     def set_index(self):
         self.std_encoder.set_index(self.std_index_track.checkState() == Qt.Checked)
-        self.sync_drawing()
 
     def set_code(self):
         if self.abs_code_gray.isChecked():
             self.abs_encoder.set_code(AbsoluteEncoder.Gray)
-            self.sync_drawing()
         elif self.abs_code_binary.isChecked():
             self.abs_encoder.set_code(AbsoluteEncoder.Binary)
-            self.sync_drawing()
 
     def save_encoder(self, filename):
         pass
@@ -424,14 +380,6 @@ class WheelEncoderGeneratorApp(QMainWindow):
                 else:
                     print('unknown absolute encoder code %s' % config['numbering'])
 
-                self.sync_type()
-                self.sync_resolution()
-                self.sync_outer()
-                self.sync_inner()
-                self.sync_quadrature()
-                self.sync_index()
-                self.sync_drawing()
-
             elif int(config['type']) == self.STANDARD:
                 self.type = self.STANDARD
                 self.std_encoder.set_resolution(int(config['resolution']))
@@ -439,14 +387,6 @@ class WheelEncoderGeneratorApp(QMainWindow):
                 self.std_encoder.set_quadrature(config['quadratureTrack'] == 'true')
                 self.std_encoder.set_outer(float(config['outerDiameter']))
                 self.std_encoder.set_inner(float(config['innerDiameter']))
-
-                self.sync_type()
-                self.sync_resolution()
-                self.sync_outer()
-                self.sync_inner()
-                self.sync_quadrature()
-                self.sync_index()
-                self.sync_drawing()
 
             else:
                 QErrorMessage(self).showMessage('unknown encoder type %s' % config['type'])
@@ -472,14 +412,6 @@ class WheelEncoderGeneratorApp(QMainWindow):
         self.std_encoder.set_quadrature(False)
         self.std_encoder.set_index(False)
 
-        self.sync_type()
-        self.sync_resolution()
-        self.sync_outer()
-        self.sync_inner()
-        self.sync_quadrature()
-        self.sync_index()
-        self.sync_drawing()
-
         self.saved = False
         self.sync_saved()
 
@@ -496,8 +428,6 @@ class WheelEncoderGeneratorApp(QMainWindow):
             QErrorMessage(self).showMessage('Error opening file %s ' % e)
         else:
             self.filename = str(filename)
-            self.sync_controls_to_model()
-            self.sync_drawing()
             self.saved = True
             self.sync_saved()
 
