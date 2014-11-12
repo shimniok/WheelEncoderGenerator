@@ -18,6 +18,7 @@ class WheelEncoderGeneratorApp(QMainWindow):
     BINARY = 1
 
     encoder_changed = pyqtSignal()
+    encoder_saved = pyqtSignal()
 
     def __init__(self):
         super(WheelEncoderGeneratorApp, self).__init__()
@@ -255,6 +256,8 @@ class WheelEncoderGeneratorApp(QMainWindow):
 
         self.std_encoder.changed.connect(self.std_changed)
         self.abs_encoder.changed.connect(self.abs_changed)
+        self.encoder_changed.connect(self.sync_changed)
+        self.encoder_saved.connect(self.sync_saved)
 
         self.do_new()
 
@@ -275,6 +278,7 @@ class WheelEncoderGeneratorApp(QMainWindow):
         elif self.abs_encoder.code() == AbsoluteEncoder.Gray:
             self.abs_code_gray.setChecked(True)
         self.controls_tabs.setCurrentIndex(self.abs_index)
+        self.encoder_changed.emit()
 
     def std_changed(self):
         print("Standard changed")
@@ -286,16 +290,19 @@ class WheelEncoderGeneratorApp(QMainWindow):
         self.std_quadrature_track.setChecked(self.std_encoder.quadrature())
         self.std_index_track.setChecked(self.std_encoder.index())
         self.controls_tabs.setCurrentIndex(self.std_index)
+        self.encoder_changed.emit()
 
 ## TODO Implement Inverse
 
+    def sync_changed(self):
+        self.saved = False
+        self.save_action.setEnabled(True)
+        self.setWindowTitle('WEG - *' + self.filename)
+
     def sync_saved(self):
-        self.save_action.setDisabled(self.saved)
-        if self.filename == '':
-            fn = 'Untitled'
-        else:
-            fn = os.path.basename(self.filename)
-        self.setWindowTitle('WEG - ' + fn)
+        self.saved = True
+        self.save_action.setDisabled(True)
+        self.setWindowTitle('WEG - ' + self.filename)
 
     def set_encoder_type(self, evt):
         if evt == self.abs_index:
@@ -396,7 +403,7 @@ class WheelEncoderGeneratorApp(QMainWindow):
         ## TODO fix inverted
 
     def do_new(self):
-        self.filename = ''
+        self.filename = 'Untitled.weg'
 
         # Defaults
         self.type = self.STANDARD
@@ -412,8 +419,7 @@ class WheelEncoderGeneratorApp(QMainWindow):
         self.std_encoder.set_quadrature(False)
         self.std_encoder.set_index(False)
 
-        self.saved = False
-        self.sync_saved()
+        self.encoder_saved.emit()
 
     def do_open(self):
         ## TODO remember last cwd; check changed
@@ -428,22 +434,18 @@ class WheelEncoderGeneratorApp(QMainWindow):
             QErrorMessage(self).showMessage('Error opening file %s ' % e)
         else:
             self.filename = str(filename)
-            self.saved = True
-            self.sync_saved()
+            self.encoder_saved.emit()
 
     def do_export(self):
         print('unsupported')
-        self.sync_saved()
 
     def do_save(self):
         print('unsupported')
-        self.saved = True
-        self.sync_saved()
+        self.encoder_saved.emit()
 
     def do_save_as(self):
         print('unsupported')
-        self.saved = True
-        self.sync_saved()
+        self.encoder_saved.emit()
 
     def do_print(self):
         print('unsupported')
