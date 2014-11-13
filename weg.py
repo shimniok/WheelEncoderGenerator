@@ -5,6 +5,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys
 import os
+from datetime import datetime
 
 
 class WheelEncoderGeneratorApp(QMainWindow):
@@ -804,8 +805,8 @@ class WheelEncoderFile(QObject):
 
         with open(filename, 'w') as f:
             f.write("#Wheel Encoder Settings\n")
-            ## TODO: fix date
-            f.write("#Thu Jan 05 11:42:34 MST 2012\n")
+            dt = datetime.utcnow().strftime('#%a %b %d %H:%M:%S UTC %Y\n')
+            f.write(dt)
             f.write("encoder.type=%d\n" % enc_type)
             f.write("encoder.resolution=%d\n" % encoder.resolution())
             f.write("encoder.innerDiameter=%f\n" % encoder.inner())
