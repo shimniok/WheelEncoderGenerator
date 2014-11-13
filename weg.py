@@ -13,9 +13,6 @@ class WheelEncoderGeneratorApp(QMainWindow):
     # Encoder Types
     ABSOLUTE = 0
     STANDARD = 1
-    # Code Types
-    GRAY = 0
-    BINARY = 1
 
     encoder_changed = pyqtSignal()
     encoder_saved = pyqtSignal()
@@ -349,36 +346,7 @@ class WheelEncoderGeneratorApp(QMainWindow):
             self.abs_encoder.set_code(AbsoluteEncoder.Binary)
 
     def save_encoder(self, filename):
-        pass
-
-    def load_encoder(self, filename):
-        # Old file format:
-        #
-        # #Wheel Encoder Settings
-        # #Thu Jan 05 11:42:34 MST 2012
-        # encoder.innerDiameter=15
-        # encoder.quadratureTrack=false
-        # encoder.outerDiameter=70
-        # encoder.resolution=32
-        # encoder.type=1
-        # encoder.indexTrack=false
-        # encoder.numbering=0
-        # encoder.inverted=false
-        #
-        with open(filename, 'r') as f:
-            data = f.readlines()
-            f.close()
-
-        ## TODO Old File Format vs. New?
-
-        config = {}
-
-        for line in data:
-            if line.startswith('encoder.'):
-                a = line.split('.')
-                b = a[1].split('=')
-                config[b[0]] = b[1].rstrip()
-
+        config = WheelEncoderFile.load(filename)
         try:
             if int(config['type']) == self.ABSOLUTE:
                 self.type = self.ABSOLUTE
@@ -696,17 +664,90 @@ class BinarySpinBox(QSpinBox):
             self.setValue(self.value() >> -steps)
 
 
+# File format:
+#
+# #Wheel Encoder Settings
+# #Thu Jan 05 11:42:34 MST 2012
+# encoder.innerDiameter=15
+# encoder.quadratureTrack=false
+# encoder.outerDiameter=70
+# encoder.resolution=32
+# encoder.type=1
+# encoder.indexTrack=false
+# encoder.numbering=0
+# encoder.inverted=false
+#
 class WheelEncoderFile(QObject):
+    # type
+    absolute = 0
+    standard = 1
+    # code
+    gray = 0
+    binary = 1
+
     def __init__(self):
         super(WheelEncoderFile, self).__init__()
 
+    @staticmethod
     def save(self, filename, encoder):
-        ## TODO: Finish
-        pass
+        """
 
-    def load(self, filename):
-        ## TODO: Finish
-        pass
+        :param self:
+        :param filename:
+        :param encoder: WheelEncoder
+        """
+        with open(filename, 'w') as f:
+            f.write("#Wheel Encoder Settings")
+            ## TODO: fix date
+            f.write("#Thu Jan 05 11:42:34 MST 2012")
+            ## TODO: parameterize all
+
+            if isinstance(encoder, AbsoluteEncoder):
+                enc_type = self.absolute
+                quad = 'false'
+                if encoder.code() == AbsoluteEncoder.Gray:
+                    code = self.gray
+                elif encoder.code() == AbsoluteEncoder.Binary:
+                    code = self.binary
+                else:
+                    code = -1
+                    print("WheelEncoderFile.save(): unknown code")
+
+            elif isinstance(encoder, StandardEncoder):
+                enc_type = self.standard
+                quad = str(encoder.quadrature()).lower()
+                index = str(encoder.index()).lower()
+
+            else:
+                enc_type = -1
+                print("WheelEncoderFile.save(): unknown type")
+
+            f.write("encoder.type=%d" % enc_type)
+            f.write("encoder.resolution=%d" % encoder.resolution())
+            f.write("encoder.innerDiameter=%f" % encoder.inner())
+            f.write("encoder.outerDiameter=%f" % encoder.outer())
+            f.write("encoder.quadratureTrack=%s" % quad)
+            f.write("encoder.indexTrack=%s" % index)
+            f.write("encoder.numbering=%d" % code)
+            ## TODO: Implement Inverted
+            f.write("encoder.inverted=false")
+            f.close()
+
+    @staticmethod
+    def load(filename):
+        with open(filename, 'r') as f:
+            data = f.readlines()
+            f.close()
+
+        config = {}
+
+        for line in data:
+            if line.startswith('encoder.'):
+                a = line.split('.')
+                b = a[1].split('=')
+                config[b[0]] = b[1].rstrip()
+
+        return config
 
 
 def main():
