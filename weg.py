@@ -17,7 +17,6 @@ class WheelEncoderGeneratorApp(QMainWindow):
         self.saved = True
 
         self.cwd = os.path.expanduser("~")+'/Documents'
-        print(self.cwd)
 
         # Model
         self.encoder = Encoder()
@@ -256,7 +255,6 @@ class WheelEncoderGeneratorApp(QMainWindow):
 
     def handle_encoder_change(self):
         if self.encoder.type() == Encoder.absolute:
-            print("Absolute changed")
             self.drawing_frame.update_image(self.encoder)
             self.dim_inner.setText(str(self.encoder.inner()))
             self.dim_outer.setText(str(self.encoder.outer()))
@@ -268,7 +266,6 @@ class WheelEncoderGeneratorApp(QMainWindow):
             self.controls_tabs.setCurrentIndex(self.abs_index)
             self.encoder_unsaved.emit()
         elif self.encoder.type() == Encoder.standard:
-            print("Standard changed")
             self.drawing_frame.update_image(self.encoder)
             self.dim_inner.setText(str(self.encoder.inner()))
             self.dim_outer.setText(str(self.encoder.outer()))
@@ -691,15 +688,11 @@ class BinarySpinBox(QSpinBox):
 
     def validate(self, s, p):
         result = QValidator.State()
-        print('validate s: %s' % s)
         if s in self.acceptable:
-            print('acceptable')
             result = QValidator.Acceptable
         elif s in self.intermediate:
-            print('intermediate')
             result = QValidator.Intermediate
         else:
-            print('invalid')
             result = QValidator.Invalid
         return result, p
 
