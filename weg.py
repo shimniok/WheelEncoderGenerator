@@ -298,11 +298,9 @@ class WheelEncoderGeneratorApp(QMainWindow):
             self.encoder.set_type(Encoder.standard)
 
     def set_std_resolution(self):
-        ## TODO: input validation, no odd numbers
         self.encoder.set_resolution(self.std_res.value())
 
     def set_abs_resolution(self):
-        ## TODO: input validation: only 2^N values
         self.encoder.set_resolution(self.abs_res.value())
 
     def set_inner(self):
@@ -355,17 +353,14 @@ class WheelEncoderGeneratorApp(QMainWindow):
 
             # Defaults
             self.encoder.set_type(Encoder.standard)
-
             self.encoder.set_resolution(64)
-            self.encoder.set_outer(50.0)
-            self.encoder.set_inner(10.0)
+            self.encoder.set_dimensions(50.0, 10.0)
             self.encoder.set_quadrature(False)
             self.encoder.set_index(False)
             self.encoder_saved.emit()
 
     def do_open(self):
         if self.check_modified():
-            ## TODO remember last cwd; check changed
             os.chdir(self.cwd)
             filename = QFileDialog(self).getOpenFileName(parent=self,
                                                          caption=self.tr('Open Wheel Encoder Generator File'),
@@ -450,8 +445,8 @@ class Encoder(QObject):
     def init(self):
         self.enc_type = self.standard
         self.res = 32
-        self.outer_dia = 50
-        self.inner_dia = 10
+        self.outer_dia = 50.0
+        self.inner_dia = 10.0
         # Standard
         self.has_quad = False
         self.has_index = False
@@ -459,72 +454,98 @@ class Encoder(QObject):
         self.my_code = self.binary
 
     def copy(self, enc):
-        if isinstance(enc, Encoder):
-            self.init()
-            self.res = enc.resolution()
-            self.outer_dia = enc.outer()
-            self.inner_dia = enc.inner()
-            self.enc_type = enc.type()
-            if self.enc_type == self.absolute:
-                self.my_code = enc.code()
-            elif self.enc_type == self.standard:
-                self.has_quad = enc.quadrature()
-                self.has_index = enc.index()
-            self.changed.emit()
+        assert isinstance(enc, Encoder)
+        self.init()
+        self.res = enc.resolution()
+        self.outer_dia = enc.outer()
+        self.inner_dia = enc.inner()
+        self.enc_type = enc.type()
+        if self.enc_type == self.absolute:
+            self.my_code = enc.code()
+        elif self.enc_type == self.standard:
+            self.has_quad = enc.quadrature()
+            self.has_index = enc.index()
+        self.changed.emit()
 
-    def set_type(self, type):
-        if type == self.absolute or type == self.standard:
-            self.enc_type = type
-            self.changed.emit()
-            ## TODO: make sure values still make sense
-        else:
+    @staticmethod
+    def validate_type(t):
+        if t != Encoder.absolute and t != Encoder.standard:
             raise ValueError('invalid encoder type')
 
-    def set_resolution(self, resolution):
+    def validate_resolution(self, resolution):
         if resolution == 0:
             raise ValueError('invalid resolution: %d' % resolution)
-        ## TODO: Validate input
         if self.enc_type == self.absolute:
             if resolution & (resolution - 1):
                 raise ValueError('resolution must be 2^n: %d' % resolution)
         elif self.enc_type == self.standard:
-            if resolution % 2:
+            if not resolution % 2 == 0:
                 raise ValueError('resolution must be even: %d' % resolution)
-        self.res = resolution
+
+    @staticmethod
+    def validate_dimensions(outer, inner):
+        if not outer > inner > 0:
+            raise ValueError('invalid outer value')
+
+    @staticmethod
+    def validate_code(code):
+        if code != Encoder.gray and code != Encoder.binary:
+            raise ValueError('invalid encoder code')
+
+    def set_type(self, t):
+        Encoder.validate_type(t)
+        self.init()
+        self.enc_type = t
+        self.changed.emit()
+
+    def set_resolution(self, resolution):
+        try:
+            self.validate_resolution(resolution)
+        except ValueError:
+            raise
+        else:
+            self.res = resolution
+            self.changed.emit()
+
+    def set_dimensions(self, outer, inner):
+        Encoder.validate_dimensions(outer, inner)
+        self.outer_dia = outer
+        self.inner_dia = inner
         self.changed.emit()
 
     def set_outer(self, outer):
-        ## TODO: Validate input
+        Encoder.validate_dimensions(outer, self.inner_dia)
         self.outer_dia = float(outer)
         self.changed.emit()
 
     def set_inner(self, inner):
-        ## TODO: Validate input
+        Encoder.validate_dimensions(self.outer_dia, inner)
         self.inner_dia = float(inner)
         self.changed.emit()
 
     def set_quadrature(self, quadrature):
-        if isinstance(quadrature, bool):
-            self.has_quad = quadrature
-            self.changed.emit()
+        assert isinstance(quadrature, bool)
+        self.has_quad = quadrature
+        self.changed.emit()
 
     def set_index(self, index):
-        if isinstance(index, bool):
-            self.has_index = index
-            self.changed.emit()
+        assert isinstance(index, bool)
+        self.has_index = index
+        self.changed.emit()
 
     def set_code(self, code):
-        if code == self.gray or code == self.binary:
-            self.my_code = code
-            self.changed.emit()
-        else:
-            raise ValueError('invalid encoder code')
+        self.validate_code(code)
+        self.my_code = code
+        self.changed.emit()
 
     def type(self):
         return self.enc_type
 
     def resolution(self):
         return self.res
+
+    def dimensions(self):
+        return float(self.outer_dia), float(self.inner_dia)
 
     def outer(self):
         return float(self.outer_dia)
@@ -753,8 +774,7 @@ class WheelEncoderFile(QObject):
                 print('Unrecognized encoder type')
                 return None
             encoder.set_resolution(int(config['resolution']))
-            encoder.set_outer(float(config['outerDiameter']))
-            encoder.set_inner(float(config['innerDiameter']))
+            encoder.set_dimensions(float(config['outerDiameter']), float(config['innerDiameter']))
         except KeyError as e:
             print('Encoder file is missing a key %s' % e)
             return None
