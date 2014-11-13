@@ -8,13 +8,7 @@ import os
 
 
 class WheelEncoderGeneratorApp(QMainWindow):
-
-    ## TODO: put this into an OldFileFormat class
-    # Encoder Types
-    ABSOLUTE = 0
-    STANDARD = 1
-
-    encoder_changed = pyqtSignal()
+    encoder_unsaved = pyqtSignal()
     encoder_saved = pyqtSignal()
 
     def __init__(self):
@@ -26,9 +20,8 @@ class WheelEncoderGeneratorApp(QMainWindow):
         print(self.cwd)
 
         # Model
-        self.std_encoder = StandardEncoder()
-        self.abs_encoder = AbsoluteEncoder()
-        self.type = self.STANDARD
+        self.encoder = Encoder()
+        self.encoder.set_type(Encoder.standard)
 
         # Actions
         # Exit
@@ -97,10 +90,10 @@ class WheelEncoderGeneratorApp(QMainWindow):
         # Standard Controls
 
         # Resolution
-        self.std_res = QSpinBox()
+        self.std_res = EvenSpinBox()
         self.std_res.setStatusTip('Set resolution')
         self.std_res.setAlignment(Qt.AlignRight)
-        self.std_res.setSingleStep(2)
+        self.std_res.setSingleStep(1)
         self.std_res.setMinimum(2)
         self.std_res.setMaximum(1024)
         std_res_label = QLabel(self.tr("&Resolution:"))
@@ -250,10 +243,9 @@ class WheelEncoderGeneratorApp(QMainWindow):
         self.dim_inner.editingFinished.connect(self.set_inner)
         self.dim_outer.editingFinished.connect(self.set_outer)
 
-        self.std_encoder.changed.connect(self.std_changed)
-        self.abs_encoder.changed.connect(self.abs_changed)
-        self.encoder_changed.connect(self.sync_changed)
+        self.encoder.changed.connect(self.handle_encoder_change)
         self.encoder_saved.connect(self.sync_saved)
+        self.encoder_unsaved.connect(self.sync_changed)
 
         self.do_new()
 
@@ -262,33 +254,29 @@ class WheelEncoderGeneratorApp(QMainWindow):
 
         self.show()
 
-    def abs_changed(self):
-        print("Absolute changed")
-        self.type = self.ABSOLUTE
-        self.drawing_frame.update_image(self.abs_encoder)
-        self.dim_inner.setText(str(self.abs_encoder.inner()))
-        self.dim_outer.setText(str(self.abs_encoder.outer()))
-        self.abs_res.setValue(self.abs_encoder.resolution())
-        if self.abs_encoder.code() == AbsoluteEncoder.Binary:
-            self.abs_code_binary.setChecked(True)
-        elif self.abs_encoder.code() == AbsoluteEncoder.Gray:
-            self.abs_code_gray.setChecked(True)
-        self.controls_tabs.setCurrentIndex(self.abs_index)
-        self.encoder_changed.emit()
-
-    def std_changed(self):
-        print("Standard changed")
-        self.type = self.STANDARD
-        self.drawing_frame.update_image(self.std_encoder)
-        self.dim_inner.setText(str(self.std_encoder.inner()))
-        self.dim_outer.setText(str(self.std_encoder.outer()))
-        self.std_res.setValue(self.std_encoder.resolution())
-        self.std_quadrature_track.setChecked(self.std_encoder.quadrature())
-        self.std_index_track.setChecked(self.std_encoder.index())
-        self.controls_tabs.setCurrentIndex(self.std_index)
-        self.encoder_changed.emit()
-
-## TODO Implement Inverse
+    def handle_encoder_change(self):
+        if self.encoder.type() == Encoder.absolute:
+            print("Absolute changed")
+            self.drawing_frame.update_image(self.encoder)
+            self.dim_inner.setText(str(self.encoder.inner()))
+            self.dim_outer.setText(str(self.encoder.outer()))
+            self.abs_res.setValue(self.encoder.resolution())
+            if self.encoder.code() == Encoder.binary:
+                self.abs_code_binary.setChecked(True)
+            elif self.encoder.code() == Encoder.gray:
+                self.abs_code_gray.setChecked(True)
+            self.controls_tabs.setCurrentIndex(self.abs_index)
+            self.encoder_unsaved.emit()
+        elif self.encoder.type() == Encoder.standard:
+            print("Standard changed")
+            self.drawing_frame.update_image(self.encoder)
+            self.dim_inner.setText(str(self.encoder.inner()))
+            self.dim_outer.setText(str(self.encoder.outer()))
+            self.std_res.setValue(self.encoder.resolution())
+            self.std_quadrature_track.setChecked(self.encoder.quadrature())
+            self.std_index_track.setChecked(self.encoder.index())
+            self.controls_tabs.setCurrentIndex(self.std_index)
+            self.encoder_unsaved.emit()
 
     def display_filename(self):
         if self.filename:
@@ -308,72 +296,39 @@ class WheelEncoderGeneratorApp(QMainWindow):
 
     def set_encoder_type(self, evt):
         if evt == self.abs_index:
-            self.abs_changed()
-
+            self.encoder.set_type(Encoder.absolute)
         elif evt == self.std_index:
-            self.std_changed()
+            self.encoder.set_type(Encoder.standard)
 
     def set_std_resolution(self):
         ## TODO: input validation, no odd numbers
-        self.std_encoder.set_resolution(self.std_res.value())
+        self.encoder.set_resolution(self.std_res.value())
 
     def set_abs_resolution(self):
         ## TODO: input validation: only 2^N values
-        self.abs_encoder.set_resolution(self.abs_res.value())
+        self.encoder.set_resolution(self.abs_res.value())
 
     def set_inner(self):
-        if self.type == self.ABSOLUTE:
-            self.abs_encoder.set_inner(float(self.dim_inner.text()))
-        elif self.type == self.STANDARD:
-            self.std_encoder.set_inner(float(self.dim_inner.text()))
+        self.encoder.set_inner(float(self.dim_inner.text()))
 
     def set_outer(self):
-        if self.type == self.ABSOLUTE:
-            self.abs_encoder.set_outer(float(self.dim_outer.text()))
-        elif self.type == self.STANDARD:
-            self.std_encoder.set_outer(float(self.dim_outer.text()))
+        self.encoder.set_outer(float(self.dim_outer.text()))
+
+    ## TODO Implement Inverse
+    def set_inverse(self):
+        print('unsupported')
 
     def set_quadrature(self):
-        self.std_encoder.set_quadrature(self.std_quadrature_track.checkState() == Qt.Checked)
+        self.encoder.set_quadrature(self.std_quadrature_track.checkState() == Qt.Checked)
 
     def set_index(self):
-        self.std_encoder.set_index(self.std_index_track.checkState() == Qt.Checked)
+        self.encoder.set_index(self.std_index_track.checkState() == Qt.Checked)
 
     def set_code(self):
         if self.abs_code_gray.isChecked():
-            self.abs_encoder.set_code(AbsoluteEncoder.Gray)
+            self.encoder.set_code(Encoder.gray)
         elif self.abs_code_binary.isChecked():
-            self.abs_encoder.set_code(AbsoluteEncoder.Binary)
-
-    def save_encoder(self, filename):
-        config = WheelEncoderFile.load(filename)
-        try:
-            if int(config['type']) == self.ABSOLUTE:
-                self.type = self.ABSOLUTE
-                self.abs_encoder.set_resolution(int(config['resolution']))
-                self.abs_encoder.set_outer(float(config['outerDiameter']))
-                self.abs_encoder.set_inner(float(config['innerDiameter']))
-                if int(config['numbering']) == self.GRAY:
-                    self.abs_encoder.set_code(AbsoluteEncoder.Gray)
-                elif int(config['numbering']) == self.BINARY:
-                    self.abs_encoder.set_code(AbsoluteEncoder.Binary)
-                else:
-                    print('unknown absolute encoder code %s' % config['numbering'])
-
-            elif int(config['type']) == self.STANDARD:
-                self.type = self.STANDARD
-                self.std_encoder.set_resolution(int(config['resolution']))
-                self.std_encoder.set_index(config['indexTrack'] == 'true')
-                self.std_encoder.set_quadrature(config['quadratureTrack'] == 'true')
-                self.std_encoder.set_outer(float(config['outerDiameter']))
-                self.std_encoder.set_inner(float(config['innerDiameter']))
-
-            else:
-                QErrorMessage(self).showMessage('unknown encoder type %s' % config['type'])
-        except KeyError as e:
-            QErrorMessage(self).showMessage('WEG file is missing a key-value pair %s' % e)
-
-        ## TODO fix inverted
+            self.encoder.set_code(Encoder.binary)
 
     def check_modified(self):
         result = True
@@ -402,19 +357,13 @@ class WheelEncoderGeneratorApp(QMainWindow):
             self.filename = ''
 
             # Defaults
-            self.type = self.STANDARD
+            self.encoder.set_type(Encoder.standard)
 
-            self.abs_encoder.set_resolution(64)
-            self.abs_encoder.set_outer(50.0)
-            self.abs_encoder.set_inner(10.0)
-            self.abs_encoder.set_code(AbsoluteEncoder.Binary)
-
-            self.std_encoder.set_resolution(32)
-            self.std_encoder.set_outer(50.0)
-            self.std_encoder.set_inner(40.0)
-            self.std_encoder.set_quadrature(False)
-            self.std_encoder.set_index(False)
-
+            self.encoder.set_resolution(64)
+            self.encoder.set_outer(50.0)
+            self.encoder.set_inner(10.0)
+            self.encoder.set_quadrature(False)
+            self.encoder.set_index(False)
             self.encoder_saved.emit()
 
     def do_open(self):
@@ -427,10 +376,11 @@ class WheelEncoderGeneratorApp(QMainWindow):
                                                          filter=self.tr("WEG Files (*.weg)"))
             if filename:
                 try:
-                    self.load_encoder(filename)
-                except (IOError, OSError) as e:
-                    QErrorMessage(self).showMessage('Error opening file %s ' % e)
+                    encoder = WheelEncoderFile().load(filename)
+                except (ValueError, IOError, OSError) as e:
+                    QErrorMessage(self).showMessage('Error opening file: ' + e)
                 else:
+                    self.encoder.copy(encoder)
                     self.filename = os.path.basename(str(filename))
                     self.encoder_saved.emit()
 
@@ -450,8 +400,13 @@ class WheelEncoderGeneratorApp(QMainWindow):
                                                          filter=self.tr("WEG Files (*.weg)"))
         if filename:
             print("saving now")
-            self.filename = os.path.basename(str(filename))
-            self.encoder_saved.emit()
+            try:
+                WheelEncoderFile().save(filename, self.encoder)
+            except (ValueError, IOError, OSError) as e:
+                QErrorMessage(self).showMessage('Error saving file: ' + e)
+            else:
+                self.filename = os.path.basename(str(filename))
+                self.encoder_saved.emit()
 
     def do_save_as(self):
         self.do_save(True)
@@ -476,39 +431,80 @@ class WheelEncoderGeneratorApp(QMainWindow):
 class Encoder(QObject):
     changed = pyqtSignal()
 
-    def __init__(self, resolution, outer, inner):
+    absolute = 0
+    standard = 1
+
+    gray = 0
+    binary = 1
+
+    def __init__(self):
         super(QObject, self).__init__()
-        self.res = resolution
-        self.outer_dia = outer
-        self.inner_dia = inner
+        self.enc_type = int()
+        self.res = int()
+        self.outer_dia = float()
+        self.inner_dia = float()
+        # Standard
+        self.has_quad = bool()
+        self.has_index = bool()
+        # Absolute
+        self.my_code = int()
+        self.init()
+
+    def init(self):
+        self.enc_type = self.standard
+        self.res = 32
+        self.outer_dia = 50
+        self.inner_dia = 10
+        # Standard
+        self.has_quad = False
+        self.has_index = False
+        # Absolute
+        self.my_code = self.binary
+
+    def copy(self, enc):
+        if isinstance(enc, Encoder):
+            self.init()
+            self.res = enc.resolution()
+            self.outer_dia = enc.outer()
+            self.inner_dia = enc.inner()
+            self.enc_type = enc.type()
+            if self.enc_type == self.absolute:
+                self.my_code = enc.code()
+            elif self.enc_type == self.standard:
+                self.has_quad = enc.quadrature()
+                self.has_index = enc.index()
+            self.changed.emit()
+
+    def set_type(self, type):
+        if type == self.absolute or type == self.standard:
+            self.enc_type = type
+            self.changed.emit()
+            ## TODO: make sure values still make sense
+        else:
+            raise ValueError('invalid encoder type')
 
     def set_resolution(self, resolution):
+        if resolution == 0:
+            raise ValueError('invalid resolution: %d' % resolution)
+        ## TODO: Validate input
+        if self.enc_type == self.absolute:
+            if resolution & (resolution - 1):
+                raise ValueError('resolution must be 2^n: %d' % resolution)
+        elif self.enc_type == self.standard:
+            if resolution % 2:
+                raise ValueError('resolution must be even: %d' % resolution)
         self.res = resolution
         self.changed.emit()
 
     def set_outer(self, outer):
+        ## TODO: Validate input
         self.outer_dia = float(outer)
         self.changed.emit()
 
     def set_inner(self, inner):
+        ## TODO: Validate input
         self.inner_dia = float(inner)
         self.changed.emit()
-
-    def resolution(self):
-        return self.res
-
-    def outer(self):
-        return float(self.outer_dia)
-
-    def inner(self):
-        return float(self.inner_dia)
-
-
-class StandardEncoder(Encoder):
-    def __init__(self, resolution=16, outer=50, inner=10, quadrature=False, index=False):
-        super(StandardEncoder, self).__init__(resolution, outer, inner)
-        self.has_quad = quadrature
-        self.has_index = index
 
     def set_quadrature(self, quadrature):
         if isinstance(quadrature, bool):
@@ -520,26 +516,30 @@ class StandardEncoder(Encoder):
             self.has_index = index
             self.changed.emit()
 
+    def set_code(self, code):
+        if code == self.gray or code == self.binary:
+            self.my_code = code
+            self.changed.emit()
+        else:
+            raise ValueError('invalid encoder code')
+
+    def type(self):
+        return self.enc_type
+
+    def resolution(self):
+        return self.res
+
+    def outer(self):
+        return float(self.outer_dia)
+
+    def inner(self):
+        return float(self.inner_dia)
+
     def quadrature(self):
         return self.has_quad
 
     def index(self):
         return self.has_index
-
-
-class AbsoluteEncoder(Encoder):
-    Gray = 0
-    Binary = 1
-
-    def __init__(self, resolution=16, outer=50, inner=10, code=Gray):
-        super(AbsoluteEncoder, self).__init__(resolution, outer, inner)
-        if code == AbsoluteEncoder.Gray or code == AbsoluteEncoder.Binary:
-            self.my_code = code
-
-    def set_code(self, code):
-        if code == AbsoluteEncoder.Gray or code == AbsoluteEncoder.Binary:
-            self.my_code = code
-            self.changed.emit()
 
     def code(self):
         return self.my_code
@@ -612,7 +612,7 @@ class EncoderWidget(QWidget):
             self.paint.begin(self)
             self.paint.setRenderHint(QPainter.HighQualityAntialiasing)
 
-            if isinstance(self.encoder, StandardEncoder):
+            if self.encoder.type() == Encoder.standard:
                 track_count = 1
                 if self.encoder.quadrature():
                     track_count += 1
@@ -632,7 +632,7 @@ class EncoderWidget(QWidget):
                     diam -= track_width
                     self.draw_track(self.paint, x, y, diam, resolution=res, index=True)
 
-            elif isinstance(self.encoder, AbsoluteEncoder):
+            elif self.encoder.type() == Encoder.absolute:
                 res = self.encoder.resolution()
                 track_count = 0
                 while res:
@@ -644,7 +644,7 @@ class EncoderWidget(QWidget):
                 diam = outside_diam
                 res = self.encoder.resolution()
                 for t in range(1, track_count):
-                    off = self.encoder.code() == AbsoluteEncoder.Gray
+                    off = self.encoder.code() == Encoder.gray
                     self.draw_track(self.paint, x, y, diam, resolution=res, offset=off)
                     diam -= track_width
                     res >>= 1
@@ -653,15 +653,55 @@ class EncoderWidget(QWidget):
             self.paint.end()
 
 
+class EvenSpinBox(QSpinBox):
+    def __init__(self, parent=None):
+        super(EvenSpinBox, self).__init__(parent)
+
+    def stepBy(self, steps):
+        self.setValue(self.value() + steps * 2)
+
+    def fixup(self, s):
+        return s
+
+    def validate(self, s, p):
+        result = QValidator.State()
+        if int(s) <= self.maximum():
+            if int(s) % 2:
+                result = QValidator.Intermediate
+            else:
+                result = QValidator.Acceptable
+
+        return result, p
+
+
 class BinarySpinBox(QSpinBox):
     def __init__(self, parent=None):
         super(BinarySpinBox, self).__init__(parent)
+        self.intermediate = ['204', '102', '51', '25', '12', '6', '3', '1']
+        self.acceptable = ['2048', '1024', '512', '256', '128', '64', '32', '16', '8', '4', '2']
 
     def stepBy(self, steps):
         if steps > 0:
             self.setValue(self.value() << steps)
         elif steps < 0:
             self.setValue(self.value() >> -steps)
+
+    def fixup(self, s):
+        return s
+
+    def validate(self, s, p):
+        result = QValidator.State()
+        print('validate s: %s' % s)
+        if s in self.acceptable:
+            print('acceptable')
+            result = QValidator.Acceptable
+        elif s in self.intermediate:
+            print('intermediate')
+            result = QValidator.Intermediate
+        else:
+            print('invalid')
+            result = QValidator.Invalid
+        return result, p
 
 
 # File format:
@@ -681,6 +721,7 @@ class WheelEncoderFile(QObject):
     # type
     absolute = 0
     standard = 1
+
     # code
     gray = 0
     binary = 1
@@ -688,53 +729,7 @@ class WheelEncoderFile(QObject):
     def __init__(self):
         super(WheelEncoderFile, self).__init__()
 
-    @staticmethod
-    def save(self, filename, encoder):
-        """
-
-        :param self:
-        :param filename:
-        :param encoder: WheelEncoder
-        """
-        with open(filename, 'w') as f:
-            f.write("#Wheel Encoder Settings")
-            ## TODO: fix date
-            f.write("#Thu Jan 05 11:42:34 MST 2012")
-            ## TODO: parameterize all
-
-            if isinstance(encoder, AbsoluteEncoder):
-                enc_type = self.absolute
-                quad = 'false'
-                if encoder.code() == AbsoluteEncoder.Gray:
-                    code = self.gray
-                elif encoder.code() == AbsoluteEncoder.Binary:
-                    code = self.binary
-                else:
-                    code = -1
-                    print("WheelEncoderFile.save(): unknown code")
-
-            elif isinstance(encoder, StandardEncoder):
-                enc_type = self.standard
-                quad = str(encoder.quadrature()).lower()
-                index = str(encoder.index()).lower()
-
-            else:
-                enc_type = -1
-                print("WheelEncoderFile.save(): unknown type")
-
-            f.write("encoder.type=%d" % enc_type)
-            f.write("encoder.resolution=%d" % encoder.resolution())
-            f.write("encoder.innerDiameter=%f" % encoder.inner())
-            f.write("encoder.outerDiameter=%f" % encoder.outer())
-            f.write("encoder.quadratureTrack=%s" % quad)
-            f.write("encoder.indexTrack=%s" % index)
-            f.write("encoder.numbering=%d" % code)
-            ## TODO: Implement Inverted
-            f.write("encoder.inverted=false")
-            f.close()
-
-    @staticmethod
-    def load(filename):
+    def load(self, filename):
         with open(filename, 'r') as f:
             data = f.readlines()
             f.close()
@@ -747,7 +742,67 @@ class WheelEncoderFile(QObject):
                 b = a[1].split('=')
                 config[b[0]] = b[1].rstrip()
 
-        return config
+        encoder = Encoder()
+        try:
+            if int(config['type']) == self.absolute:
+                encoder.set_type(Encoder.absolute)
+                if int(config['numbering']) == self.gray:
+                    encoder.set_code(Encoder.gray)
+                elif int(config['numbering']) == self.binary:
+                    encoder.set_code(Encoder.binary)
+                else:
+                    print('unknown absolute encoder code %s' % config['numbering'])
+            elif int(config['type']) == self.standard:
+                encoder.set_type(Encoder.standard)
+                encoder.set_index(config['indexTrack'] == 'true')
+                encoder.set_quadrature(config['quadratureTrack'] == 'true')
+            else:
+                print('Unrecognized encoder type')
+                return None
+            encoder.set_resolution(int(config['resolution']))
+            encoder.set_outer(float(config['outerDiameter']))
+            encoder.set_inner(float(config['innerDiameter']))
+        except KeyError as e:
+            print('Encoder file is missing a key %s' % e)
+            return None
+        else:
+            return encoder
+
+    def save(self, filename, encoder):
+        """
+        Save the provided encoder to the specified filename
+        :param self:
+        :param filename: filename to write encoder data to
+        :param encoder: Encoder class
+        """
+        if encoder.type() == Encoder.absolute:
+            enc_type = self.absolute
+        elif encoder.type() == Encoder.standard:
+            enc_type = self.standard
+        else:
+            raise ValueError("unknown encoder type")
+
+        if encoder.code() == Encoder.gray:
+            code = self.gray
+        elif encoder.code() == Encoder.binary:
+            code = self.binary
+        else:
+            raise ValueError("unknown absolute encoder code value")
+
+        with open(filename, 'w') as f:
+            f.write("#Wheel Encoder Settings\n")
+            ## TODO: fix date
+            f.write("#Thu Jan 05 11:42:34 MST 2012\n")
+            f.write("encoder.type=%d\n" % enc_type)
+            f.write("encoder.resolution=%d\n" % encoder.resolution())
+            f.write("encoder.innerDiameter=%f\n" % encoder.inner())
+            f.write("encoder.outerDiameter=%f\n" % encoder.outer())
+            f.write("encoder.numbering=%d\n" % code)
+            f.write("encoder.quadratureTrack=%s\n" % str(encoder.quadrature()).lower())
+            f.write("encoder.indexTrack=%s\n" % str(encoder.index()).lower())
+            ## TODO: Implement Inverted
+            f.write("encoder.inverted=false\n")
+            f.close()
 
 
 def main():
