@@ -152,7 +152,15 @@ public class PrimaryController implements Initializable {
         index.selectedProperty().bindBidirectional((Property) encoder.getIndexTrack());
         incResolution.setValueFactory(new IntegerSpinnerValueFactory(2, 2048, 16, 1));
         
-        // TODO - add TextFormatters and Input verifiers
+        // TODO draw circle
+        // TODO print
+        // TODO input verification for all fields
+        // TODO file save
+        // TODO file save as
+        // TODO file open
+        // TODO file new
+        // TODO file export
+        // TODO toolbar icons
     }    
      
 }

@@ -15,6 +15,8 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -47,12 +49,55 @@
       </MenuBar>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
-          <Button mnemonicParsing="false" text="New" />
-            <Button mnemonicParsing="false" text="Open" />
-            <Button mnemonicParsing="false" text="Save" />
-            <Button mnemonicParsing="false" text="Save As" />
-            <Button mnemonicParsing="false" text="Export" />
-            <Button mnemonicParsing="false" text="Print" />
+          <Button fx:id="newButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="New">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/New.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="openButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Open">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/Open.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button fx:id="saveButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Save">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/Save.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button fx:id="saveAsButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Save As">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/SaveAs.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button fx:id="exportButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Export">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/Export.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button fx:id="printButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Print">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/Print.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
         </items>
       </ToolBar>
       <HBox>
