@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -25,8 +24,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-
-<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="app" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.botthoughts.wheelencodergenerator.PrimaryController">
    <children>
       <MenuBar>
         <menus>
@@ -144,21 +142,13 @@
                            <children>
                               <Label text="Outer Diameter" textAlignment="RIGHT" />
                               <Label text="Inner Diameter" GridPane.rowIndex="1" />
-                              <TextField alignment="CENTER_RIGHT" GridPane.columnIndex="1" />
-                              <TextField alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <TextField alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <TextField fx:id="outer" alignment="CENTER_RIGHT" GridPane.columnIndex="1" />
+                              <TextField fx:id="inner" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <TextField fx:id="center" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                               <Label text="Center Diameter" GridPane.rowIndex="2" />
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                  <children>
-                                    <Group>
-                                       <children>
-                                          <RadioButton mnemonicParsing="false" text="mm" textAlignment="CENTER" />
-                                          <RadioButton layoutX="80.0" mnemonicParsing="false" text="in" />
-                                       </children>
-                                       <HBox.margin>
-                                          <Insets />
-                                       </HBox.margin>
-                                    </Group>
+                                    <ComboBox fx:id="units" onAction="#handleUnits" prefWidth="150.0" />
                                  </children>
                               </HBox>
                               <Label text="Units" GridPane.rowIndex="3" />
@@ -170,7 +160,7 @@
                     <content>
                         <HBox alignment="CENTER" prefWidth="300.0">
                            <children>
-                              <CheckBox mnemonicParsing="false" text="Invert Encoder" textAlignment="CENTER" />
+                              <CheckBox fx:id="inverted" mnemonicParsing="false" text="Invert Encoder" textAlignment="CENTER" />
                            </children>
                         </HBox>
                     </content>
@@ -181,6 +171,17 @@
                </padding>
             </VBox>
          </children>
+      </HBox>
+      <HBox alignment="CENTER">
+         <children>
+            <Label fx:id="status" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" />
+         </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
       </HBox>
    </children>
 </VBox>
