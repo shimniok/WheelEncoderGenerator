@@ -71,23 +71,14 @@ public class PrimaryController implements Initializable {
     private void handleUnits(ActionEvent e) {
         int i = units.getSelectionModel().getSelectedIndex();
         String selected = encoder.getUnitOptions().get(i);
-        System.out.println("selected " + selected + " " + i);
-        //         System.out.println("selected " + selected);
     }
 
     @FXML
     private void handleType(Event e) {
-        System.out.print("selected ");
         if (absolute.isSelected()) {
-            
-            System.out.println("absolute");
             encoder.getType().set("absolute");
-            
         } else if (incremental.isSelected()) {
-            
-            System.out.println("incremental");
             encoder.getType().set("incremental");
-            
         }
     }
     
@@ -95,7 +86,6 @@ public class PrimaryController implements Initializable {
     private void handleCoding(Event e) {
         int i = coding.getSelectionModel().getSelectedIndex();
         String selected = encoder.getCodingOptions().get(i);
-        System.out.println("coding " + selected + " " + i);    
     }
     
     @Override
@@ -111,13 +101,11 @@ public class PrimaryController implements Initializable {
         coding.getItems().addAll(encoder.getCodingOptions());
         
         encoder.getUnits().addListener((observable, oldValue, newValue) -> {
-            System.out.println("model change:" + newValue);
             units.selectionModelProperty().setValue(newValue);
         });
         units.getSelectionModel().selectFirst();
 
         encoder.getCoding().addListener((observable, oldValue, newValue) -> {
-            System.out.println("model change:" + newValue);
             coding.selectionModelProperty().setValue(newValue);
         });
         coding.getSelectionModel().selectFirst();

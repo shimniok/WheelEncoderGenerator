@@ -72,7 +72,7 @@
                      <content>
                         <TabPane fx:id="type" onMouseClicked="#handleType" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE">
                           <tabs>
-                            <Tab fx:id="incremental" text="Incremental">
+                            <Tab fx:id="incremental" closable="false" text="Incremental">
                               <content>
                                 <AnchorPane>
                                        <children>
@@ -122,7 +122,7 @@
                                     </AnchorPane>
                               </content>
                             </Tab>
-                            <Tab fx:id="absolute" text="Absolute">
+                            <Tab fx:id="absolute" closable="false" text="Absolute">
                               <content>
                                 <AnchorPane>
                                        <children>
@@ -142,7 +142,7 @@
                                                       <Label text="Resolution" textAlignment="RIGHT" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
                                                       <Spinner id="resolution" fx:id="absResolution" GridPane.columnIndex="1" />
                                                       <Label text="Coding" GridPane.rowIndex="1" />
-                                                      <ComboBox fx:id="coding" onAction="#handleCoding" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                      <ComboBox id="coding-combobox" fx:id="coding" onAction="#handleCoding" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                    </children>
                                                 </GridPane>
                                              </children>
