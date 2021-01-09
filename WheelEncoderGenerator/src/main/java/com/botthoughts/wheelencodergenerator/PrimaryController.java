@@ -25,6 +25,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -33,6 +34,14 @@ public class PrimaryController implements Initializable {
     
     Encoder encoder;
     
+    @FXML
+    Spinner incResolution;
+    @FXML
+    CheckBox index;
+    @FXML
+    CheckBox quadrature;
+    @FXML
+    Spinner absResolution;
     @FXML
     TextField outer;
     @FXML
@@ -64,11 +73,14 @@ public class PrimaryController implements Initializable {
         units.getItems().addAll(encoder.getUnitOptions());
         
         encoder.getUnits().addListener((observable, oldValue, newValue) -> {
-            System.out.println("model change:" + newValue.getClass().toString());
+            System.out.println("model change:" + newValue.toString());
             units.selectionModelProperty().setValue(newValue);
         });
         units.getSelectionModel().selectFirst();
 
+        quadrature.selectedProperty().bindBidirectional((Property) encoder.getQuadratureTrack());
+        index.selectedProperty().bindBidirectional((Property) encoder.getIndexTrack());
+        
         // TODO - add TextFormatters and Input verifiers
         //invert.setTextFormatter(new TextFormatter<>());
     }    

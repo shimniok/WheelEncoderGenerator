@@ -117,7 +117,7 @@ final public class Encoder {
     }
    
     private SimpleStringProperty type;
-    private SimpleIntegerProperty resolution;
+    private SimpleIntegerProperty resolution; // TODO use multiple resolutions?
     private SimpleIntegerProperty outerDiameter;
     private SimpleIntegerProperty innerDiameter;
     private SimpleIntegerProperty centerDiameter;
@@ -131,20 +131,29 @@ final public class Encoder {
     private SimpleBooleanProperty indexTrack;   
     
     /* absolute encoder properties */
+    private List<String> codingOptions;
     private SimpleStringProperty coding;
 
     /* Generic type */
     public Encoder() {
-        
         unitOptions = Arrays.asList("mm", "in");
         typeOptions = Arrays.asList("absolute", "incremental");
+        codingOptions = Arrays.asList("gray", "binary");
         
         outerDiameter = new SimpleIntegerProperty(50);
         innerDiameter = new SimpleIntegerProperty(20);
         centerDiameter = new SimpleIntegerProperty(5);
         inverted = new SimpleBooleanProperty(false);
+        units = new SimpleStringProperty(unitOptions.get(0));
+
         type = new SimpleStringProperty(typeOptions.get(0));
-        units = new SimpleStringProperty(typeOptions.get(0));
+        
+        // Incremental
+        quadratureTrack = new SimpleBooleanProperty(true);
+        indexTrack = new SimpleBooleanProperty(true);
+        
+        // Absolute
+        //coding = new SimpleStringProperty(codingOptions.get(0));
         
     }
     
