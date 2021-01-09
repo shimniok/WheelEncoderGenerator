@@ -15,7 +15,6 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -153,8 +152,8 @@ final public class Encoder {
         indexTrack = new SimpleBooleanProperty(true);
         
         // Absolute
-        //coding = new SimpleStringProperty(codingOptions.get(0));
-        
+        coding = new SimpleStringProperty(codingOptions.get(0));
+               
     }
     
 }

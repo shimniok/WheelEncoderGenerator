@@ -60,7 +60,7 @@
          <children>
             <Pane prefHeight="500.0" prefWidth="500.0">
                <children>
-                  <Circle fill="WHITE" layoutX="250.0" layoutY="250.0" radius="220.0" stroke="BLACK" strokeType="INSIDE">
+                  <Circle fx:id="circle" fill="WHITE" layoutX="250.0" layoutY="250.0" radius="220.0" stroke="BLACK" strokeType="INSIDE">
                      <effect>
                         <DropShadow />
                      </effect>
@@ -71,9 +71,9 @@
                <children>
                   <TitledPane collapsible="false" text="Configuration" VBox.vgrow="ALWAYS">
                      <content>
-                        <TabPane prefWidth="300.0" tabClosingPolicy="UNAVAILABLE">
+                        <TabPane fx:id="type" onMouseClicked="#handleType" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE">
                           <tabs>
-                            <Tab text="Incremental">
+                            <Tab fx:id="incremental" text="Incremental">
                               <content>
                                 <AnchorPane>
                                        <children>
@@ -112,7 +112,7 @@
                                     </AnchorPane>
                               </content>
                             </Tab>
-                            <Tab text="Absolute">
+                            <Tab fx:id="absolute" text="Absolute">
                               <content>
                                 <AnchorPane>
                                        <children>
@@ -121,13 +121,13 @@
                                                 <HBox alignment="CENTER" spacing="10.0">
                                                    <children>
                                                       <Label text="Resolution" />
-                                                      <Spinner prefHeight="26.0" prefWidth="123.0" />
+                                                      <Spinner fx:id="absResolution" prefHeight="26.0" prefWidth="125.0" />
                                                    </children>
                                                 </HBox>
                                                 <HBox alignment="CENTER" spacing="10.0">
                                                    <children>
                                                       <Label text="Coding" />
-                                                      <ChoiceBox prefWidth="150.0" />
+                                                      <ChoiceBox fx:id="coding" prefHeight="26.0" prefWidth="100.0" />
                                                    </children>
                                                 </HBox>
                                              </children>
@@ -177,7 +177,7 @@
                   </TitledPane>
                   <TitledPane animated="false" collapsible="false" contentDisplay="CENTER" text="Other" VBox.vgrow="ALWAYS">
                     <content>
-                        <HBox alignment="CENTER" prefWidth="300.0">
+                        <HBox alignment="CENTER">
                            <children>
                               <CheckBox fx:id="inverted" mnemonicParsing="false" text="Invert Encoder" textAlignment="CENTER" />
                            </children>

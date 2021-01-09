@@ -18,15 +18,18 @@ package com.botthoughts.wheelencodergenerator;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.property.Property;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.util.converter.IntegerStringConverter;
 
 
@@ -43,6 +46,8 @@ public class PrimaryController implements Initializable {
     @FXML
     Spinner absResolution;
     @FXML
+    ChoiceBox coding;
+    @FXML
     TextField outer;
     @FXML
     TextField inner;
@@ -52,14 +57,37 @@ public class PrimaryController implements Initializable {
     CheckBox inverted;
     @FXML
     ComboBox units;
+    @FXML
+    TabPane type;
+    @FXML
+    Tab absolute;
+    @FXML
+    Tab incremental;
 
     
     @FXML
     private void handleUnits(ActionEvent e) {
-        String x = units.getSelectionModel().getSelectedItem().toString();
-        System.out.println("selected "+x);
+        int i = units.getSelectionModel().getSelectedIndex();
+        String selected = encoder.getUnitOptions().get(i);
+        System.out.println("selected " + selected + " " + i);
+        //         System.out.println("selected " + selected);
     }
 
+    @FXML
+    private void handleType(Event e) {
+        System.out.print("selected ");
+        if (absolute.isSelected()) {
+            
+            System.out.println("absolute");
+            encoder.getType().set("absolute");
+            
+        } else if (incremental.isSelected()) {
+            
+            System.out.println("incremental");
+            encoder.getType().set("incremental");
+            
+        }
+    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {   
@@ -73,7 +101,7 @@ public class PrimaryController implements Initializable {
         units.getItems().addAll(encoder.getUnitOptions());
         
         encoder.getUnits().addListener((observable, oldValue, newValue) -> {
-            System.out.println("model change:" + newValue.toString());
+            System.out.println("model change:" + newValue);
             units.selectionModelProperty().setValue(newValue);
         });
         units.getSelectionModel().selectFirst();
@@ -81,8 +109,8 @@ public class PrimaryController implements Initializable {
         quadrature.selectedProperty().bindBidirectional((Property) encoder.getQuadratureTrack());
         index.selectedProperty().bindBidirectional((Property) encoder.getIndexTrack());
         
+        
         // TODO - add TextFormatters and Input verifiers
-        //invert.setTextFormatter(new TextFormatter<>());
     }    
      
 }
