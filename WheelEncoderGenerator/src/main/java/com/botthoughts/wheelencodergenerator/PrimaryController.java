@@ -38,16 +38,6 @@ public class PrimaryController implements Initializable {
     Encoder encoder;
     
     @FXML
-    Spinner incResolution;
-    @FXML
-    CheckBox index;
-    @FXML
-    CheckBox quadrature;
-    @FXML
-    Spinner absResolution;
-    @FXML
-    ChoiceBox coding;
-    @FXML
     TextField outer;
     @FXML
     TextField inner;
@@ -59,10 +49,22 @@ public class PrimaryController implements Initializable {
     ComboBox units;
     @FXML
     TabPane type;
+
     @FXML
     Tab absolute;
     @FXML
+    Spinner absResolution;
+    @FXML
+    ComboBox coding;
+
+    @FXML
     Tab incremental;
+    @FXML
+    Spinner incResolution;
+    @FXML
+    CheckBox index;
+    @FXML
+    CheckBox quadrature;
 
     
     @FXML
@@ -89,6 +91,13 @@ public class PrimaryController implements Initializable {
         }
     }
     
+    @FXML
+    private void handleCoding(Event e) {
+        int i = coding.getSelectionModel().getSelectedIndex();
+        String selected = encoder.getCodingOptions().get(i);
+        System.out.println("coding " + selected + " " + i);    
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {   
         
@@ -99,6 +108,7 @@ public class PrimaryController implements Initializable {
         center.textProperty().bindBidirectional((Property) encoder.getCenterDiameter(), new IntegerStringConverter());
         inverted.selectedProperty().bindBidirectional((Property) encoder.getInverted());
         units.getItems().addAll(encoder.getUnitOptions());
+        coding.getItems().addAll(encoder.getCodingOptions());
         
         encoder.getUnits().addListener((observable, oldValue, newValue) -> {
             System.out.println("model change:" + newValue);
@@ -106,9 +116,14 @@ public class PrimaryController implements Initializable {
         });
         units.getSelectionModel().selectFirst();
 
+        encoder.getCoding().addListener((observable, oldValue, newValue) -> {
+            System.out.println("model change:" + newValue);
+            coding.selectionModelProperty().setValue(newValue);
+        });
+        coding.getSelectionModel().selectFirst();
+        
         quadrature.selectedProperty().bindBidirectional((Property) encoder.getQuadratureTrack());
         index.selectedProperty().bindBidirectional((Property) encoder.getIndexTrack());
-        
         
         // TODO - add TextFormatters and Input verifiers
     }    

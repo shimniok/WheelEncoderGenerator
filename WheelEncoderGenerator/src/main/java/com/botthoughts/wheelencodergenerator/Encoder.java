@@ -114,6 +114,10 @@ final public class Encoder {
     public List<String> getUnitOptions() {
         return unitOptions;
     }
+    
+    public List<String> getCodingOptions() {
+        return codingOptions;
+    }
    
     private SimpleStringProperty type;
     private SimpleIntegerProperty resolution; // TODO use multiple resolutions?
@@ -122,15 +126,15 @@ final public class Encoder {
     private SimpleIntegerProperty centerDiameter;
     private SimpleBooleanProperty inverted;
     private SimpleStringProperty units;
-    private List<String> unitOptions;
-    private List<String> typeOptions;
+    private final List<String> unitOptions;
+    private final List<String> typeOptions;
 
     /* incremental encoder properties */
     private SimpleBooleanProperty quadratureTrack;
     private SimpleBooleanProperty indexTrack;   
     
     /* absolute encoder properties */
-    private List<String> codingOptions;
+    private final List<String> codingOptions;
     private SimpleStringProperty coding;
 
     /* Generic type */
