@@ -91,7 +91,7 @@
                                                          <GridPane.margin>
                                                             <Insets />
                                                          </GridPane.margin></Label>
-                                                      <Spinner id="resolution" fx:id="incResolution" GridPane.columnIndex="1" />
+                                                      <Spinner id="resolution" fx:id="incResolution" editable="true" GridPane.columnIndex="1" />
                                                    </children>
                                                 </GridPane>
                                                 <GridPane hgap="7.0" vgap="7.0">
@@ -140,7 +140,7 @@
                                                    </rowConstraints>
                                                    <children>
                                                       <Label text="Resolution" textAlignment="RIGHT" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
-                                                      <Spinner id="resolution" fx:id="absResolution" GridPane.columnIndex="1" />
+                                                      <Spinner id="resolution" fx:id="absResolution" editable="true" GridPane.columnIndex="1" />
                                                       <Label text="Coding" GridPane.rowIndex="1" />
                                                       <ComboBox id="coding-combobox" fx:id="coding" onAction="#handleCoding" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                    </children>

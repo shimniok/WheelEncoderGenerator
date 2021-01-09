@@ -26,6 +26,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
@@ -87,6 +89,39 @@ public class PrimaryController implements Initializable {
         int i = coding.getSelectionModel().getSelectedIndex();
         String selected = encoder.getCodingOptions().get(i);
     }
+ 
+    class Base2SpinnerValueFactory extends SpinnerValueFactory {
+        private int compute(int n) {
+            return (int) Math.pow(2, n);
+        }
+
+        private void set(int value) {
+            if (this.min <= value && value <= this.max) {
+                this.value = value;
+                this.valueProperty().set(this.compute(this.value));
+            }         
+        }
+         
+        @Override
+        public void increment(int steps) {
+            set(this.value + steps);
+        }
+        
+        @Override
+        public void decrement(int steps) {
+            set(this.value - steps);
+        }
+        
+        private int value;
+        private int max;
+        private int min;
+
+        public Base2SpinnerValueFactory(int min, int max, int initial) {
+            if (this.min >= 0) this.min = min; // negative values don't make sense
+            if (this.max >= 0) this.max = max;// negative values don't make sense
+            this.set(initial);
+        }
+    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {   
@@ -105,13 +140,17 @@ public class PrimaryController implements Initializable {
         });
         units.getSelectionModel().selectFirst();
 
+        /* absolute encoder */
         encoder.getCoding().addListener((observable, oldValue, newValue) -> {
             coding.selectionModelProperty().setValue(newValue);
         });
         coding.getSelectionModel().selectFirst();
+        absResolution.setValueFactory(new Base2SpinnerValueFactory(1, 16, 4));
         
+        /* incremental encoder */
         quadrature.selectedProperty().bindBidirectional((Property) encoder.getQuadratureTrack());
         index.selectedProperty().bindBidirectional((Property) encoder.getIndexTrack());
+        incResolution.setValueFactory(new IntegerSpinnerValueFactory(2, 2048, 16, 1));
         
         // TODO - add TextFormatters and Input verifiers
     }    
