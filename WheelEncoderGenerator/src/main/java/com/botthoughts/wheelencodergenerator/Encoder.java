@@ -148,6 +148,7 @@ final public class Encoder implements java.io.Serializable {
         return codingOptions;
     }
     
+    
     /**
      * Returns the number of tracks in the encoder, based on its type and various options.
      * This method is helpful for rendering the encoder. Absolute encoders have a track count
@@ -160,15 +161,155 @@ final public class Encoder implements java.io.Serializable {
     public int getTrackCount() {
         Integer result=1;
         
-        if (this.type.equals(this.ABSOLUTE)) {
+        if (this.type.getValue().equals(ABSOLUTE)) {
             result = this.absoluteResolution.getValue();
-        } else if (this.type.equals(this.INCREMENTAL)) {
+        } else if (this.type.getValue().equals(INCREMENTAL)) {
             if (this.quadratureTrack.getValue()) result += 1;
             if (this.indexTrack.getValue()) result += 1;
         }
         return result;
     }
+   
 
+     /**
+     * Returns track number of quadrature track, if enabled.
+     * 
+     * @return track number of quadrature track or -1 if no index track
+     */
+    private int quadratureTrackNumber() {
+        if (this.getIndexTrack().getValue()) {
+            return 2;
+        } else {
+            return -1;
+        }
+    }
+    
+    
+    /**
+     * Returns track number of index track, if enabled.
+     * 
+     * @return track number of index track or -1 if no index track
+     */
+    private int indexTrackNumber() {
+        if (this.getIndexTrack().getValue()) {
+            return this.quadratureTrackNumber() + 1;
+        } else {
+            return -1;
+        }
+    }
+    
+    
+    /* getStripes()
+     * 
+     * Returns the number of black stripes for a given track
+     */
+    public int getStripeCount(int whichTrack)
+    {
+        int stripes = 0;
+
+        if (this.type.getValue().equals(INCREMENTAL) && whichTrack == this.indexTrackNumber())
+            stripes = 2;
+        else {
+            stripes = (int) Math.ceil( 360.0 / Encoder.this.getStripeAngle() );
+        }
+        // TODO -- do gray vs. binary vs. incremental
+    
+        return stripes;
+    }
+
+    /* getOffset()
+     *
+     * Returns the offset in degrees of the current track
+     */
+    public double getAngleOffset(int whichTrack)
+    {
+        double offset = 0.0;
+
+        // In all cases, offset is zero, except if the encoder is:
+        // 1) of type absolute and encoding is Gray Code, in which case, offset
+        // depends on which track we're talking about among other things
+        // 2) the current track is the quadrature track
+        // TODO: clockwise vs counter clockwise
+        if (this.type.equals(ABSOLUTE) && this.coding.equals(GRAY)) {
+            if (whichTrack == this.absoluteResolution.getValue()-1)
+                offset = 0; //-getDegree(whichTrack, 0); // CCW: 0, CW: -getDegree(whichTrack, 0)
+            else
+                offset = -getStripeAngle(whichTrack, 0)/2; // CW: - CCW: +
+        } else if (this.type.equals(INCREMENTAL)) {
+            if (whichTrack == quadratureTrackNumber()) {
+                offset = getStripeAngle(whichTrack, 0)/2;
+            }
+            else if (whichTrack == indexTrackNumber()) {
+                offset = -getStripeAngle(whichTrack, 0);
+            }
+        }
+        //Debug.println("track="+whichTrack);
+        //Debug.println("offset="+offset);
+        return offset;
+    }
+    
+    /**
+     * Get the angle of a single stripe
+     * 
+     * @return angle of a single stripe
+     */
+
+    private double getStripeAngle()
+    {
+        double d=0.0;
+        if (this.type.getValue().equals(INCREMENTAL)) {
+            // The standard encoder has one track and
+            // the resolution specifies the number of stripes
+            // directly
+            d = 360.0 / this.incrementalResolution.getValue(); 
+        }
+        //Debug.println("degree="+d);
+        return d;
+    }
+
+    /**
+     * Get the angle of specified stripe on specified track
+     * 
+     * @param whichTrack
+     * @param whichStripe
+     * @return 
+     */
+    public double getStripeAngle(int whichTrack, int whichStripe)
+    {
+        double d=0.0;
+        int theTrack = whichTrack;
+
+        if (this.type.getValue().equals(ABSOLUTE)) {
+            // With an absolute encoder (gray or binary), the resolution
+            // defines the total number of tracks. The resolution for a given
+            // track is dependent on the track number.  A 3 track absolute
+            // encoder has 2^1 stripes on the inner track, 2^2 on the middle
+            // track and 2^3 on the outer track
+            // In Gray coding, the innermost track starts the same as binary,
+            // but the next track out is a duplicate (only one block of black)
+            // and it is offset degree/2 == 90*; the rest of the tracks are
+            // same as binary (starting with 2 black stripes), but are offset
+            // by degree/2 from the previous track.
+            //Debug.println("whichTrack=" + Integer.toString(whichTrack));
+            if (this.coding.equals(GRAY) && (this.absoluteResolution.getValue() - theTrack) > 1) {
+                //Debug.println("incrementing theTrack");
+                theTrack++;
+            }
+            d = 360.0 / Math.pow(2, resolution - theTrack); // TODO - getTrackResolution(whichTrack)
+        }
+        else if (this.type.getValue().equals(INCREMENTAL)) {
+            // Index track has only two stripes, one small black stripe
+            // and one giant white stripe that covers the rest of the track
+            if (whichTrack == indexTrackNumber() && whichStripe == 0) {
+                d = 360 - Encoder.this.getStripeAngle();
+            } else {
+                d = Encoder.this.getStripeAngle();
+            }
+        }
+        return d;
+    }
+    
+    
     private SimpleStringProperty type;
     private SimpleIntegerProperty resolution; // TODO use multiple resolutions?
     private SimpleIntegerProperty absoluteResolution; // TODO use multiple resolutions?

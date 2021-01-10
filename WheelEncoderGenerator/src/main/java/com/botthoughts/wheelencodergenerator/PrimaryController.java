@@ -120,7 +120,8 @@ public class PrimaryController implements Initializable {
         this.drawTrack(offset, diameter, resolution, 90);
         gc.setStroke(Color.BLACK);
         gc.strokeOval(offset, offset, diameter, diameter);
-
+        
+        /*
         if (type.equals(Encoder.INCREMENTAL)) {
             // Draw quadrature track
             if (encoder.getQuadratureTrack().getValue()) {
@@ -139,15 +140,15 @@ public class PrimaryController implements Initializable {
                 gc.fillArc(offset, offset, diameter, diameter, 90, -stripeAngle, ArcType.ROUND);
             }
         }
-        /*
-        else if (type.equals(Encoder.ABSOLUTE)) {
-            for (Integer t=1<<resolution; t >= 0; t >>= 1) {
-                this.drawTrack(offset, diameter, t, 0);
-                diameter -= 2 * trackWidth;
-                offset += trackWidth;
-            }
-        }
         */
+
+        // 
+        trackWidth = 0.5 * (outerDiameter - innerDiameter) / resolution;
+        for (Integer t=4; t >= 0; t--) {
+            this.drawTrack(offset, diameter, 1<<t, 0);
+            diameter -= 2 * trackWidth;
+            offset += trackWidth;
+        }
         
         // Draw inner diameter circle
         offset = padding + (outerDiameter - innerDiameter) / 2.0;
