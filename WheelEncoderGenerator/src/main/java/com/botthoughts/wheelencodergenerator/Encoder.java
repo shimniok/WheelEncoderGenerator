@@ -27,12 +27,12 @@ import javafx.beans.property.SimpleStringProperty;
  */
 final public class Encoder implements java.io.Serializable {
 
-    private static String ABSOLUTE = "absolute";
-    private static String INCREMENTAL = "incremental";
-    private static String MM = "mm";
-    private static String INCH = "inch";
-    private static String GRAY = "gray";
-    private static String BINARY = "binary";
+    public static String ABSOLUTE = "absolute";
+    public static String INCREMENTAL = "incremental";
+    public static String MM = "mm";
+    public static String INCH = "inch";
+    public static String GRAY = "gray";
+    public static String BINARY = "binary";
 
     public boolean checkDiameters() {
         Integer i = this.innerDiameter.getValue();
@@ -189,6 +189,8 @@ final public class Encoder implements java.io.Serializable {
     private final List<String> codingOptions;
     private SimpleStringProperty coding;
 
+    // TODO - track width property, should innerdiameter be calculated?
+    
     /* Generic type */
     public Encoder() {
         unitOptions = Arrays.asList(this.MM, this.INCH);
@@ -196,7 +198,7 @@ final public class Encoder implements java.io.Serializable {
         codingOptions = Arrays.asList(this.GRAY, this.BINARY);
         
         outerDiameter = new SimpleIntegerProperty(50);
-        innerDiameter = new SimpleIntegerProperty(40);
+        innerDiameter = new SimpleIntegerProperty(30);
         centerDiameter = new SimpleIntegerProperty(5);
         inverted = new SimpleBooleanProperty(false);
         units = new SimpleStringProperty(unitOptions.get(0));

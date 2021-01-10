@@ -77,30 +77,32 @@ public class PrimaryController implements Initializable {
     
     private GraphicsContext gc;
     
-    private void drawTrack(double offset, double diameter, int resolution) {
+    private void drawTrack(double offset, double diameter, int resolution, double startAngle) {
         if (resolution >= 2) {
-            double angle = 360.0 / resolution;
+            double angle = 360.0 / resolution; // TODO - duplicated below, clean up all this
             gc.fillOval(offset, offset, diameter, diameter);
             for (int s=0; s < resolution; s++) {
-                if (s % 2 == 0) {
-                    gc.setFill(Color.WHITE);
-                } else {
-                    gc.setFill(Color.BLACK);
-                }
-                gc.fillArc(offset, offset, diameter, diameter, s*angle, angle, ArcType.ROUND);
+                gc.setFill((s % 2 == 0) ? Color.WHITE : Color.BLACK);
+                gc.fillArc(offset, offset, diameter, diameter, startAngle + s*angle, angle, ArcType.ROUND);
             }
         }        
     }
     
-    
     public void drawEncoder() {
-
         // Encoder measurements
         Integer id = encoder.getInnerDiameter().getValue();
         Integer od = encoder.getOuterDiameter().getValue();
         Integer cd = encoder.getCenterDiameter().getValue();
+        String type = encoder.getType().getValue();
+        
+        // Track info
+        int resolution = encoder.getIncrementalResolution().getValue();
+        int trackCount = 1;
+        if (encoder.getQuadratureTrack().getValue()) trackCount++;
+        if (encoder.getIndexTrack().getValue()) trackCount++;
         
         // Real Pixels
+        double lineWidth = 5;
         double padding = 10.0;
         double maxWidth = Math.min(canvas.getWidth(), canvas.getHeight());
         double outerDiameter = maxWidth - 2 * padding;
@@ -108,22 +110,45 @@ public class PrimaryController implements Initializable {
         double innerDiameter = id * scale;
         double centerDiameter = cd * scale;
         double offset = padding; // initial circle offset is just padding
-
-        // Track info
-        int resolution = encoder.getIncrementalResolution().getValue();
+        double trackWidth = 0.5 * (outerDiameter - innerDiameter) / trackCount;
+        double diameter = outerDiameter;
         double stripeAngle = 360.0 / resolution;
-        
-        System.out.println("outerDiameter=" + outerDiameter);
-        System.out.println("innerDiameter=" + innerDiameter);
-        
-        // Draw outer diameter circle
-        gc.setStroke(Color.BLACK);
-        gc.strokeOval(offset, padding, outerDiameter, outerDiameter);
+  
+        // TODO - real lines separating each track
         
         // Draw outer track
-        this.drawTrack(offset, outerDiameter, resolution);
-        
+        this.drawTrack(offset, diameter, resolution, 90);
+        gc.setStroke(Color.BLACK);
+        gc.strokeOval(offset, offset, diameter, diameter);
+
+        if (type.equals(Encoder.INCREMENTAL)) {
+            // Draw quadrature track
+            if (encoder.getQuadratureTrack().getValue()) {
+                diameter -= 2 * trackWidth;
+                offset = padding + (outerDiameter - diameter) / 2;
+                this.drawTrack(offset, diameter, resolution, 90 - stripeAngle/2.0);
+            }
+
+            // Draw index track
+            if (encoder.getIndexTrack().getValue()) {
+                diameter -= 2 * trackWidth;
+                offset = padding + (outerDiameter - diameter) / 2;
+                gc.setFill(Color.WHITE);
+                gc.fillOval(offset, offset, diameter, diameter);
+                gc.setFill(Color.BLACK);
+                gc.fillArc(offset, offset, diameter, diameter, 90, -stripeAngle, ArcType.ROUND);
+            }
+        }
         /*
+        else if (type.equals(Encoder.ABSOLUTE)) {
+            for (Integer t=1<<resolution; t >= 0; t >>= 1) {
+                this.drawTrack(offset, diameter, t, 0);
+                diameter -= 2 * trackWidth;
+                offset += trackWidth;
+            }
+        }
+        */
+        
         // Draw inner diameter circle
         offset = padding + (outerDiameter - innerDiameter) / 2.0;
         gc.setFill(Color.WHITE);
@@ -144,7 +169,6 @@ public class PrimaryController implements Initializable {
         gc.setStroke(Color.DARKGREY);
         gc.strokeLine(x1, y1, x2, y2); // draw vertical line
         gc.strokeLine(y1, x1, y2, x2); // draw the horizontal line
-        */
     }
     
     @FXML
