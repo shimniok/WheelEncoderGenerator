@@ -75,8 +75,25 @@ public class PrimaryController implements Initializable {
     @FXML
     Canvas canvas;
     
+    private GraphicsContext gc;
     
-    public void drawEncoder(GraphicsContext gc) {
+    private void drawTrack(double offset, double diameter, int resolution) {
+        if (resolution >= 2) {
+            double angle = 360.0 / resolution;
+            gc.fillOval(offset, offset, diameter, diameter);
+            for (int s=0; s < resolution; s++) {
+                if (s % 2 == 0) {
+                    gc.setFill(Color.WHITE);
+                } else {
+                    gc.setFill(Color.BLACK);
+                }
+                gc.fillArc(offset, offset, diameter, diameter, s*angle, angle, ArcType.ROUND);
+            }
+        }        
+    }
+    
+    
+    public void drawEncoder() {
 
         // Encoder measurements
         Integer id = encoder.getInnerDiameter().getValue();
@@ -92,15 +109,21 @@ public class PrimaryController implements Initializable {
         double centerDiameter = cd * scale;
         double offset = padding; // initial circle offset is just padding
 
+        // Track info
+        int resolution = encoder.getIncrementalResolution().getValue();
+        double stripeAngle = 360.0 / resolution;
+        
         System.out.println("outerDiameter=" + outerDiameter);
         System.out.println("innerDiameter=" + innerDiameter);
         
         // Draw outer diameter circle
-        gc.setFill(Color.WHITE);
-        gc.fillOval(offset, offset, outerDiameter, outerDiameter);
+        gc.setStroke(Color.BLACK);
         gc.strokeOval(offset, padding, outerDiameter, outerDiameter);
-        gc.setFill(Color.BLACK);
-
+        
+        // Draw outer track
+        this.drawTrack(offset, outerDiameter, resolution);
+        
+        /*
         // Draw inner diameter circle
         offset = padding + (outerDiameter - innerDiameter) / 2.0;
         gc.setFill(Color.WHITE);
@@ -113,54 +136,14 @@ public class PrimaryController implements Initializable {
         gc.fillOval(offset, offset, centerDiameter, centerDiameter);
         gc.strokeOval(offset, offset, centerDiameter, centerDiameter);
         
-        
-        /*
-        // Quadrature track
-        gc.setFill(Color.DARKOLIVEGREEN);
-        double trackWidth = trackAreaWidth / maxTrack / 2.0;
-        if (encoder.getQuadratureTrack().getValue()) {
-            for (double angle = 90; angle < 360.0; angle += angleStep) {
-                gc.fillArc(trackWidth, trackWidth, maxDiameter-trackWidth, maxDiameter-trackWidth, 90.0-angleStep/2.0, -angleStep, ArcType.ROUND);
-            }    
-        }
-        */
-        
-        /*
-        for (int track = 0; track < maxTrack; track++) {
-            offset = e.getOffset(track);
-            double dA = innerDiam + (maxTrack-track) * (diameter - innerDiam - 1) / maxTrack;
-            double xA = x + track * trackWidth / maxTrack;
-            double yA = y + track * trackWidth / maxTrack;
-
-            if (e.isInverted())
-                color = Color.white;
-            else
-                color = Color.black;
-            int stripe = 0;
-            for (double i=offset; i < (360.0+offset); i += degree) {
-                degree = e.getDegree(track, stripe++);
-                g2D.setColor( color );
-                g2D.fill( new Arc2D.Double(xA, yA, dA, dA, i, degree, Arc2D.PIE) );
-                if (color == Color.white)
-                    color = Color.black;
-                else
-                    color = Color.white;
-            }
-            g2D.setColor(Color.black);
-            g2D.drawOval((int) Math.round(xA), (int) Math.round(yA), (int) Math.round(dA), (int) Math.round(dA));
-        }
-        */
-        
-        /*
-        gc.setFill(Color.WHITE);
-        gc.fillOval((int) Math.round(x+trackWidth), (int) Math.round(y+trackWidth), (int) Math.round(innerDiam), (int) Math.round(innerDiam));
-        gc.setFill(Color.BLACK);
-        gc.drawOval((int) Math.round(x+trackWidth), (int) Math.round(y+trackWidth), (int) Math.round(innerDiam), (int) Math.round(innerDiam));
-        // Draw center circle
-        gc.drawOval((int) Math.round(x+ctrWidth), (int) Math.round(y+ctrWidth), (int) Math.round(ctrDiam), (int) Math.round(ctrDiam));
         // Draw crosshairs
-        gc.drawLine((int) Math.round(x+trackWidth), (int) Math.round(y+diameter/2), (int) Math.round(x+(diameter+innerDiam)/2), (int) Math.round(y+diameter/2));
-        gc.drawLine((int) Math.round(x+diameter/2), (int) Math.round(y+trackWidth), (int) Math.round(x+diameter/2), (int) Math.round(y+(diameter+innerDiam)/2));        
+        double x1 = offset + centerDiameter/2.0;
+        double y1 = offset;
+        double x2 = x1;
+        double y2 = y1 + centerDiameter;
+        gc.setStroke(Color.DARKGREY);
+        gc.strokeLine(x1, y1, x2, y2); // draw vertical line
+        gc.strokeLine(y1, x1, y2, x2); // draw the horizontal line
         */
     }
     
@@ -247,8 +230,8 @@ public class PrimaryController implements Initializable {
         index.selectedProperty().bindBidirectional((Property) encoder.getIndexTrack());
         incResolution.setValueFactory(new IntegerSpinnerValueFactory(2, 2048, 16, 1));
         
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        this.drawEncoder(gc);
+        this.gc = canvas.getGraphicsContext2D();
+        this.drawEncoder();
         
         // TODO draw circle
         // TODO print
