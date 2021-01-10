@@ -35,6 +35,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 import javafx.util.converter.IntegerStringConverter;
 
 
@@ -74,67 +75,56 @@ public class PrimaryController implements Initializable {
     @FXML
     Canvas canvas;
     
-    private static int diameter = 500;
-    
-        /* getOffset()
-     *
-     * Returns the offset in degrees of the current track
-     */
-    private double getTrackOffset(int whichTrack)
-    {
-        double offset = 0.0;
-
-        // In all cases, offset is zero, except if the encoder is:
-        // 1) of type absolute and encoding is Gray Code, in which case, offset
-        // depends on which track we're talking about among other things
-        // 2) the current track is the quadrature track
-        // TODO: clockwise vs counter clockwise
-        /*
-        if (type == WheelEncoder.ABSOLUTE && numbering == WheelEncoder.GRAY) {
-            if (whichTrack == resolution-1)
-                offset = 0; //-getDegree(whichTrack, 0); // CCW: 0, CW: -getDegree(whichTrack, 0)
-            else
-                offset = -getDegree(whichTrack, 0)/2; // CW: - CCW: +
-        } else if (type == WheelEncoder.STANDARD) {
-            if (whichTrack == getQuadratureTrack()) {
-                offset = getDegree(whichTrack, 0)/2;
-            }
-        }
-        */
-        //Debug.println("track="+whichTrack);
-        //Debug.println("offset="+offset);
-        return offset;
-    }
     
     public void drawEncoder(GraphicsContext gc) {
-        double maxDiameter = Math.min(canvas.getWidth(), canvas.getHeight());
-        double centerX = canvas.getWidth() / 2.0;
-        double centerY = canvas.getHeight() / 2.0;
-        
+
+        // Encoder measurements
         Integer id = encoder.getInnerDiameter().getValue();
         Integer od = encoder.getOuterDiameter().getValue();
         Integer cd = encoder.getCenterDiameter().getValue();
         
-        double ioRatio = (double) id / (double) od; // ratio of inner to outer diameter
-        double innerDiam = this.diameter * (double) id / (double) od;
-        double trackWidth = (this.diameter - innerDiam) / 2.0;
-        double ctrRatio = (double) cd / (double) od;
-        double ctrDiam = this.diameter * ctrRatio;
-        double ctrWidth = (this.diameter - ctrDiam) / 2.0;
-        double degree = 0;
-        double offset = 0;
-        int maxTrack = 0;
-        Color color;
+        // Real Pixels
+        double padding = 10.0;
+        double maxWidth = Math.min(canvas.getWidth(), canvas.getHeight());
+        double outerDiameter = maxWidth - 2 * padding;
+        double scale = outerDiameter / od; // scaling factor in pixes per encoder-unit-of-measure
+        double innerDiameter = id * scale;
+        double centerDiameter = cd * scale;
+        double offset = padding; // initial circle offset is just padding
 
-        // Background
+        System.out.println("outerDiameter=" + outerDiameter);
+        System.out.println("innerDiameter=" + innerDiameter);
+        
+        // Draw outer diameter circle
+        gc.setFill(Color.WHITE);
+        gc.fillOval(offset, offset, outerDiameter, outerDiameter);
+        gc.strokeOval(offset, padding, outerDiameter, outerDiameter);
+        gc.setFill(Color.BLACK);
+
+        // Draw inner diameter circle
+        offset = padding + (outerDiameter - innerDiameter) / 2.0;
+        gc.setFill(Color.WHITE);
+        gc.fillOval(offset, offset, innerDiameter, innerDiameter);
+        gc.strokeOval(offset, offset, innerDiameter, innerDiameter);
+        
+        // Draw center circle diameter
+        offset = padding + (outerDiameter - centerDiameter) / 2.0;
+        gc.setFill(Color.WHITE);
+        gc.fillOval(offset, offset, centerDiameter, centerDiameter);
+        gc.strokeOval(offset, offset, centerDiameter, centerDiameter);
+        
+        
         /*
-        if (background != null) {
-            g2D.setColor(background);
-            g2D.fillRect(0, 0, (int) Math.round(width), (int) Math.round(height));
-        }*/
-
-        maxTrack = encoder.getTrackCount();
-
+        // Quadrature track
+        gc.setFill(Color.DARKOLIVEGREEN);
+        double trackWidth = trackAreaWidth / maxTrack / 2.0;
+        if (encoder.getQuadratureTrack().getValue()) {
+            for (double angle = 90; angle < 360.0; angle += angleStep) {
+                gc.fillArc(trackWidth, trackWidth, maxDiameter-trackWidth, maxDiameter-trackWidth, 90.0-angleStep/2.0, -angleStep, ArcType.ROUND);
+            }    
+        }
+        */
+        
         /*
         for (int track = 0; track < maxTrack; track++) {
             offset = e.getOffset(track);
@@ -160,9 +150,6 @@ public class PrimaryController implements Initializable {
             g2D.drawOval((int) Math.round(xA), (int) Math.round(yA), (int) Math.round(dA), (int) Math.round(dA));
         }
         */
-        
-        // Draw inner circle
-        gc.strokeOval(0, 0, maxDiameter, maxDiameter);
         
         /*
         gc.setFill(Color.WHITE);

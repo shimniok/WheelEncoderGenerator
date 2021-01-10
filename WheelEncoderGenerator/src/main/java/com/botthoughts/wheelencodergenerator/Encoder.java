@@ -196,7 +196,7 @@ final public class Encoder implements java.io.Serializable {
         codingOptions = Arrays.asList(this.GRAY, this.BINARY);
         
         outerDiameter = new SimpleIntegerProperty(50);
-        innerDiameter = new SimpleIntegerProperty(20);
+        innerDiameter = new SimpleIntegerProperty(40);
         centerDiameter = new SimpleIntegerProperty(5);
         inverted = new SimpleBooleanProperty(false);
         units = new SimpleStringProperty(unitOptions.get(0));
@@ -204,10 +204,12 @@ final public class Encoder implements java.io.Serializable {
         type = new SimpleStringProperty(typeOptions.get(0));
         
         // Incremental
+        incrementalResolution = new SimpleIntegerProperty(16);
         quadratureTrack = new SimpleBooleanProperty(true);
         indexTrack = new SimpleBooleanProperty(true);
         
         // Absolute
+        absoluteResolution = new SimpleIntegerProperty(4);
         coding = new SimpleStringProperty(codingOptions.get(0));
                
     }
