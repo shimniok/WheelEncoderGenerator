@@ -25,23 +25,6 @@ import javafx.beans.property.SimpleIntegerProperty;
  */
 public class BinaryEncoder extends BasicEncoder {
 
-    /*
-    // TODO - reverse bit pattern
-    double tw = 0.5 * (outerDiameter - innerDiameter) / (bits-1);
-    double o = offset;
-    double d = outerDiameter;
-    int res;
-    double sweep; 
-    double start = 90;
-    for (int t = bits-1; t > 0; t--) {
-        res = 1<<t;
-        sweep = 360.0/res; // TODO - reverse rotation + is ccw, - is cw
-        this.drawTrack(o, d, res, start, sweep);
-        o += tw;
-        d -= 2*tw;
-    }
-    */
-
     @Override
     public boolean validResolution(int resolution) {
         return resolution >= 1;
