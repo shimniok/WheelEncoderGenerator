@@ -295,7 +295,7 @@ final public class Encoder implements java.io.Serializable {
                 //Debug.println("incrementing theTrack");
                 theTrack++;
             }
-            d = 360.0 / Math.pow(2, resolution - theTrack); // TODO - getTrackResolution(whichTrack)
+            d = 360.0 / Math.pow(2, resolution.getValue() - theTrack); // TODO - getTrackResolution(whichTrack)
         }
         else if (this.type.getValue().equals(INCREMENTAL)) {
             // Index track has only two stripes, one small black stripe
@@ -347,14 +347,13 @@ final public class Encoder implements java.io.Serializable {
         type = new SimpleStringProperty(typeOptions.get(0));
         
         // Incremental
-        incrementalResolution = new SimpleIntegerProperty(16);
+        incrementalResolution = new SimpleIntegerProperty(4);
         quadratureTrack = new SimpleBooleanProperty(true);
         indexTrack = new SimpleBooleanProperty(true);
         
         // Absolute
         absoluteResolution = new SimpleIntegerProperty(4);
         coding = new SimpleStringProperty(codingOptions.get(0));
-               
     }
     
 }

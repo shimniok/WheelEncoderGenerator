@@ -77,16 +77,94 @@ public class PrimaryController implements Initializable {
     
     private GraphicsContext gc;
     
-    private void drawTrack(double offset, double diameter, int resolution, double startAngle) {
-        if (resolution >= 2) {
-            double angle = 360.0 / resolution; // TODO - duplicated below, clean up all this
-            gc.fillOval(offset, offset, diameter, diameter);
-            for (int s=0; s < resolution; s++) {
-                gc.setFill((s % 2 == 0) ? Color.WHITE : Color.BLACK);
-                gc.fillArc(offset, offset, diameter, diameter, startAngle + s*angle, angle, ArcType.ROUND);
-            }
-        }        
+    /**
+     * Draws a single track with specified number of stripes at specified start angle.
+     * This method can draw encoder tracks for absolute or standard/incremental encoders,
+     * or can an index track with a single stripe. Or whatever else you want.
+     * 
+     * @param offset represents the upper left of the bounding rectangle for the track circle
+     * @param diameter represents the width/height of the track circle
+     * @param stripeCount number of black stripes to draw     
+     * @param startAngle is the angle to start drawing the first stripe in degrees
+     * @param sweepAngle is the angular width of each stripe
+     */
+    private void drawTrack(double offset, double diameter, int stripeCount, double startAngle, double sweepAngle) {
+        // Draw circle with white background
+        gc.setFill(Color.WHITE);
+        gc.fillOval(offset, offset, diameter, diameter);
+        // Draw the stripes for the track
+        gc.setFill(Color.BLACK);
+        for (int s=0; s < stripeCount; s += 2) {
+            gc.fillArc(offset, offset, diameter, diameter, startAngle+s*sweepAngle, sweepAngle, ArcType.ROUND);
+        }
+        gc.setStroke(Color.BLACK);
+        gc.strokeOval(offset, offset, diameter, diameter);
     }
+
+    private void drawTrack(double offset, double diameter, int resolution, double startAngle) {
+    }
+    
+    
+    private double getGrayTrackAngle(int n) {
+        return 0;
+    }
+    
+    private void drawBinaryEncoder(double offset, double outerDiameter, double innerDiameter, int bits) {
+        // TODO - reverse bit pattern
+        double tw = 0.5 * (outerDiameter - innerDiameter) / (bits-1);
+        double o = offset;
+        double d = outerDiameter;
+        int res;
+        double sweep; 
+        double start = 90;
+        for (int t = bits-1; t > 0; t--) {
+            res = 1<<t;
+            sweep = 360.0/res; // TODO - reverse rotation + is ccw, - is cw
+            this.drawTrack(o, d, res, start, sweep);
+            o += tw;
+            d -= 2*tw;
+        }
+    }
+    
+    
+    private void drawGrayEncoder(double offset, double outerDiameter, double innerDiameter, int bits) {
+        // TODO - reverse gray
+        double tw = 0.5 * (outerDiameter - innerDiameter) / bits;
+        double o = offset;
+        double d = outerDiameter;
+        int res;
+        double sweep;
+        double start;
+        for (int t = bits-1; t >= 0; t--) {
+            if (t == 0) {
+                res = 2;
+                start = 90;
+                sweep = 180;
+            } else {
+                res = 1<<t;
+                sweep = 360.0/res;
+                start = 90 - sweep/2;
+            }
+            this.drawTrack(o, d, res, start, sweep);
+            o += tw;
+            d -= 2*tw;
+        }
+    }
+    
+        
+    private void drawIncrementalEncoder(double offset, double outerDiameter, double innerDiameter, 
+            int resolution, boolean index, boolean quadrature) {
+        int trackCount = 1;
+        if (index) trackCount++;
+        if (quadrature) trackCount++;
+        double trackWidth = 0.5 * (outerDiameter - innerDiameter) / trackCount;
+        double stripeAngle = 360.0 / resolution;
+
+        this.drawTrack(offset, outerDiameter, resolution, 90, stripeAngle);
+        if (quadrature) this.drawTrack(offset + trackWidth, outerDiameter - 2*trackWidth, resolution, 90 - stripeAngle/2.0, stripeAngle);
+        if (index) this.drawTrack(offset + trackWidth*2, outerDiameter - 4*trackWidth, 1, 90, stripeAngle);
+    }
+    
     
     public void drawEncoder() {
         // Encoder measurements
@@ -97,40 +175,39 @@ public class PrimaryController implements Initializable {
         
         // Track info
         int resolution = encoder.getIncrementalResolution().getValue();
-        int trackCount = 1;
-        if (encoder.getQuadratureTrack().getValue()) trackCount++;
-        if (encoder.getIndexTrack().getValue()) trackCount++;
         
         // Real Pixels
-        double lineWidth = 5;
         double padding = 10.0;
         double maxWidth = Math.min(canvas.getWidth(), canvas.getHeight());
         double outerDiameter = maxWidth - 2 * padding;
         double scale = outerDiameter / od; // scaling factor in pixes per encoder-unit-of-measure
         double innerDiameter = id * scale;
         double centerDiameter = cd * scale;
-        double offset = padding; // initial circle offset is just padding
-        double trackWidth = 0.5 * (outerDiameter - innerDiameter) / trackCount;
-        double diameter = outerDiameter;
-        double stripeAngle = 360.0 / resolution;
-  
+        double direction = 1; // TODO direction -1 for ccw rotation, 1 for cw rotation
+        
         // TODO - real lines separating each track
         
-        // Draw outer track
-        this.drawTrack(offset, diameter, resolution, 90);
-        gc.setStroke(Color.BLACK);
-        gc.strokeOval(offset, offset, diameter, diameter);
+               
+        //drawGrayEncoder(padding, outerDiameter, innerDiameter, resolution);
+
+        //drawIncrementalEncoder(padding, outerDiameter, innerDiameter, resolution, 
+        //        encoder.getIndexTrack().getValue(), encoder.getQuadratureTrack().getValue());
+
+        drawBinaryEncoder(padding, outerDiameter, innerDiameter, resolution);
         
-        /*
         if (type.equals(Encoder.INCREMENTAL)) {
+  
+            /*
             // Draw quadrature track
-            if (encoder.getQuadratureTrack().getValue()) {
+//            if (encoder.getQuadratureTrack().getValue()) {
                 diameter -= 2 * trackWidth;
                 offset = padding + (outerDiameter - diameter) / 2;
-                this.drawTrack(offset, diameter, resolution, 90 - stripeAngle/2.0);
-            }
+                this.drawTrack(offset, diameter, resolution, 90 - stripeAngle/2.0, stripeAngle);
+//            }
+            */
 
             // Draw index track
+            /*
             if (encoder.getIndexTrack().getValue()) {
                 diameter -= 2 * trackWidth;
                 offset = padding + (outerDiameter - diameter) / 2;
@@ -139,19 +216,20 @@ public class PrimaryController implements Initializable {
                 gc.setFill(Color.BLACK);
                 gc.fillArc(offset, offset, diameter, diameter, 90, -stripeAngle, ArcType.ROUND);
             }
+            */
         }
-        */
+        
 
-        // 
+        /*
         trackWidth = 0.5 * (outerDiameter - innerDiameter) / resolution;
         for (Integer t=4; t >= 0; t--) {
             this.drawTrack(offset, diameter, 1<<t, 0);
             diameter -= 2 * trackWidth;
             offset += trackWidth;
         }
-        
+        */
         // Draw inner diameter circle
-        offset = padding + (outerDiameter - innerDiameter) / 2.0;
+        double offset = padding + (outerDiameter - innerDiameter) / 2.0;
         gc.setFill(Color.WHITE);
         gc.fillOval(offset, offset, innerDiameter, innerDiameter);
         gc.strokeOval(offset, offset, innerDiameter, innerDiameter);
