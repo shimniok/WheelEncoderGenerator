@@ -195,7 +195,7 @@ public class BasicEncoder implements EncoderInterface {
     protected SimpleIntegerProperty direction;
     protected List<EncoderTrack> tracks;
 
-    BasicEncoder() {
+    public BasicEncoder() {
         this.outerDiameter = new SimpleDoubleProperty(50);
         this.innerDiameter = new SimpleDoubleProperty(30);
         this.centerDiameter = new SimpleDoubleProperty(10);

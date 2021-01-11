@@ -23,17 +23,8 @@ import javafx.beans.property.SimpleIntegerProperty;
  *
  * @author mes
  */
-public class BinaryEncoder extends BasicEncoder {
+public class GrayEncoder extends BinaryEncoder {
 
-    public Integer getTrackCount() {
-        return resolution.getValue();
-    }
-    
-    @Override
-    public boolean validResolution(int resolution) {
-        return resolution >= 1;
-    }
-    
     /**
      * Return list of ordered Track objects for this encoder.
      * Track information is computed on-demand
@@ -45,25 +36,32 @@ public class BinaryEncoder extends BasicEncoder {
 
         double outer = outerDiameter.getValue();
         double inner = innerDiameter.getValue();
-        
         double trackWidth = (outer - inner)/getTrackCount();
+        double angle = 0;
+        double start = 0;
+        int res = 0;
+        
 
         inner = outer - trackWidth;
-        for (int b = resolution.getValue(); b > 0; b--) {
-            int res = 1<<b;
-            double angle = 360.0/res;
+        for (int b = resolution.getValue()-1; b >= 0; b--) {
+            if (b > 0) {
+                res = 1<<b;
+                angle = 360.0/res;
+                start = angle/2;
+            } else {
+                start = 0;
+            }
 
-            tracks.add(new EncoderTrack(outer, inner, 0, angle, res));
+            tracks.add(new EncoderTrack(outer, inner, start, angle, res));
             outer -= trackWidth;
-            inner -= trackWidth;
+            inner -= trackWidth;            
         }
         
         return tracks;
     }
-   
     
-    public BinaryEncoder() {
-        this.resolution = new SimpleIntegerProperty(4);
+    public GrayEncoder() {
+        this.resolution = new SimpleIntegerProperty(5);
     }
     
 }

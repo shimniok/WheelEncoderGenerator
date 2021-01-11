@@ -224,7 +224,8 @@ public class PrimaryController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {   
         
         //encoder = new BasicEncoder();
-        encoder = new BinaryEncoder();
+        //encoder = new BinaryEncoder();
+        encoder = new GrayEncoder();
 
         /*
         outer.textProperty().bindBidirectional((Property) encoder.getOuterDiameter(), new IntegerStringConverter());
