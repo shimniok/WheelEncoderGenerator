@@ -19,10 +19,29 @@ package com.botthoughts.wheelencodergenerator;
  *
  * @author mes
  */
-public class Track {
+public class EncoderTrack {
     public double outerDiameter;
     public double innerDiameter;
     public double startAngle;
-    public Stripe stripe;
+    public double stripeAngle;
     public int stripeCount;
+
+    /**
+     * 
+     * @param outerDiameter outer diameter (all units managed externally)
+     * @param innerDiameter inner diameter
+     * @param startAngle starting angle for first stripe in degrees
+     * @param stripeSweepAngle angle of each white and black stripe
+     * @param stripeCount number of black stripes
+     */
+    public EncoderTrack(double outerDiameter, double innerDiameter, double startAngle, 
+            double stripeSweepAngle, int stripeCount) {
+        this.outerDiameter = outerDiameter;
+        this.innerDiameter = innerDiameter;
+        this.startAngle = startAngle;
+        this.stripeAngle = stripeSweepAngle;
+        this.stripeCount = stripeCount;
+    }
+    
+
 }

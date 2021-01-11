@@ -25,14 +25,13 @@ import javafx.beans.property.SimpleStringProperty;
  *
  * @author mes
  */
-final public class Encoder implements java.io.Serializable {
+public class Encoder implements java.io.Serializable {
 
-    public static String ABSOLUTE = "absolute";
+    public static String GRAY = "gray"; // a type of absolute
+    public static String BINARY = "binary"; // a type of absolute
     public static String INCREMENTAL = "incremental";
     public static String MM = "mm";
     public static String INCH = "inch";
-    public static String GRAY = "gray";
-    public static String BINARY = "binary";
 
     public boolean checkDiameters() {
         Integer i = this.innerDiameter.getValue();
@@ -51,7 +50,7 @@ final public class Encoder implements java.io.Serializable {
     }
 
     public void setType(SimpleStringProperty type) {
-        if (this.type.equals(this.ABSOLUTE) || this.type.equals(this.INCREMENTAL)) {
+        if (this.type.equals(this.GRAY) || this.type.equals(this.BINARY) || this.type.equals(this.INCREMENTAL)) { // convert to x in list
             this.type = type;
         }
     }
@@ -128,14 +127,6 @@ final public class Encoder implements java.io.Serializable {
         this.indexTrack = indexTrack;
     }
 
-    public SimpleStringProperty getCoding() {
-        return coding;
-    }
-
-    public void setCoding(SimpleStringProperty coding) {
-        this.coding = coding;
-    }
-       
     public List<String> getTypeOptions() {
         return typeOptions;
     }
@@ -143,12 +134,7 @@ final public class Encoder implements java.io.Serializable {
     public List<String> getUnitOptions() {
         return unitOptions;
     }
-    
-    public List<String> getCodingOptions() {
-        return codingOptions;
-    }
-    
-    
+       
     /**
      * Returns the number of tracks in the encoder, based on its type and various options.
      * This method is helpful for rendering the encoder. Absolute encoders have a track count
@@ -161,7 +147,9 @@ final public class Encoder implements java.io.Serializable {
     public int getTrackCount() {
         Integer result=1;
         
-        if (this.type.getValue().equals(ABSOLUTE)) {
+        if (this.type.getValue().equals(GRAY)) {
+            result = this.absoluteResolution.getValue()+1;
+        } else if (this.type.getValue().equals(BINARY)) {
             result = this.absoluteResolution.getValue();
         } else if (this.type.getValue().equals(INCREMENTAL)) {
             if (this.quadratureTrack.getValue()) result += 1;
@@ -203,6 +191,7 @@ final public class Encoder implements java.io.Serializable {
      * 
      * Returns the number of black stripes for a given track
      */
+    /*
     public int getStripeCount(int whichTrack)
     {
         int stripes = 0;
@@ -210,17 +199,19 @@ final public class Encoder implements java.io.Serializable {
         if (this.type.getValue().equals(INCREMENTAL) && whichTrack == this.indexTrackNumber())
             stripes = 2;
         else {
-            stripes = (int) Math.ceil( 360.0 / Encoder.this.getStripeAngle() );
+            stripes = (int) Math.ceil( 360.0 / Encoder.this.getStripeAngle(whichTrack) );
         }
         // TODO -- do gray vs. binary vs. incremental
     
         return stripes;
     }
+    */
 
     /* getOffset()
      *
      * Returns the offset in degrees of the current track
      */
+    /*
     public double getAngleOffset(int whichTrack)
     {
         double offset = 0.0;
@@ -230,56 +221,43 @@ final public class Encoder implements java.io.Serializable {
         // depends on which track we're talking about among other things
         // 2) the current track is the quadrature track
         // TODO: clockwise vs counter clockwise
-        if (this.type.equals(ABSOLUTE) && this.coding.equals(GRAY)) {
-            if (whichTrack == this.absoluteResolution.getValue()-1)
-                offset = 0; //-getDegree(whichTrack, 0); // CCW: 0, CW: -getDegree(whichTrack, 0)
-            else
-                offset = -getStripeAngle(whichTrack, 0)/2; // CW: - CCW: +
+        if (this.type.getValue().equals(GRAY)) {
+            double sweepAngle = 10; // TODO - FIX
+            if (whichTrack == 0) {
+                offset = getAngleOffset(whichTrack+1);
+            } else {
+                offset = 90 - sweepAngle/2;
+            }
+        } else if (this.type.getValue().equals(BINARY)) {
+            offset = 90;
         } else if (this.type.equals(INCREMENTAL)) {
             if (whichTrack == quadratureTrackNumber()) {
-                offset = getStripeAngle(whichTrack, 0)/2;
+                offset = getStripeAngle(whichTrack)/2;
             }
             else if (whichTrack == indexTrackNumber()) {
-                offset = -getStripeAngle(whichTrack, 0);
+                offset = -getStripeAngle(whichTrack);
             }
         }
         //Debug.println("track="+whichTrack);
         //Debug.println("offset="+offset);
         return offset;
     }
+    */
     
     /**
-     * Get the angle of a single stripe
-     * 
-     * @return angle of a single stripe
-     */
-
-    private double getStripeAngle()
-    {
-        double d=0.0;
-        if (this.type.getValue().equals(INCREMENTAL)) {
-            // The standard encoder has one track and
-            // the resolution specifies the number of stripes
-            // directly
-            d = 360.0 / this.incrementalResolution.getValue(); 
-        }
-        //Debug.println("degree="+d);
-        return d;
-    }
-
-    /**
-     * Get the angle of specified stripe on specified track
+     * Get the angle of a stripe on specified track
      * 
      * @param whichTrack
      * @param whichStripe
      * @return 
      */
-    public double getStripeAngle(int whichTrack, int whichStripe)
+    /*
+    public double getStripeAngle(int whichTrack)
     {
         double d=0.0;
         int theTrack = whichTrack;
 
-        if (this.type.getValue().equals(ABSOLUTE)) {
+        if (this.type.getValue().equals(GRAY)) {
             // With an absolute encoder (gray or binary), the resolution
             // defines the total number of tracks. The resolution for a given
             // track is dependent on the track number.  A 3 track absolute
@@ -291,27 +269,26 @@ final public class Encoder implements java.io.Serializable {
             // same as binary (starting with 2 black stripes), but are offset
             // by degree/2 from the previous track.
             //Debug.println("whichTrack=" + Integer.toString(whichTrack));
-            if (this.coding.equals(GRAY) && (this.absoluteResolution.getValue() - theTrack) > 1) {
+            if ((this.absoluteResolution.getValue() - theTrack) > 1) {
                 //Debug.println("incrementing theTrack");
                 theTrack++;
-            }
+            } 
+            //TODO FIX
             d = 360.0 / Math.pow(2, resolution.getValue() - theTrack); // TODO - getTrackResolution(whichTrack)
         }
         else if (this.type.getValue().equals(INCREMENTAL)) {
             // Index track has only two stripes, one small black stripe
             // and one giant white stripe that covers the rest of the track
-            if (whichTrack == indexTrackNumber() && whichStripe == 0) {
-                d = 360 - Encoder.this.getStripeAngle();
-            } else {
+            d = 360.0 / this
                 d = Encoder.this.getStripeAngle();
             }
         }
         return d;
     }
+    */
     
     
     private SimpleStringProperty type;
-    private SimpleIntegerProperty resolution; // TODO use multiple resolutions?
     private SimpleIntegerProperty absoluteResolution; // TODO use multiple resolutions?
     private SimpleIntegerProperty incrementalResolution; // TODO use multiple resolutions?
     private SimpleIntegerProperty outerDiameter;
@@ -324,19 +301,14 @@ final public class Encoder implements java.io.Serializable {
 
     /* incremental encoder properties */
     private SimpleBooleanProperty quadratureTrack;
-    private SimpleBooleanProperty indexTrack;   
-    
-    /* absolute encoder properties */
-    private final List<String> codingOptions;
-    private SimpleStringProperty coding;
+    private SimpleBooleanProperty indexTrack;      
 
     // TODO - track width property, should innerdiameter be calculated?
     
     /* Generic type */
     public Encoder() {
         unitOptions = Arrays.asList(this.MM, this.INCH);
-        typeOptions = Arrays.asList(this.ABSOLUTE, this.INCREMENTAL);
-        codingOptions = Arrays.asList(this.GRAY, this.BINARY);
+        typeOptions = Arrays.asList(this.GRAY, this.BINARY);
         
         outerDiameter = new SimpleIntegerProperty(50);
         innerDiameter = new SimpleIntegerProperty(30);
@@ -353,7 +325,6 @@ final public class Encoder implements java.io.Serializable {
         
         // Absolute
         absoluteResolution = new SimpleIntegerProperty(4);
-        coding = new SimpleStringProperty(codingOptions.get(0));
     }
     
 }

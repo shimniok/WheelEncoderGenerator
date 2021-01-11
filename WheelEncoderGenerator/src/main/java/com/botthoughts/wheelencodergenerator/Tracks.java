@@ -19,7 +19,6 @@ package com.botthoughts.wheelencodergenerator;
  *
  * @author mes
  */
-public class Stripe {
-    public double startAngle;
-    public double sweepAngle;
+class Tracks {
+    
 }
