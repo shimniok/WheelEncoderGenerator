@@ -97,9 +97,9 @@
                </graphic></Button>
         </items>
       </ToolBar>
-      <HBox>
+      <HBox VBox.vgrow="ALWAYS">
          <children>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+            <AnchorPane HBox.hgrow="ALWAYS">
                <children>
                   <Canvas fx:id="canvas" height="500.0" width="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children>
@@ -107,14 +107,14 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </HBox.margin>
             </AnchorPane>
-            <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" HBox.hgrow="ALWAYS">
                <children>
-                  <TitledPane collapsible="false" prefWidth="260.0" text="Settings" VBox.vgrow="ALWAYS">
+                  <TitledPane collapsible="false" text="Settings" VBox.vgrow="ALWAYS">
                      <content>
-                        <GridPane alignment="CENTER" hgap="5.0" vgap="5.0">
+                        <GridPane alignment="CENTER" hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="5.0">
                            <columnConstraints>
-                              <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" prefWidth="100.0" />
+                              <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+                              <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="-Infinity" />
                            </columnConstraints>
                            <rowConstraints>
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -134,27 +134,34 @@
                               <TextField fx:id="innerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                               <TextField fx:id="centerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                               <Label text="Center Diameter" GridPane.rowIndex="4" />
-                              <ComboBox fx:id="unitsUI" onAction="#handleUnits" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                              <ComboBox fx:id="unitsUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" onAction="#handleUnits" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                               <Label text="Units" GridPane.rowIndex="5" />
                               <Label text="Inverted" GridPane.rowIndex="6" />
-                              <ToggleButton fx:id="invertedUI" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="No" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                              <ToggleButton fx:id="invertedUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="No" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                               <Label text="Resolution" GridPane.rowIndex="1" />
-                              <Spinner fx:id="resolutionUI1" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                              <ToggleButton fx:id="indexUI" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="No" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                              <ToggleButton fx:id="indexUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="No" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                               <Label text="Index Track" GridPane.rowIndex="8" />
-                              <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                              <GridPane GridPane.columnIndex="1" GridPane.rowIndex="7">
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                 </rowConstraints>
                                  <children>
-                                    <ToggleButton mnemonicParsing="false" prefWidth="100.0" text="CW" HBox.hgrow="ALWAYS">
+                                    <ToggleButton maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="70.0" mnemonicParsing="false" text="CW">
                                        <toggleGroup>
                                           <ToggleGroup fx:id="directionGroup" />
                                        </toggleGroup>
                                     </ToggleButton>
-                                    <ToggleButton mnemonicParsing="false" prefWidth="100.0" text="CCW" toggleGroup="$directionGroup" HBox.hgrow="ALWAYS" />
+                                    <ToggleButton maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="70.0" mnemonicParsing="false" text="CCW" toggleGroup="$directionGroup" GridPane.columnIndex="1" />
                                  </children>
-                              </HBox>
+                              </GridPane>
                               <Label text="Direction" GridPane.rowIndex="7" />
-                              <ComboBox fx:id="typeUI" prefWidth="150.0" GridPane.columnIndex="1" />
+                              <ComboBox fx:id="typeUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
                               <Label text="Encoder Type" />
+                              <Spinner fx:id="resolutionUI" editable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                            </children>
                         </GridPane>
                      </content>

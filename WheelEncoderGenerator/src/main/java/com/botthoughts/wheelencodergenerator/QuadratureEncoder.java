@@ -22,42 +22,38 @@ import java.util.List;
  *
  * @author mes
  */
-public class QuadratureEncoder extends EncoderTracks {
-    
-    @Override
-    public boolean validResolution(int resolution) {
-        return resolution > 1;
-    }
-
+public class QuadratureEncoder extends BasicEncoder {
     /**
-     * Return list of ordered Track objects for this encoder.
-     * Track information is computed on-demand
+     * Return list of ordered Track objects for this encoder.Track information is computed on-demand
+     * @param index include index track?
      * @return list of tracks
      */
     @Override
-    public List<EncoderTrack> getTracks() {
+    public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index) {
         tracks = new ArrayList<>();
-        double angle = 360.0/ep.getResolution().getValue();
-
+        double angle = 360.0/resolution;
+        int tc = 2; // track count
+        double tw; // track width
+        
+        if (index) tc++;
+        tw = (od - id)/tc;
+        
         // outer track
-        tracks.add(new EncoderTrack(ep.getOuterDiameter().getValue(),
-                ep.getInnerDiameter().getValue(), 0, angle, ep.getResolution().getValue()));
+        tracks.add(new EncoderTrack(od, id, 0, angle, resolution));
         
         // inner track
-        tracks.add(new EncoderTrack(ep.getOuterDiameter().getValue(),
-                ep.getInnerDiameter().getValue(), angle/2, angle, ep.getResolution().getValue()));
+        od -= tw;
+        id -= tw;
+        tracks.add(new EncoderTrack(od, id, angle/2, angle, resolution));
         
         // index track
-        if (this.ep.getIndexTrack().getValue()) {
-            tracks.add(new EncoderTrack(ep.getOuterDiameter().getValue(),
-                ep.getInnerDiameter().getValue(), angle/2, angle, ep.getResolution().getValue()));
+        if (index) {
+            od -= tw;
+            id -= tw;
+            tracks.add(new EncoderTrack(od, id, angle/2, angle, resolution));
         }
         
         return tracks;
-    }
-
-    QuadratureEncoder(EncoderProperties ep) {
-        super(ep);
     }
 
 }

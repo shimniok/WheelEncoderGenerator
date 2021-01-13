@@ -40,22 +40,15 @@ import javafx.util.converter.DoubleStringConverter;
 
 public class PrimaryController implements Initializable {
     
-    EncoderProperties encoder;
+    EncoderProperties eProperties;
     BasicEncoder basicEncoder;
     QuadratureEncoder quadratureEncoder;
     BinaryEncoder binaryEncoder;
     GrayEncoder grayEncoder;
+    Encoder currentEncoder;
     
     @FXML
     ComboBox typeUI;
-    @FXML
-    ToggleButton basicUI;
-    @FXML
-    ToggleButton quadratureUI;
-    @FXML
-    ToggleButton binaryUI;
-    @FXML
-    ToggleButton grayUI;
 
     @FXML
     Spinner resolutionUI;
@@ -70,18 +63,12 @@ public class PrimaryController implements Initializable {
     ComboBox unitsUI;
 
     @FXML
-    Node directionRowUI;
-    @FXML
     ToggleGroup directionUI;
     @FXML
     ToggleButton cwUI;
     @FXML
     ToggleButton ccwUI;
-    
-    @FXML
-    GridPane indexRowUI;
-//    @FXML
-//    ToggleButton indexUI;
+
     @FXML
     ToggleButton invertedUI;
     
@@ -129,48 +116,51 @@ public class PrimaryController implements Initializable {
     
     public void drawEncoder() {
         // Encoder measurements
-        Double id = encoder.getInnerDiameter().getValue();
-        Double od = encoder.getOuterDiameter().getValue();
-        Double cd = encoder.getCenterDiameter().getValue();
+        Double id = eProperties.getInnerDiameter().getValue();
+        Double od = eProperties.getOuterDiameter().getValue();
+        Double cd = eProperties.getCenterDiameter().getValue();
+        Boolean index = eProperties.getIndexTrack().getValue();
+        Integer res = eProperties.getResolution().getValue();
         
         // Real Pixels & Scaling
         double padding = 10.0; // TODO - configurable?
         double centerX = canvas.getWidth() / 2;
         double centerY = canvas.getHeight() / 2;
-        double outerDiameterPx = Math.min(canvas.getWidth(), canvas.getHeight()) - 2*padding;
-        double scale = outerDiameterPx / od; // scaling factor: px / units
-        double innerDiameterPx = id * scale;
-        double centerDiameterPx = cd * scale;
+        double canvasPx = Math.min(canvas.getWidth(), canvas.getHeight()); // canvas min width
+        double scale = (canvasPx-2*padding)/ od; // scaling factor: px / units
+        double cdPx = cd * scale; // scaled center diameter
         
         // TODO - real lines separating each track
         
-        // INCREMENTAL
-
-        for (EncoderTrack t : basicEncoder.getTracks()) {
-            double outerPx = t.outerDiameter * scale;
-            double innerPx = t.innerDiameter * scale;            
-            double offsetX = centerX - outerPx/2;
-            double offsetY = centerY - outerPx/2;
-            
-            System.out.println("o=" + t.outerDiameter + " i=" + t.innerDiameter
-                    + " a=" + t.stripeAngle + " c=" + t.stripeCount);
-            
-            this.drawTrack(offsetX, offsetY, outerPx, innerPx, 
-                    t.stripeCount, t.startAngle, t.stripeAngle);
-        }
+        Encoder enc = eProperties.getEncoder();
         
+        if (enc != null) {
+            for (EncoderTrack t : enc.getTracks(id, od, res, index)) {
+                double outerPx = t.outerDiameter * scale;
+                double innerPx = t.innerDiameter * scale;            
+                double offsetX = centerX - outerPx/2;
+                double offsetY = centerY - outerPx/2;
+
+                System.out.println("o=" + t.outerDiameter + " i=" + t.innerDiameter
+                        + " a=" + t.stripeAngle + " c=" + t.stripeCount);
+
+                this.drawTrack(offsetX, offsetY, outerPx, innerPx, 
+                        t.stripeCount, t.startAngle, t.stripeAngle);
+            }
+        }
+            
         // Draw center circle diameter
         gc.setFill(Color.WHITE);
-        double x = centerX - centerDiameterPx/2;
-        double y = centerY - centerDiameterPx/2;
-        gc.fillOval(x, y, centerDiameterPx, centerDiameterPx);
-        gc.strokeOval(x, y, centerDiameterPx, centerDiameterPx);
+        double x = centerX - cdPx/2;
+        double y = centerY - cdPx/2;
+        gc.fillOval(x, y, cdPx, cdPx);
+        gc.strokeOval(x, y, cdPx, cdPx);
         
         // Draw crosshairs
-        double x1 = x + centerDiameterPx/2.0;
+        double x1 = x + cdPx/2.0;
         double y1 = y;
         double x2 = x1;
-        double y2 = y1 + centerDiameterPx;
+        double y2 = y1 + cdPx;
         gc.setStroke(Color.DARKGREY);
         gc.strokeLine(x1, y1, x2, y2); // draw vertical line
         gc.strokeLine(y1, x1, y2, x2); // draw the horizontal line
@@ -237,51 +227,40 @@ public class PrimaryController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {   
         
-        basicEncoder = new BasicEncoder(encoder);
-        binaryEncoder = new BinaryEncoder(encoder);
-        quadratureEncoder = new QuadratureEncoder(encoder);
-        grayEncoder = new GrayEncoder(encoder);
+        basicEncoder = new BasicEncoder();
+        binaryEncoder = new BinaryEncoder();
+        quadratureEncoder = new QuadratureEncoder();
+        grayEncoder = new GrayEncoder();
+
+        eProperties = new EncoderProperties(basicEncoder);
         
-        encoder = new EncoderProperties(basicEncoder);
-        
+        // TODO - convert below to properties
         typeUI.getItems().addAll("Quadrature", "Basic", "Absolute Binary", "Gray Coded");
+        typeUI.getSelectionModel().select(0);
         
-        outerUI.textProperty().bindBidirectional((Property) encoder.getOuterDiameter(), 
+        outerUI.textProperty().bindBidirectional((Property) eProperties.getOuterDiameter(), 
                 new DoubleStringConverter());
-        /*
-        innerUI.textProperty().bindBidirectional((Property) encoder.getInnerDiameter(), 
+        innerUI.textProperty().bindBidirectional((Property) eProperties.getInnerDiameter(), 
                 new DoubleStringConverter());
-
-        centerUI.textProperty().bindBidirectional((Property) encoder.getCenterDiameter(), 
+        centerUI.textProperty().bindBidirectional((Property) eProperties.getCenterDiameter(), 
                 new DoubleStringConverter());
 
-        invertedUI.selectedProperty().bindBidirectional((Property) encoder.getInverted());
+        invertedUI.selectedProperty().bindBidirectional((Property) eProperties.getInverted());
 
-        encoder.getUnits().addListener((observable, oldValue, newValue) -> {
-            unitsUI.selectionModelProperty().setValue(newValue);
-        });
-
-        resolutionUI.setValueFactory(new IntegerSpinnerValueFactory(2, 2048, 16, 1));
-        */
-
-        /* absolute encoder */
-        /*
-        encoder.getCoding().addListener((observable, oldValue, newValue) -> {
-            coding.selectionModelProperty().setValue(newValue);
-        });
-        coding.getSelectionModel().selectFirst();
-        */
-        //absResolution.setValueFactory(new Base2SpinnerValueFactory(1, 16, 4));
+        unitsUI.getItems().addAll(eProperties.getUnitOptions());
+        unitsUI.valueProperty().bindBidirectional(eProperties.getUnits());
         
-        /* incremental encoder */
-        //quadrature.selectedProperty().bindBidirectional((Property) encoder.getQuadratureTrack());
-        //index.selectedProperty().bindBidirectional((Property) encoder.getIndexTrack());
+//
+//        SpinnerValueFactory<Integer> valueFactory =
+//                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 5, 1);
+//        
+//        resolutionUI.setValueFactory(valueFactory);
         
+//        resolutionUI.valueFactoryProperty().bindBidirectional(eProperties.getResolution());
+       
         this.gc = canvas.getGraphicsContext2D();
 
-        /*
         this.drawEncoder();
-        */
         
         // TODO draw circle
         // TODO print

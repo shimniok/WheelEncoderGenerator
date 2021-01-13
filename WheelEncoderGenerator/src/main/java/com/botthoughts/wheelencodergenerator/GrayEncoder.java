@@ -25,40 +25,42 @@ import java.util.List;
 public class GrayEncoder extends BinaryEncoder {
 
     /**
-     * Return list of ordered Track objects for this encoder.
-     * Track information is computed on-demand
+     * Return list of ordered Track objects for this encoder. Track information
+     * is computed on-demand
+     * @param id Inside diameter
+     * @param od Outside diameter
+     * @param resolution
+     * @param index ignored because it doesn't make sense for this type of encoder
      * @return list of tracks
      */
     @Override
-    public List<EncoderTrack> getTracks() {
-        tracks = new ArrayList<>();
-
-        double outer = ep.getOuterDiameter().getValue();
-        double inner = ep.getInnerDiameter().getValue();
-        double trackWidth = (outer - inner)/ep.getResolution().getValue();
+    public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index) {
+        double tw = (od - id)/resolution; // track width
         double angle = 0;
-        double start = 0;
+        double start;
         int res = 0;
 
-        inner = outer - trackWidth;
-        for (int b = ep.getResolution().getValue()-1; b >= 0; b--) {
+        tracks = new ArrayList<>();
+
+        id = od - tw;
+        for (int b = resolution-1; b >= 0; b--) {
             if (b > 0) {
-                res = 1<<b;
+                res = 1 << b;
                 angle = 360.0/res;
                 start = angle/2;
             } else {
+                // for the final track, we keep the previous
+                // resolution and angle, and simply start it
+                // 90 degrees offset from the previous track
                 start = 0;
             }
 
-            tracks.add(new EncoderTrack(outer, inner, start, angle, res));
-            outer -= trackWidth;
-            inner -= trackWidth;            
+            tracks.add(new EncoderTrack(od, id, start, angle, res));
+            od -= tw;
+            id -= tw;            
         }
         
         return tracks;
     }
 
-    public GrayEncoder(EncoderProperties ep) {
-        super(ep);
-    }       
 }

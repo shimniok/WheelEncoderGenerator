@@ -23,11 +23,13 @@ limitations under the License.
     -fx-vgap: 5;
 }
 
+/*
 .grid-column {
     -fx-pref-width: 50%;
     -fx-min-width: 50%;
     -fx-max-width: 50%;   
 }
+*/
 
 /*
 .grid-row {

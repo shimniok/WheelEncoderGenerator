@@ -22,17 +22,30 @@ import java.util.List;
  *
  * @author mes
  */
-public class BasicEncoder extends EncoderTracks {
+public class BasicEncoder implements Encoder {
 
+    protected List<EncoderTrack> tracks; // list of tracks
+    static private int RESOLUTION_MAX = 2;
+    static private int RESOLUTION_MIN = 2048;
+
+    /**
+     * Return list of tracks
+     * @param id inside diameter
+     * @param od outside diameter
+     * @param resolution resolution of encoder
+     * @param index
+     * @return list of tracks
+     */
     @Override
-    public List<EncoderTrack> getTracks() {
+    public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index) {
         tracks = new ArrayList<>();
         
-        EncoderTrack outer = new EncoderTrack(
-                ep.getOuterDiameter().getValue(),
-                ep.getInnerDiameter().getValue(), 
-                0, 360.0/this.ep.getResolution().getValue(), 
-                ep.getResolution().getValue());
+        EncoderTrack outer = new EncoderTrack(od, id, 0, 360.0/resolution, resolution);
+//        EncoderTrack outer = new EncoderTrack(
+//                ep.getOuterDiameter().getValue(),
+//                ep.getInnerDiameter().getValue(), 
+//                0, 360.0/ep.getResolution().getValue(), 
+//                ep.getResolution().getValue());
         tracks.add(outer);
         
         return tracks;
@@ -44,10 +57,39 @@ public class BasicEncoder extends EncoderTracks {
      */
     @Override
     public boolean validResolution(int resolution) {
-        return resolution > 1;
+        return resolution >= RESOLUTION_MAX && resolution <= RESOLUTION_MIN;
     }
     
-    public BasicEncoder(EncoderProperties ep) {
-        super(ep);
+    /**
+     * Attempt to increment the supplied resolution by one step.
+     * If the result is valid (see validResolution()) it its returned,
+     * otherwise the original resolution is returned
+     * 
+     * @param resolution 
+     * @return incremented resolution if valid, else original resolution
+     */
+    @Override
+    public int incrementResolution(int resolution) {
+        if (validResolution(resolution+1)) {
+            return resolution+1;
+        }
+        return resolution;
     }
+    
+    /**
+     * Attempt to decrement the supplied resolution by one step.
+     * If the result is valid (see validResolution()) it its returned,
+     * otherwise the original resolution is returned
+     * 
+     * @return decremented resolution if valid, else original resolution
+     * @param resolution 
+     */
+    @Override
+    public int decrementResolution(int resolution) {
+        if (validResolution(resolution-1)) {
+            return resolution-1;
+        }
+        return resolution;
+    }
+
 }

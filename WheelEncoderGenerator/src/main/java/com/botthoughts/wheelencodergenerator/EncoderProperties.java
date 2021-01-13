@@ -17,10 +17,14 @@ package com.botthoughts.wheelencodergenerator;
 
 import java.util.Arrays;
 import java.util.List;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 
 /**
  *
@@ -33,7 +37,32 @@ public class EncoderProperties {
     
     public static Boolean CLOCKWISE = true;
     public static Boolean COUNTERCLOCKWISE = false;
+
+    protected final List<String> unitOptions = Arrays.asList(
+            EncoderProperties.MM, EncoderProperties.INCH);
     
+    protected SimpleStringProperty units; // see this.unitOptions
+    protected SimpleDoubleProperty outerDiameter;
+    protected SimpleDoubleProperty innerDiameter;
+    protected SimpleDoubleProperty centerDiameter;
+    protected SimpleIntegerProperty resolution;
+    protected SimpleBooleanProperty inverted;
+    protected SimpleBooleanProperty indexTrack;
+    protected SimpleBooleanProperty direction; // see this.CLOCKWISE
+    protected Encoder encoder;
+
+    public EncoderProperties(Encoder encoder) {
+        this.outerDiameter = new SimpleDoubleProperty(50);
+        this.innerDiameter = new SimpleDoubleProperty(30);
+        this.centerDiameter = new SimpleDoubleProperty(10);
+        this.inverted = new SimpleBooleanProperty(false);
+        this.units = new SimpleStringProperty(unitOptions.get(0));
+        this.resolution = new SimpleIntegerProperty(2);
+        this.direction = new SimpleBooleanProperty(true);
+        this.indexTrack = new SimpleBooleanProperty(false);
+        this.encoder = encoder;
+    }
+
     /**
      * Determine if specified resolution is valid for this encoder
      * 
@@ -41,7 +70,7 @@ public class EncoderProperties {
      * @return true if valid, false otherwise
      */
     final public boolean validResolution(int resolution) {
-        return tracks.validResolution(resolution);
+        return encoder.validResolution(resolution);
     }
 
     /**
@@ -50,10 +79,6 @@ public class EncoderProperties {
      */
     final public List<String> getUnitOptions() {
         return unitOptions;
-    }
-
-    final public void setType() {
-        
     }
     
     /**
@@ -197,28 +222,39 @@ public class EncoderProperties {
         this.direction = direction;
     }
 
-    protected final List<String> unitOptions = Arrays.asList(
-            EncoderProperties.MM, EncoderProperties.INCH);
-    
-    protected SimpleDoubleProperty outerDiameter;
-    protected SimpleDoubleProperty innerDiameter;
-    protected SimpleDoubleProperty centerDiameter;
-    protected SimpleStringProperty units; // see this.unitOptions
-    protected SimpleIntegerProperty resolution; // number of bits
-    protected SimpleBooleanProperty inverted;
-    protected SimpleBooleanProperty indexTrack;
-    protected SimpleBooleanProperty direction; // see this.CLOCKWISE
-    protected EncoderTracks tracks;
-
-    public EncoderProperties(EncoderTracks tracks) {
-        this.outerDiameter = new SimpleDoubleProperty(50);
-        this.innerDiameter = new SimpleDoubleProperty(30);
-        this.centerDiameter = new SimpleDoubleProperty(10);
-        this.inverted = new SimpleBooleanProperty(false);
-        this.units = new SimpleStringProperty(unitOptions.get(0));
-        this.resolution = new SimpleIntegerProperty(16);
-        this.direction = new SimpleBooleanProperty(true);
-        this.indexTrack = new SimpleBooleanProperty(false);
-        this.tracks = tracks;
+    /**
+     * Get the encoder associated with these properties
+     * @return the encoder associated with these properties
+     */
+    public Encoder getEncoder() {
+        return this.encoder;
     }
+
+    /**
+     * Set the encoder associated with these properties
+     * @param e the encoder to associate with these properties
+     */
+    public void setEncoder(Encoder e) {
+        this.encoder = e;
+    }
+
+    public SpinnerValueFactory getResolutionValueFactory() {
+        return new SpinnerValueFactory<Integer>() {
+            
+            @Override
+            public void increment(int i) {
+                while (i-- > 0) {
+                    valueProperty().set(valueProperty().get() + 1);
+                }
+            }
+            
+            @Override
+            public void decrement(int i) {
+                while (i-- > 0) {
+                    valueProperty().set(valueProperty().get() - 1);
+                }
+            }
+
+        };
+    }    
 }
