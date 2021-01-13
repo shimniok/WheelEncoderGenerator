@@ -23,15 +23,16 @@ import javafx.beans.property.SimpleIntegerProperty;
  *
  * @author mes
  */
-public class BinaryEncoder extends BasicEncoder {
+public class BinaryEncoder extends EncoderTracks {
 
-    public Integer getTrackCount() {
-        return resolution.getValue();
-    }
-    
+    /**
+     * Check validity of resolution, which for this type is # bits.
+     * @param resolution
+     * @return true if valid resolution.
+     */
     @Override
     public boolean validResolution(int resolution) {
-        return resolution >= 1;
+        return resolution >= 1; // minimum resolution is 1 bit
     }
     
     /**
@@ -43,13 +44,13 @@ public class BinaryEncoder extends BasicEncoder {
     public List<EncoderTrack> getTracks() {
         tracks = new ArrayList<>();
 
-        double outer = outerDiameter.getValue();
-        double inner = innerDiameter.getValue();
+        double outer = ep.getOuterDiameter().getValue();
+        double inner = ep.getInnerDiameter().getValue();
         
-        double trackWidth = (outer - inner)/getTrackCount();
+        double trackWidth = (outer - inner)/ep.getResolution().getValue();
 
         inner = outer - trackWidth;
-        for (int b = resolution.getValue(); b > 0; b--) {
+        for (int b = ep.getResolution().getValue(); b > 0; b--) {
             int res = 1<<b;
             double angle = 360.0/res;
 
@@ -60,10 +61,8 @@ public class BinaryEncoder extends BasicEncoder {
         
         return tracks;
     }
-   
     
-    public BinaryEncoder() {
-        this.resolution = new SimpleIntegerProperty(4);
+    public BinaryEncoder(EncoderProperties ep) {
+        super(ep);
     }
-    
 }

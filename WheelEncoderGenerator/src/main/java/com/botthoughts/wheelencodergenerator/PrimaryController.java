@@ -16,62 +16,75 @@
 package com.botthoughts.wheelencodergenerator;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.property.Property;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
-import javafx.util.converter.IntegerStringConverter;
+import javafx.util.converter.DoubleStringConverter;
 
 
 public class PrimaryController implements Initializable {
     
-    BasicEncoder encoder;
+    EncoderProperties encoder;
+    BasicEncoder basicEncoder;
+    QuadratureEncoder quadratureEncoder;
+    BinaryEncoder binaryEncoder;
+    GrayEncoder grayEncoder;
     
     @FXML
-    TextField outer;
+    ComboBox typeUI;
     @FXML
-    TextField inner;
+    ToggleButton basicUI;
     @FXML
-    TextField center;
+    ToggleButton quadratureUI;
     @FXML
-    CheckBox inverted;
+    ToggleButton binaryUI;
     @FXML
-    ComboBox units;
-    @FXML
-    TabPane type;
+    ToggleButton grayUI;
 
     @FXML
-    Tab absolute;
+    Spinner resolutionUI;
+    
     @FXML
-    Spinner absResolution;
+    TextField outerUI;
     @FXML
-    ComboBox coding;
+    TextField innerUI;
+    @FXML
+    TextField centerUI;
+    @FXML
+    ComboBox unitsUI;
 
     @FXML
-    Tab incremental;
+    Node directionRowUI;
     @FXML
-    Spinner incResolution;
+    ToggleGroup directionUI;
     @FXML
-    CheckBox index;
+    ToggleButton cwUI;
     @FXML
-    CheckBox quadrature;
-
+    ToggleButton ccwUI;
+    
+    @FXML
+    GridPane indexRowUI;
+//    @FXML
+//    ToggleButton indexUI;
+    @FXML
+    ToggleButton invertedUI;
+    
     @FXML
     Canvas canvas;
     
@@ -133,7 +146,7 @@ public class PrimaryController implements Initializable {
         
         // INCREMENTAL
 
-        for (EncoderTrack t : encoder.getTracks()) {
+        for (EncoderTrack t : basicEncoder.getTracks()) {
             double outerPx = t.outerDiameter * scale;
             double innerPx = t.innerDiameter * scale;            
             double offsetX = centerX - outerPx/2;
@@ -220,27 +233,37 @@ public class PrimaryController implements Initializable {
         }
     }
     
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {   
         
-        //encoder = new BasicEncoder();
-        //encoder = new BinaryEncoder();
-        encoder = new GrayEncoder();
-
+        basicEncoder = new BasicEncoder(encoder);
+        binaryEncoder = new BinaryEncoder(encoder);
+        quadratureEncoder = new QuadratureEncoder(encoder);
+        grayEncoder = new GrayEncoder(encoder);
+        
+        encoder = new EncoderProperties(basicEncoder);
+        
+        typeUI.getItems().addAll("Quadrature", "Basic", "Absolute Binary", "Gray Coded");
+        
+        outerUI.textProperty().bindBidirectional((Property) encoder.getOuterDiameter(), 
+                new DoubleStringConverter());
         /*
-        outer.textProperty().bindBidirectional((Property) encoder.getOuterDiameter(), new IntegerStringConverter());
-        inner.textProperty().bindBidirectional((Property) encoder.getInnerDiameter(), new IntegerStringConverter());
-        center.textProperty().bindBidirectional((Property) encoder.getCenterDiameter(), new IntegerStringConverter());
-        inverted.selectedProperty().bindBidirectional((Property) encoder.getInverted());
-        units.getItems().addAll(encoder.getUnitOptions());
-        //coding.getItems().addAll(encoder.getCodingOptions());
+        innerUI.textProperty().bindBidirectional((Property) encoder.getInnerDiameter(), 
+                new DoubleStringConverter());
+
+        centerUI.textProperty().bindBidirectional((Property) encoder.getCenterDiameter(), 
+                new DoubleStringConverter());
+
+        invertedUI.selectedProperty().bindBidirectional((Property) encoder.getInverted());
 
         encoder.getUnits().addListener((observable, oldValue, newValue) -> {
-            units.selectionModelProperty().setValue(newValue);
+            unitsUI.selectionModelProperty().setValue(newValue);
         });
-        units.getSelectionModel().selectFirst();
+
+        resolutionUI.setValueFactory(new IntegerSpinnerValueFactory(2, 2048, 16, 1));
         */
-        
+
         /* absolute encoder */
         /*
         encoder.getCoding().addListener((observable, oldValue, newValue) -> {
@@ -253,11 +276,12 @@ public class PrimaryController implements Initializable {
         /* incremental encoder */
         //quadrature.selectedProperty().bindBidirectional((Property) encoder.getQuadratureTrack());
         //index.selectedProperty().bindBidirectional((Property) encoder.getIndexTrack());
-        //incResolution.setValueFactory(new IntegerSpinnerValueFactory(2, 2048, 16, 1));
         
         this.gc = canvas.getGraphicsContext2D();
 
+        /*
         this.drawEncoder();
+        */
         
         // TODO draw circle
         // TODO print

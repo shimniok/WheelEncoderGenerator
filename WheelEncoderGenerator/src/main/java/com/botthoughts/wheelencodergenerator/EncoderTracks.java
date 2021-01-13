@@ -15,10 +15,28 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import java.util.List;
+
 /**
  *
  * @author mes
  */
-class Tracks {
+abstract public class EncoderTracks {
+
+    protected EncoderProperties ep;
+    protected List<EncoderTrack> tracks;
+
+    /**
+     * Return list of ordered Track objects for a basic encoder.
+     * Track information is computed on-demand
+     * @return list of tracks
+     */
+    abstract public List<EncoderTrack> getTracks();
+
+    abstract public boolean validResolution(int resolution);
     
+    public EncoderTracks(EncoderProperties ep) {
+        this.ep = ep;
+    }
+
 }

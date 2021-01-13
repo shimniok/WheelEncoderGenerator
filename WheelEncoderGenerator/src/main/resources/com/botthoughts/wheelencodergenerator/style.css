@@ -18,28 +18,31 @@ limitations under the License.
     Author     : mes
 */
 
-.spinner  {
-    -fx-pref-width: 8em;
-    -fx-min-width: 8em;
-    -fx-max-width: 8em;
+.grid-pane {
+    -fx-hgap: 5;
+    -fx-vgap: 5;
 }
 
-.grid-pane {
-    -fx-hgap: 7;
-    -fx-vgap: 7;
+.grid-column {
+    -fx-pref-width: 50%;
+    -fx-min-width: 50%;
+    -fx-max-width: 50%;   
 }
+
+/*
 .grid-row {
     -fx-pref-height: 30px;
     -fx-min-height: 30px;
     -fx-max-height: 30px;
 }
+*/
 
-#config-pane {
-    -fx-padding: 10;
+/*
+.tab-pane {
+    -fx-tab-max-height: 0;
+    -fx-tab-min-height: 0;
+} 
+.tab-pane .tab-header-area {
+    visibility: hidden;
 }
-
-#coding-combobox {
-    -fx-pref-width: 8em;
-    -fx-min-width: 8em;
-    -fx-max-width: 8em;
-}
+*/

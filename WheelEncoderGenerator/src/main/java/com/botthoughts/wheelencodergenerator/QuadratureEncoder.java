@@ -22,7 +22,12 @@ import java.util.List;
  *
  * @author mes
  */
-public class GrayEncoder extends BinaryEncoder {
+public class QuadratureEncoder extends EncoderTracks {
+    
+    @Override
+    public boolean validResolution(int resolution) {
+        return resolution > 1;
+    }
 
     /**
      * Return list of ordered Track objects for this encoder.
@@ -32,33 +37,27 @@ public class GrayEncoder extends BinaryEncoder {
     @Override
     public List<EncoderTrack> getTracks() {
         tracks = new ArrayList<>();
+        double angle = 360.0/ep.getResolution().getValue();
 
-        double outer = ep.getOuterDiameter().getValue();
-        double inner = ep.getInnerDiameter().getValue();
-        double trackWidth = (outer - inner)/ep.getResolution().getValue();
-        double angle = 0;
-        double start = 0;
-        int res = 0;
-
-        inner = outer - trackWidth;
-        for (int b = ep.getResolution().getValue()-1; b >= 0; b--) {
-            if (b > 0) {
-                res = 1<<b;
-                angle = 360.0/res;
-                start = angle/2;
-            } else {
-                start = 0;
-            }
-
-            tracks.add(new EncoderTrack(outer, inner, start, angle, res));
-            outer -= trackWidth;
-            inner -= trackWidth;            
+        // outer track
+        tracks.add(new EncoderTrack(ep.getOuterDiameter().getValue(),
+                ep.getInnerDiameter().getValue(), 0, angle, ep.getResolution().getValue()));
+        
+        // inner track
+        tracks.add(new EncoderTrack(ep.getOuterDiameter().getValue(),
+                ep.getInnerDiameter().getValue(), angle/2, angle, ep.getResolution().getValue()));
+        
+        // index track
+        if (this.ep.getIndexTrack().getValue()) {
+            tracks.add(new EncoderTrack(ep.getOuterDiameter().getValue(),
+                ep.getInnerDiameter().getValue(), angle/2, angle, ep.getResolution().getValue()));
         }
         
         return tracks;
     }
 
-    public GrayEncoder(EncoderProperties ep) {
+    QuadratureEncoder(EncoderProperties ep) {
         super(ep);
-    }       
+    }
+
 }

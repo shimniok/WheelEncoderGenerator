@@ -3,17 +3,16 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -110,136 +109,55 @@
             </AnchorPane>
             <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                <children>
-                  <TitledPane collapsible="false" text="Configuration" VBox.vgrow="ALWAYS">
+                  <TitledPane collapsible="false" prefWidth="260.0" text="Settings" VBox.vgrow="ALWAYS">
                      <content>
-                        <TabPane fx:id="type" onMouseClicked="#handleType" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE">
-                          <tabs>
-                            <Tab fx:id="incremental" closable="false" text="Incremental">
-                              <content>
-                                <AnchorPane>
-                                       <children>
-                                          <VBox id="config-pane" alignment="TOP_CENTER" fillWidth="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                             <children>
-                                                <GridPane hgap="7.0" vgap="7.0" VBox.vgrow="ALWAYS">
-                                                  <columnConstraints>
-                                                    <ColumnConstraints hgrow="SOMETIMES" />
-                                                    <ColumnConstraints hgrow="SOMETIMES" />
-                                                  </columnConstraints>
-                                                  <rowConstraints>
-                                                    <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
-                                                  </rowConstraints>
-                                                   <children>
-                                                      <Label alignment="TOP_CENTER" text="Resolution" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
-                                                         <GridPane.margin>
-                                                            <Insets />
-                                                         </GridPane.margin></Label>
-                                                      <Spinner id="resolution" fx:id="incResolution" editable="true" GridPane.columnIndex="1" />
-                                                   </children>
-                                                </GridPane>
-                                                <GridPane hgap="7.0" vgap="7.0">
-                                                  <columnConstraints>
-                                                    <ColumnConstraints hgrow="SOMETIMES" />
-                                                  </columnConstraints>
-                                                  <rowConstraints>
-                                                    <RowConstraints vgrow="SOMETIMES" />
-                                                    <RowConstraints vgrow="SOMETIMES" />
-                                                  </rowConstraints>
-                                                   <children>
-                                                      <CheckBox fx:id="quadrature" mnemonicParsing="false" text="Quadrature Track" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS">
-                                                         <GridPane.margin>
-                                                            <Insets top="7.0" />
-                                                         </GridPane.margin></CheckBox>
-                                                      <CheckBox fx:id="index" contentDisplay="CENTER" graphicTextGap="6.0" mnemonicParsing="false" text="Index Track" textAlignment="CENTER" GridPane.rowIndex="1" />
-                                                   </children>
-                                                   <VBox.margin>
-                                                      <Insets />
-                                                   </VBox.margin>
-                                                </GridPane>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </VBox>
-                                       </children>
-                                    </AnchorPane>
-                              </content>
-                            </Tab>
-                            <Tab fx:id="absolute" closable="false" text="Absolute">
-                              <content>
-                                <AnchorPane>
-                                       <children>
-                                          <VBox id="config-pane" alignment="TOP_CENTER" fillWidth="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                             <children>
-                                                <GridPane hgap="7.0" vgap="7.0">
-                                                   <columnConstraints>
-                                                      <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" />
-                                                      <ColumnConstraints hgrow="SOMETIMES" />
-                                                   </columnConstraints>
-                                                   <rowConstraints>
-                                                      <RowConstraints vgrow="SOMETIMES" />
-                                                      <RowConstraints vgrow="SOMETIMES" />
-                                                      <RowConstraints vgrow="SOMETIMES" />
-                                                   </rowConstraints>
-                                                   <children>
-                                                      <Label text="Resolution" textAlignment="RIGHT" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
-                                                      <Spinner id="resolution" fx:id="absResolution" editable="true" GridPane.columnIndex="1" />
-                                                      <Label text="Coding" GridPane.rowIndex="1" />
-                                                      <ComboBox id="coding-combobox" fx:id="coding" onAction="#handleCoding" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                   </children>
-                                                </GridPane>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </VBox>
-                                       </children></AnchorPane>
-                              </content>
-                            </Tab>
-                          </tabs>
-                        </TabPane>
-                     </content>
-                  </TitledPane>
-                  <TitledPane collapsible="false" text="Dimensions" VBox.vgrow="ALWAYS">
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                     <content>
-                        <GridPane alignment="CENTER" hgap="7.0" vgap="7.0">
-                          <columnConstraints>
-                            <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <GridPane alignment="CENTER" hgap="5.0" vgap="5.0">
+                           <columnConstraints>
+                              <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" prefWidth="100.0" />
+                           </columnConstraints>
+                           <rowConstraints>
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                          </rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
                            <children>
-                              <Label text="Outer Diameter" textAlignment="RIGHT" />
-                              <Label text="Inner Diameter" GridPane.rowIndex="1" />
-                              <TextField fx:id="outer" alignment="CENTER_RIGHT" GridPane.columnIndex="1" />
-                              <TextField fx:id="inner" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <TextField fx:id="center" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <Label text="Center Diameter" GridPane.rowIndex="2" />
-                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                              <Label text="Outer Diameter" textAlignment="RIGHT" GridPane.rowIndex="2" />
+                              <Label text="Inner Diameter" GridPane.rowIndex="3" />
+                              <TextField fx:id="outerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <TextField fx:id="innerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <TextField fx:id="centerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <Label text="Center Diameter" GridPane.rowIndex="4" />
+                              <ComboBox fx:id="unitsUI" onAction="#handleUnits" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                              <Label text="Units" GridPane.rowIndex="5" />
+                              <Label text="Inverted" GridPane.rowIndex="6" />
+                              <ToggleButton fx:id="invertedUI" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="No" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                              <Label text="Resolution" GridPane.rowIndex="1" />
+                              <Spinner fx:id="resolutionUI1" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                              <ToggleButton fx:id="indexUI" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="No" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                              <Label text="Index Track" GridPane.rowIndex="8" />
+                              <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="7">
                                  <children>
-                                    <ComboBox fx:id="units" onAction="#handleUnits" prefWidth="150.0" />
+                                    <ToggleButton mnemonicParsing="false" prefWidth="100.0" text="CW" HBox.hgrow="ALWAYS">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="directionGroup" />
+                                       </toggleGroup>
+                                    </ToggleButton>
+                                    <ToggleButton mnemonicParsing="false" prefWidth="100.0" text="CCW" toggleGroup="$directionGroup" HBox.hgrow="ALWAYS" />
                                  </children>
                               </HBox>
-                              <Label text="Units" GridPane.rowIndex="3" />
+                              <Label text="Direction" GridPane.rowIndex="7" />
+                              <ComboBox fx:id="typeUI" prefWidth="150.0" GridPane.columnIndex="1" />
+                              <Label text="Encoder Type" />
                            </children>
                         </GridPane>
                      </content>
-                  </TitledPane>
-                  <TitledPane animated="false" collapsible="false" contentDisplay="CENTER" text="Other" VBox.vgrow="ALWAYS">
-                    <content>
-                        <HBox alignment="CENTER">
-                           <children>
-                              <CheckBox fx:id="inverted" mnemonicParsing="false" text="Invert Encoder" textAlignment="CENTER" />
-                           </children>
-                        </HBox>
-                    </content>
                   </TitledPane>
                </children>
                <padding>
@@ -248,16 +166,6 @@
             </VBox>
          </children>
       </HBox>
-      <HBox alignment="CENTER">
-         <children>
-            <Label fx:id="status" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" />
-         </children>
-         <VBox.margin>
-            <Insets />
-         </VBox.margin>
-         <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </padding>
-      </HBox>
+      <Label fx:id="status" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" />
    </children>
 </VBox>
