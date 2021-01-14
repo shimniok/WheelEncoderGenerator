@@ -22,7 +22,26 @@ import java.util.List;
  * 
  * @author mes
  */
-public interface Encoder {
+public interface EncoderInterface {
+
+    /**
+     * Return minimum resolution for the encoder.
+     * @return min resolution
+     */
+    abstract public int getMinResolution();
+    
+    /**
+     * Return maximum resolution for the encoder.
+     * @return max resolution
+     */
+    abstract public int getMaxResolution();
+
+    /**
+     * Return the amount by which resolution can increment
+     * @return resolution increment value
+     */
+    abstract public int getResolutionIncrement();
+   
     /**
      * Return list of ordered Track objects for this encoder. Track information
      * is computed on-demand.
@@ -50,7 +69,7 @@ public interface Encoder {
      * @param resolution 
      * @return incremented resolution if valid, else original resolution
      */
-    abstract public Integer incrementResolution(int resolution);
+    //abstract public Integer incrementResolution(int resolution);
     
     /**
      * Attempt to decrement the supplied resolution by one step.
@@ -60,6 +79,6 @@ public interface Encoder {
      * @return decremented resolution if valid, else original resolution
      * @param resolution 
      */
-    abstract public Integer decrementResolution(int resolution);
+    //abstract public Integer decrementResolution(int resolution);
     
 }

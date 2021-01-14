@@ -22,11 +22,12 @@ import java.util.List;
  *
  * @author mes
  */
-public class BasicEncoder implements Encoder {
+public class BasicEncoder implements EncoderInterface {
 
     protected List<EncoderTrack> tracks; // list of tracks
-    static private int RESOLUTION_MAX = 2;
-    static private int RESOLUTION_MIN = 2048;
+    protected static int RESOLUTION_MIN = 2;
+    protected static int RESOLUTION_MAX = 2048;
+    protected static int INCREMENT = 2;
 
     /**
      * Return list of tracks
@@ -68,13 +69,12 @@ public class BasicEncoder implements Encoder {
      * @param resolution 
      * @return incremented resolution if valid, else original resolution
      */
-    @Override
-    public int incrementResolution(int resolution) {
-        if (validResolution(resolution+1)) {
-            return resolution+1;
-        }
-        return resolution;
-    }
+//    public int incrementResolution(int resolution) {
+//        if (validResolution(resolution+1)) {
+//            return resolution+1;
+//        }
+//        return resolution;
+//    }
     
     /**
      * Attempt to decrement the supplied resolution by one step.
@@ -84,12 +84,26 @@ public class BasicEncoder implements Encoder {
      * @return decremented resolution if valid, else original resolution
      * @param resolution 
      */
+//    public int decrementResolution(int resolution) {
+//        if (validResolution(resolution-1)) {
+//            return resolution-1;
+//        }
+//        return resolution;
+//    }
+
     @Override
-    public int decrementResolution(int resolution) {
-        if (validResolution(resolution-1)) {
-            return resolution-1;
-        }
-        return resolution;
+    public int getMinResolution() {
+        return 2;
+    }
+
+    @Override
+    public int getMaxResolution() {
+        return 2048;
+    }
+
+    @Override
+    public int getResolutionIncrement() {
+        return 2;
     }
 
 }

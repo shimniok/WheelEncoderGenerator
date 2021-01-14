@@ -25,10 +25,7 @@ import java.util.List;
 public class BinaryEncoder extends BasicEncoder {
 
     protected List<EncoderTrack> tracks; // list of tracks
-
-    private static final int RESOLUTION_MAX = 11; /* 2^11 = 2048 */
-    private static final int RESOLUTION_MIN = 2;
-
+    
     /**
      * Check validity of resolution, which for this type is # bits.
      * @param resolution
@@ -65,30 +62,20 @@ public class BinaryEncoder extends BasicEncoder {
         return tracks;
     }
     
-    /**
-     * Attempt to increment the supplied resolution by one step.
-     * If the result is valid (see validResolution()) it its returned,
-     * otherwise the original resolution is returned
-     * 
-     * @param resolution 
-     * @return incremented resolution if valid, else original resolution
-     */
     @Override
-    public int incrementResolution(int resolution) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    public int getMinResolution() {
+        return 1;
+    }
+    
+    @Override
+    public int getMaxResolution() {
+        return 12;
     }
 
-    /**
-     * Attempt to decrement the supplied resolution by one step.
-     * If the result is valid (see validResolution()) it its returned,
-     * otherwise the original resolution is returned
-     * 
-     * @return decremented resolution if valid, else original resolution
-     * @param resolution 
-     */
     @Override
-    public int decrementResolution(int resolution) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int getResolutionIncrement() {
+        return 1;
     }
 
 }

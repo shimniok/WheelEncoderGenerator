@@ -30,27 +30,30 @@ public class QuadratureEncoder extends BasicEncoder {
      */
     @Override
     public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index) {
-        tracks = new ArrayList<>();
-        double angle = 360.0/resolution;
-        int tc = 2; // track count
+        int tc;    // track count
         double tw; // track width
+        double angle = 360.0/resolution;
         
-        if (index) tc++;
+        List<EncoderTrack> tracks = new ArrayList<>();
+
+        if (index) {
+            tc = 3;
+        } else {
+            tc = 2;
+        }
         tw = (od - id)/tc;
         
         // outer track
-        tracks.add(new EncoderTrack(od, id, 0, angle, resolution));
-        
+        tracks.add(new EncoderTrack(od, od-tw, 0, angle, resolution));
+       
         // inner track
         od -= tw;
-        id -= tw;
-        tracks.add(new EncoderTrack(od, id, angle/2, angle, resolution));
+        tracks.add(new EncoderTrack(od, od-tw, angle/2, angle, resolution));
         
         // index track
         if (index) {
             od -= tw;
-            id -= tw;
-            tracks.add(new EncoderTrack(od, id, angle/2, angle, resolution));
+            tracks.add(new EncoderTrack(od, od-tw, angle/2, angle, 1));
         }
         
         return tracks;

@@ -62,5 +62,4 @@ public class GrayEncoder extends BinaryEncoder {
         
         return tracks;
     }
-
 }

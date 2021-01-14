@@ -15,16 +15,14 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 
 /**
  *
@@ -34,13 +32,13 @@ public class EncoderProperties {
 
     public static String MM = "mm";
     public static String INCH = "inch";
-    
     public static Boolean CLOCKWISE = true;
     public static Boolean COUNTERCLOCKWISE = false;
-
+    protected final List<String> typeOptions = Arrays.asList(
+        "Quadrature", "Simple", "Binary", "Gray");
+    protected SimpleStringProperty type;
     protected final List<String> unitOptions = Arrays.asList(
             EncoderProperties.MM, EncoderProperties.INCH);
-    
     protected SimpleStringProperty units; // see this.unitOptions
     protected SimpleDoubleProperty outerDiameter;
     protected SimpleDoubleProperty innerDiameter;
@@ -48,21 +46,30 @@ public class EncoderProperties {
     protected SimpleIntegerProperty resolution;
     protected SimpleBooleanProperty inverted;
     protected SimpleBooleanProperty indexTrack;
-    protected SimpleBooleanProperty direction; // see this.CLOCKWISE
-    protected Encoder encoder;
+    protected BooleanProperty direction; // see this.CLOCKWISE
+    protected EncoderInterface encoder;
 
-    public EncoderProperties(Encoder encoder) {
+    /**
+     * Make new encoder properties object
+     * @param encoder is the Encoder object associated with these properties
+     */
+    public EncoderProperties(EncoderInterface encoder) {
         this.outerDiameter = new SimpleDoubleProperty(50);
         this.innerDiameter = new SimpleDoubleProperty(30);
         this.centerDiameter = new SimpleDoubleProperty(10);
         this.inverted = new SimpleBooleanProperty(false);
         this.units = new SimpleStringProperty(unitOptions.get(0));
         this.resolution = new SimpleIntegerProperty(2);
-        this.direction = new SimpleBooleanProperty(true);
+        this.direction = new SimpleBooleanProperty(CLOCKWISE);
         this.indexTrack = new SimpleBooleanProperty(false);
         this.encoder = encoder;
+        this.type = new SimpleStringProperty(this.typeOptions.get(0));
     }
 
+    public List<String> getTypeOptions() {
+        return typeOptions;
+    }
+    
     /**
      * Determine if specified resolution is valid for this encoder
      * 
@@ -73,6 +80,20 @@ public class EncoderProperties {
         return encoder.validResolution(resolution);
     }
 
+    
+    final public SimpleStringProperty getType() {
+        return type;
+    }
+    
+    final public void setType(SimpleStringProperty type) {
+        if (typeOptions.contains(type.getValue())) {
+            this.type = type;
+            System.out.println("type set to "+type.getValue());
+        } else {
+            System.out.println("typeOptions doesn't contain "+type.getValue());
+        }
+    }
+    
     /**
      * Return list of options for valid unit setting
      * @return list of options
@@ -94,6 +115,7 @@ public class EncoderProperties {
      * @param outerDiameter 
      */
     final public void setOuterDiameter(SimpleDoubleProperty outerDiameter) {
+        System.out.println("setOuterDiameter");
         if (outerDiameter.getValue() >= 0) this.outerDiameter = outerDiameter;
     }
 
@@ -110,6 +132,7 @@ public class EncoderProperties {
      * @param innerDiameter 
      */   
     final public void setInnerDiameter(SimpleDoubleProperty innerDiameter) {
+        System.out.println("setInnerDiameter");
         if (innerDiameter.getValue() >= 0) this.innerDiameter = innerDiameter;
     }
 
@@ -126,6 +149,7 @@ public class EncoderProperties {
      * @param centerDiameter is the center diameter property to set
      */
     final public void setCenterDiameter(SimpleDoubleProperty centerDiameter) {
+        System.out.println("setCenterDiameter");
         if (centerDiameter.getValue() >= 0) this.centerDiameter = centerDiameter;
     }
 
@@ -144,6 +168,7 @@ public class EncoderProperties {
      * @param units 
      */
     final public void setUnits(SimpleStringProperty units) {
+        System.out.println("setUnits");
         // TODO - check validity
         this.units = units;
     }
@@ -162,6 +187,8 @@ public class EncoderProperties {
      */
     final public void setResolution(SimpleIntegerProperty resolution) {
         int r = resolution.getValue();
+
+        System.out.println("setResolution");
         
         if (validResolution(r)) {
             this.resolution.set(r);
@@ -182,6 +209,7 @@ public class EncoderProperties {
      * @param inverted
      */
     final public void setInverted(SimpleBooleanProperty inverted) {
+        System.out.println("setInverted");
         this.inverted = inverted;
     }
 
@@ -191,7 +219,7 @@ public class EncoderProperties {
      * @return true if index track enabled, false otherwise
      */
     public SimpleBooleanProperty getIndexTrack() {
-        return indexTrack;
+        return this.indexTrack;
     }
 
     /**
@@ -200,6 +228,7 @@ public class EncoderProperties {
      * @param indexTrack true to enable index track
      */
     public void setIndexTrack(SimpleBooleanProperty indexTrack) {
+        System.out.println("setIndexTrack");
         this.indexTrack = indexTrack;
     }
     
@@ -208,7 +237,7 @@ public class EncoderProperties {
      * 
      * @return CLOCKWISE (true), or COUNTERCLOCKWISE(false)
      */
-    public SimpleBooleanProperty getDirection() {
+    public BooleanProperty getDirection() {
         // check validity
         return this.direction;
     }
@@ -218,7 +247,8 @@ public class EncoderProperties {
      * 
      * @param direction is either CLOCKWISE (true), or COUNTERCLOCKWISE(false)
      */
-    public void setDirection(SimpleBooleanProperty direction) {
+    public void setDirection(BooleanProperty direction) {
+        System.out.println("setDirection");
         this.direction = direction;
     }
 
@@ -226,7 +256,7 @@ public class EncoderProperties {
      * Get the encoder associated with these properties
      * @return the encoder associated with these properties
      */
-    public Encoder getEncoder() {
+    public EncoderInterface getEncoder() {
         return this.encoder;
     }
 
@@ -234,27 +264,55 @@ public class EncoderProperties {
      * Set the encoder associated with these properties
      * @param e the encoder to associate with these properties
      */
-    public void setEncoder(Encoder e) {
+    public void setEncoder(EncoderInterface e) {
+        System.out.println("setEncoder");
         this.encoder = e;
     }
 
-    public SpinnerValueFactory getResolutionValueFactory() {
-        return new SpinnerValueFactory<Integer>() {
-            
-            @Override
-            public void increment(int i) {
-                while (i-- > 0) {
-                    valueProperty().set(valueProperty().get() + 1);
-                }
-            }
-            
-            @Override
-            public void decrement(int i) {
-                while (i-- > 0) {
-                    valueProperty().set(valueProperty().get() - 1);
-                }
-            }
+//    public SpinnerValueFactory getResolutionValueFactory() {
+//        return new IntegerSpinnerValueFactory(
+//            encoder.getMinResolution(),
+//            encoder.getMaxResolution()
+//        );
+//            
+//            @Override
+//            public void increment(int i) {
+//                while (i-- > 0) {
+//                    valueProperty().set(valueProperty().get() + 1);
+//                }
+//            }
+//            
+//            @Override
+//            public void decrement(int i) {
+//                while (i-- > 0) {
+//                    valueProperty().set(valueProperty().get() - 1);
+//                }
+//            }
+//
+//        };
+//    }    
 
-        };
-    }    
+//    @Override
+//    public void addListener(ChangeListener cl) {
+//        outerDiameter.addListener(cl);
+//        innerDiameter.addListener(cl);
+//        centerDiameter.addListener(cl);
+//        resolution.addListener(cl);
+//        inverted.addListener(cl);
+//        indexTrack.addListener(cl);
+//        direction.addListener(cl);
+//        
+//    }
+//
+//    @Override
+//    public void removeListener(InvalidationListener il) {
+//        outerDiameter.removeListener(il);
+//        innerDiameter.removeListener(il);
+//        centerDiameter.removeListener(il);
+//        resolution.removeListener(il);
+//        inverted.removeListener(il);
+//        indexTrack.removeListener(il);
+//        direction.removeListener(il);
+//    }
+
 }
