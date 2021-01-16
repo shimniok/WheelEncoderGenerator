@@ -15,9 +15,14 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -28,14 +33,15 @@ import javafx.beans.property.SimpleStringProperty;
  *
  * @author mes
  */
-public class EncoderProperties {
+public final class EncoderProperties {
 
     public static String MM = "mm";
     public static String INCH = "inch";
     public static Boolean CLOCKWISE = true;
     public static Boolean COUNTERCLOCKWISE = false;
-    protected final List<String> typeOptions = Arrays.asList(
-        "Quadrature", "Simple", "Binary", "Gray");
+//    protected final List<String> typeOptions = Arrays.asList(
+//        "Quadrature", "Simple", "Binary", "Gray");
+    protected final HashMap encoderMap;
     protected SimpleStringProperty type;
     protected final List<String> unitOptions = Arrays.asList(
             EncoderProperties.MM, EncoderProperties.INCH);
@@ -47,13 +53,18 @@ public class EncoderProperties {
     protected SimpleBooleanProperty inverted;
     protected SimpleBooleanProperty indexTrack;
     protected BooleanProperty direction; // see this.CLOCKWISE
-    protected EncoderInterface encoder;
+//    protected EncoderInterface encoder;
 
     /**
      * Make new encoder properties object
      * @param encoder is the Encoder object associated with these properties
      */
-    public EncoderProperties(EncoderInterface encoder) {
+    public EncoderProperties() {
+        this.encoderMap = new HashMap();
+        this.encoderMap.put("Quadrature", new QuadratureEncoder());
+        this.encoderMap.put("Simple", new BasicEncoder());
+        this.encoderMap.put("Binary", new BinaryEncoder());
+        this.encoderMap.put("Gray", new GrayEncoder());
         this.outerDiameter = new SimpleDoubleProperty(50);
         this.innerDiameter = new SimpleDoubleProperty(30);
         this.centerDiameter = new SimpleDoubleProperty(10);
@@ -62,12 +73,11 @@ public class EncoderProperties {
         this.resolution = new SimpleIntegerProperty(2);
         this.direction = new SimpleBooleanProperty(CLOCKWISE);
         this.indexTrack = new SimpleBooleanProperty(false);
-        this.encoder = encoder;
-        this.type = new SimpleStringProperty(this.typeOptions.get(0));
+        this.type = new SimpleStringProperty(getTypeOptions().get(0));
     }
 
     public List<String> getTypeOptions() {
-        return typeOptions;
+        return new ArrayList<>(this.encoderMap.keySet());
     }
     
     /**
@@ -77,7 +87,7 @@ public class EncoderProperties {
      * @return true if valid, false otherwise
      */
     final public boolean validResolution(int resolution) {
-        return encoder.validResolution(resolution);
+        return getEncoder().validResolution(resolution);
     }
 
     
@@ -86,7 +96,7 @@ public class EncoderProperties {
     }
     
     final public void setType(SimpleStringProperty type) {
-        if (typeOptions.contains(type.getValue())) {
+        if (getTypeOptions().contains(type.getValue())) {
             this.type = type;
             System.out.println("type set to "+type.getValue());
         } else {
@@ -257,17 +267,17 @@ public class EncoderProperties {
      * @return the encoder associated with these properties
      */
     public EncoderInterface getEncoder() {
-        return this.encoder;
+        return (EncoderInterface) this.encoderMap.get(this.type.get());
     }
 
     /**
      * Set the encoder associated with these properties
      * @param e the encoder to associate with these properties
      */
-    public void setEncoder(EncoderInterface e) {
-        System.out.println("setEncoder");
-        this.encoder = e;
-    }
+//    public void setEncoder(EncoderInterface e) {
+//        System.out.println("setEncoder");
+//        this.encoder = e;
+//    }
 
 //    public SpinnerValueFactory getResolutionValueFactory() {
 //        return new IntegerSpinnerValueFactory(

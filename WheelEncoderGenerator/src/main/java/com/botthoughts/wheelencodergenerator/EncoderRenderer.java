@@ -102,9 +102,6 @@ public class EncoderRenderer extends Canvas implements ChangeListener {
         double cdPx = cd * scale; // scaled center diameter
         
         // TODO - real lines separating each track
-        
-        // TODO - prevent rendering of invalid diameters
-        
         EncoderInterface enc = ep.getEncoder();
         
         if (id >= od || cd >= id) return;
