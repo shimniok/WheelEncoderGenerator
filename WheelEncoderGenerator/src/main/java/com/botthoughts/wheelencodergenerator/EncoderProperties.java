@@ -279,50 +279,6 @@ public final class EncoderProperties {
 //        this.encoder = e;
 //    }
 
-//    public SpinnerValueFactory getResolutionValueFactory() {
-//        return new IntegerSpinnerValueFactory(
-//            encoder.getMinResolution(),
-//            encoder.getMaxResolution()
-//        );
-//            
-//            @Override
-//            public void increment(int i) {
-//                while (i-- > 0) {
-//                    valueProperty().set(valueProperty().get() + 1);
-//                }
-//            }
-//            
-//            @Override
-//            public void decrement(int i) {
-//                while (i-- > 0) {
-//                    valueProperty().set(valueProperty().get() - 1);
-//                }
-//            }
-//
-//        };
-//    }    
 
-//    @Override
-//    public void addListener(ChangeListener cl) {
-//        outerDiameter.addListener(cl);
-//        innerDiameter.addListener(cl);
-//        centerDiameter.addListener(cl);
-//        resolution.addListener(cl);
-//        inverted.addListener(cl);
-//        indexTrack.addListener(cl);
-//        direction.addListener(cl);
-//        
-//    }
-//
-//    @Override
-//    public void removeListener(InvalidationListener il) {
-//        outerDiameter.removeListener(il);
-//        innerDiameter.removeListener(il);
-//        centerDiameter.removeListener(il);
-//        resolution.removeListener(il);
-//        inverted.removeListener(il);
-//        indexTrack.removeListener(il);
-//        direction.removeListener(il);
-//    }
 
 }

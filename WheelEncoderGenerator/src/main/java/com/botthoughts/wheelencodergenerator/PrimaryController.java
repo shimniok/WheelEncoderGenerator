@@ -45,39 +45,29 @@ public class PrimaryController implements Initializable {
     
     @FXML
     ComboBox typeUI;
-
     @FXML
     Spinner resolutionUI;
-    
     @FXML
     TextField outerUI;
-
     @FXML
     TextField innerUI;
-
     @FXML
     TextField centerUI;
-
     @FXML
     ComboBox unitsUI;
-
     @FXML
     ToggleGroup directionUI;
     @FXML
     ToggleButton cwUI;
     @FXML
     ToggleButton ccwUI;
-
     @FXML
     ToggleButton invertedUI;
-    
     @FXML
     ToggleButton indexUI;
-    
     @FXML
     AnchorPane canvasContainer;
     
-     
     @Override
     public void initialize(URL url, ResourceBundle rb) {   
         
@@ -103,11 +93,10 @@ public class PrimaryController implements Initializable {
         typeUI.valueProperty().addListener(renderer);
         
         // TODO - prevent odd numbers
-        resolutionUI.setValueFactory(new IntegerSpinnerValueFactory(
+        resolutionUI.setValueFactory(new EvenSpinnerValueFactory(
             ep.getEncoder().getMinResolution(),
             ep.getEncoder().getMaxResolution(),
-            ep.getResolution().getValue(),
-            ep.getEncoder().getResolutionIncrement()
+            ep.getResolution().get()
         ));
         resolutionUI.getValueFactory().valueProperty().bindBidirectional(ep.getResolution());
         resolutionUI.getValueFactory().valueProperty().addListener(renderer);
