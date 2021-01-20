@@ -58,7 +58,7 @@ public class BasicEncoder implements EncoderInterface {
      */
     @Override
     public boolean validResolution(int resolution) {
-        return resolution >= RESOLUTION_MAX && resolution <= RESOLUTION_MIN;
+        return RESOLUTION_MIN <= resolution && resolution <= RESOLUTION_MAX;
     }
     
     /**
@@ -93,17 +93,17 @@ public class BasicEncoder implements EncoderInterface {
 
     @Override
     public int getMinResolution() {
-        return 2;
+        return RESOLUTION_MIN;
     }
 
     @Override
     public int getMaxResolution() {
-        return 2048;
+        return RESOLUTION_MAX;
     }
 
     @Override
     public int getResolutionIncrement() {
-        return 2;
+        return INCREMENT;
     }
 
 }

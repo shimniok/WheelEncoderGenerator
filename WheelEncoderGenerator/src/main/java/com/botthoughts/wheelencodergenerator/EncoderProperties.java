@@ -39,8 +39,7 @@ public final class EncoderProperties {
     public static String INCH = "inch";
     public static Boolean CLOCKWISE = true;
     public static Boolean COUNTERCLOCKWISE = false;
-//    protected final List<String> typeOptions = Arrays.asList(
-//        "Quadrature", "Simple", "Binary", "Gray");
+    
     protected final HashMap encoderMap;
     protected SimpleStringProperty type;
     protected final List<String> unitOptions = Arrays.asList(
@@ -53,11 +52,13 @@ public final class EncoderProperties {
     protected SimpleBooleanProperty inverted;
     protected SimpleBooleanProperty indexTrack;
     protected BooleanProperty direction; // see this.CLOCKWISE
-//    protected EncoderInterface encoder;
-
+    protected ResolutionValueFactory qvf;
+    protected ResolutionValueFactory svf;
+    protected ResolutionValueFactory bvf;
+    protected ResolutionValueFactory gvf;
+   
     /**
      * Make new encoder properties object
-     * @param encoder is the Encoder object associated with these properties
      */
     public EncoderProperties() {
         this.encoderMap = new HashMap();
@@ -65,6 +66,12 @@ public final class EncoderProperties {
         this.encoderMap.put("Simple", new BasicEncoder());
         this.encoderMap.put("Binary", new BinaryEncoder());
         this.encoderMap.put("Gray", new GrayEncoder());
+        
+        this.qvf = new ResolutionValueFactory((EncoderInterface) encoderMap.get("Quadrature"), 4); // TODO initial value
+        this.svf = new ResolutionValueFactory((EncoderInterface) encoderMap.get("Simple"), 4); // TODO initial value
+        this.bvf = new ResolutionValueFactory((EncoderInterface) encoderMap.get("Binary"), 2); // TODO initial value
+        this.gvf = new ResolutionValueFactory((EncoderInterface) encoderMap.get("Gray"), 2); // TODO initial value
+        
         this.outerDiameter = new SimpleDoubleProperty(50);
         this.innerDiameter = new SimpleDoubleProperty(30);
         this.centerDiameter = new SimpleDoubleProperty(10);
@@ -98,6 +105,7 @@ public final class EncoderProperties {
     final public void setType(SimpleStringProperty type) {
         if (getTypeOptions().contains(type.getValue())) {
             this.type = type;
+            
             System.out.println("type set to "+type.getValue());
         } else {
             System.out.println("typeOptions doesn't contain "+type.getValue());
@@ -269,7 +277,7 @@ public final class EncoderProperties {
     public EncoderInterface getEncoder() {
         return (EncoderInterface) this.encoderMap.get(this.type.get());
     }
-
+    
     /**
      * Set the encoder associated with these properties
      * @param e the encoder to associate with these properties
@@ -279,6 +287,24 @@ public final class EncoderProperties {
 //        this.encoder = e;
 //    }
 
-
+//    /**
+//     * Return the appropriate spinner value factory based on type
+//     * @return value factory or null if unexpected type value
+//     */
+//    public ResolutionSpinnerValueFactory getValueFactory() {
+//        switch (type.get()) {
+//            case "Quadrature":
+//                return qvf;
+//            case "Simple":
+//                return svf;
+//            case "Binary":
+//                return bvf;
+//            case "Gray":
+//                return gvf;
+//            default:
+//                System.out.println("Unrecognized type, can't find value factory");
+//                return null;
+//        }
+//    }
 
 }

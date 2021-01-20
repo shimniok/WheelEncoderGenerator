@@ -22,7 +22,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -81,25 +80,21 @@ public class PrimaryController implements Initializable {
         renderer.setHeight(500);
 
         canvasContainer.getChildren().add(renderer);
-//        
-//        ChangeListener cl = (observable, oldValue, newValue) -> {
-//            renderer.drawEncoder();
-//        };
         
         // TODO - convert type to property on eProperties
         typeUI.getItems().setAll(ep.getTypeOptions());
         typeUI.valueProperty().bindBidirectional(ep.getType());
-        typeUI.getSelectionModel().select(0);
-        typeUI.valueProperty().addListener(renderer);
-        
-        // TODO - prevent odd numbers
-        resolutionUI.setValueFactory(new EvenSpinnerValueFactory(
-            ep.getEncoder().getMinResolution(),
-            ep.getEncoder().getMaxResolution(),
-            ep.getResolution().get()
-        ));
+//        typeUI.getSelectionModel().select(0);
+        typeUI.valueProperty().addListener(renderer); // TODO - rendering breaks switching type
+
+        resolutionUI.setValueFactory(new ResolutionValueFactory(ep.getEncoder(), ep.getResolution().get()));
         resolutionUI.getValueFactory().valueProperty().bindBidirectional(ep.getResolution());
         resolutionUI.getValueFactory().valueProperty().addListener(renderer);
+        ep.getType().addListener((observable, oldvalue, newvalue) -> {
+            ResolutionValueFactory vf = (ResolutionValueFactory) resolutionUI.getValueFactory();
+            vf.setEncoder(ep.getEncoder());
+            // TODO - fix invalid values upon type change
+        });
 
         outerUI.textProperty().bindBidirectional((Property) ep.getOuterDiameter(), 
                 new DoubleStringConverter());
@@ -129,7 +124,7 @@ public class PrimaryController implements Initializable {
         cwUI.selectedProperty().bindBidirectional(ep.getDirection());
         cwUI.selectedProperty().addListener((observable, oldvalue, newvalue) -> {
             System.out.println("cwUI, newvalue: " + newvalue);
-//            ep.setDirection(cwUI.selectedProperty());
+            ep.setDirection(cwUI.selectedProperty());
             ccwUI.selectedProperty().set(oldvalue); // make sure the other toggle toggles
         });
 

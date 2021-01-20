@@ -22,59 +22,52 @@ import javafx.util.converter.IntegerStringConverter;
  *
  * @author mes
  */
-public class EvenSpinnerValueFactory extends SpinnerValueFactory<Integer> {
+public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
 
-    private int min;
-    private int max;
+    EncoderInterface e;
     
-    public EvenSpinnerValueFactory(int min, int max, int initialValue) {
+    public ResolutionValueFactory(EncoderInterface e, Integer initial) {
         super();
-        if (min < max) {
-            this.min = min;
-            this.max = max;
-        }
+        this.e = e;
         setConverter(new IntegerStringConverter());
         this.valueProperty().addListener((observable, oldvalue, newvalue) -> {
-            if (!validValue(newvalue)) {
-                if (validValue(newvalue+1)) {
-                    valueProperty().set(newvalue+1);
-                } else if (validValue(newvalue-1)) {
-                    valueProperty().set(newvalue-1);
-                }
+            if (!this.e.validResolution(newvalue)) {
+                // Fix it
             }
         });
-        this.setValue(initialValue);
+        this.setValue(initial);
     }
-            
-    /**
-     * Determine if specified value is even and between min and max
-     * @param value to test
-     * @return true if valid, false otherwise
-     */
-    public final boolean validValue(int value) {
-        return value % 2 == 0 && min <= value && value <= max;
+
+    public void setEncoder(EncoderInterface e) {
+        this.e = e;
+    }
+    
+    private int bump(int steps, int increment) {
+        int v;
+        
+        
+        v = valueProperty().get();
+
+        System.out.println("v="+v+" inc="+increment+" steps="+steps);
+
+        while (steps-- > 0 && e.validResolution(v + increment)) {
+            v += increment;
+            System.out.println("v=" + v + " inc=" + increment + " steps=" + steps);
+        }    
+        
+        System.out.println("v=" + v + " inc=" + increment + " steps=" + steps);
+
+        return v;
     }
     
     @Override
     public void decrement(int i) {
-        int v;
-        
-        v = valueProperty().get();
-        while (i-- > 0 && validValue(v-2)) {
-            v -= 2;
-        }    
-        valueProperty().set(v);
+        valueProperty().set(bump(i, -e.getResolutionIncrement()));
     }
 
     @Override
     public void increment(int i) {
-        int v;
-        
-        v = valueProperty().get();
-        while (i-- > 0 && validValue(v+2)) {
-            v += 2;
-        }    
-        valueProperty().set(v);
+        valueProperty().set(bump(i, e.getResolutionIncrement()));
     }
     
 }

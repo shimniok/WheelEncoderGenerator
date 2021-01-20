@@ -69,7 +69,7 @@ public interface EncoderInterface {
      * @param resolution 
      * @return incremented resolution if valid, else original resolution
      */
-    //abstract public Integer incrementResolution(int resolution);
+//    abstract public Integer incrementResolution(int resolution);
     
     /**
      * Attempt to decrement the supplied resolution by one step.
@@ -79,6 +79,6 @@ public interface EncoderInterface {
      * @return decremented resolution if valid, else original resolution
      * @param resolution 
      */
-    //abstract public Integer decrementResolution(int resolution);
+//    abstract public Integer decrementResolution(int resolution);
     
 }
