@@ -32,7 +32,6 @@ public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
         setConverter(new IntegerStringConverter());
         this.valueProperty().addListener((observable, oldvalue, newvalue) -> {
             if (!this.e.validResolution(newvalue)) {
-                // Fix it
             }
         });
         this.setValue(initial);
@@ -44,7 +43,6 @@ public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
     
     private int bump(int steps, int increment) {
         int v;
-        
         
         v = valueProperty().get();
 

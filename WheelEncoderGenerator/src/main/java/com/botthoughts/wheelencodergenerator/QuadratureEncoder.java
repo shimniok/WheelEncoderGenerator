@@ -25,6 +25,9 @@ import java.util.List;
 public class QuadratureEncoder extends BasicEncoder {
     /**
      * Return list of ordered Track objects for this encoder.Track information is computed on-demand
+     * @param id inside diameter of track
+     * @param od outside diameter of track
+     * @param resolution number of black stripes on track
      * @param index include index track?
      * @return list of tracks
      */
@@ -32,7 +35,8 @@ public class QuadratureEncoder extends BasicEncoder {
     public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index) {
         int tc;    // track count
         double tw; // track width
-        double angle = 360.0/resolution;
+        int r = resolution * 2;
+        double angle = 360.0/r;
         
         List<EncoderTrack> tracks = new ArrayList<>();
 
@@ -44,11 +48,11 @@ public class QuadratureEncoder extends BasicEncoder {
         tw = (od - id)/tc;
         
         // outer track
-        tracks.add(new EncoderTrack(od, od-tw, 0, angle, resolution));
+        tracks.add(new EncoderTrack(od, od-tw, 0, angle, r));
        
         // inner track
         od -= tw;
-        tracks.add(new EncoderTrack(od, od-tw, angle/2, angle, resolution));
+        tracks.add(new EncoderTrack(od, od-tw, angle/2, angle, r));
         
         // index track
         if (index) {

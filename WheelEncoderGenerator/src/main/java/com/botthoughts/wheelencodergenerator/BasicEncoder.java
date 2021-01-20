@@ -25,9 +25,9 @@ import java.util.List;
 public class BasicEncoder implements EncoderInterface {
 
     protected List<EncoderTrack> tracks; // list of tracks
-    protected static int RESOLUTION_MIN = 2;
-    protected static int RESOLUTION_MAX = 2048;
-    protected static int INCREMENT = 2;
+    protected static int RESOLUTION_MIN = 1;
+    protected static int RESOLUTION_MAX = 1024;
+    protected static int INCREMENT = 1;
 
     /**
      * Return list of tracks
@@ -40,13 +40,9 @@ public class BasicEncoder implements EncoderInterface {
     @Override
     public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index) {
         tracks = new ArrayList<>();
+        int r = resolution * 2;
         
-        EncoderTrack outer = new EncoderTrack(od, id, 0, 360.0/resolution, resolution);
-//        EncoderTrack outer = new EncoderTrack(
-//                ep.getOuterDiameter().getValue(),
-//                ep.getInnerDiameter().getValue(), 
-//                0, 360.0/ep.getResolution().getValue(), 
-//                ep.getResolution().getValue());
+        EncoderTrack outer = new EncoderTrack(od, id, 0, 360.0/r, r);
         tracks.add(outer);
         
         return tracks;
@@ -59,6 +55,13 @@ public class BasicEncoder implements EncoderInterface {
     @Override
     public boolean validResolution(int resolution) {
         return RESOLUTION_MIN <= resolution && resolution <= RESOLUTION_MAX;
+    }
+    
+    public int fixResolution(int resolution) {
+        int r = resolution;
+        if (r < this.getMinResolution()) r = this.getMinResolution();
+        if (r > this.getMaxResolution()) r = this.getMaxResolution();
+        return r;
     }
     
     /**
