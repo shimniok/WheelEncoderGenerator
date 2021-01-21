@@ -28,6 +28,7 @@ import javafx.print.PrinterJob;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -102,7 +103,7 @@ public class PrimaryController implements Initializable {
         try {
             parent = fxmlLoader.load();
             stage = new Stage();
-            scene = new Scene(parent, 300, 200);
+            scene = new Scene(parent);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(scene);
             stage.showAndWait();
@@ -110,24 +111,6 @@ public class PrimaryController implements Initializable {
             ex.printStackTrace(); // TODO - remove
         }
 
-
-//        double pr = 600; // dpi
-//        double w = 8.5; // inches
-//        
-//        EncoderRenderer er = new EncoderRenderer(ep);
-//        
-//        er.setWidth(w*pr);
-//        er.setHeight(w*pr);
-//
-//        er.drawEncoder();
-//        
-//        PrinterJob job = PrinterJob.createPrinterJob();
-//        if (job != null) {
-//            boolean success = job.printPage(er);
-//            if (success) {
-//                job.endJob();
-//            }
-//        }
     }
 
     @FXML
