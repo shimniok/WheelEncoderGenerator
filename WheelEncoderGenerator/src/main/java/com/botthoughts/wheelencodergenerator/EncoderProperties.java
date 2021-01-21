@@ -15,14 +15,11 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Properties;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -276,6 +273,51 @@ public final class EncoderProperties {
      */
     public EncoderInterface getEncoder() {
         return (EncoderInterface) this.encoderMap.get(this.type.get());
+    }
+    
+
+    /**
+     * Return a Properties object representing this object.
+     * @return Properties object
+     */
+    public Properties toProperties() {
+        Properties p;
+        
+        p = new Properties();
+        
+        p.setProperty("encoder.type", this.getType().get());
+        p.setProperty("encoder.resolution", this.getResolution().toString());
+        p.setProperty("encoder.centerDiameter", this.getCenterDiameter().toString());
+        p.setProperty("encoder.innerDiameter", this.getInnerDiameter().toString());
+        p.setProperty("encoder.outerDiameter", this.getOuterDiameter().toString());
+        p.setProperty("encoder.indexTrack", this.getIndexTrack().toString());
+        p.setProperty("encoder.inverted", this.getInverted().toString());
+        p.setProperty("encoder.clockwise", this.getDirection().toString());
+        p.setProperty("encoder.units", this.getUnits().get());
+        
+        return p;
+    }
+    
+    /**
+     * Set this object's properties based on Properties object
+     * @param p properties object from which to set this object's properties
+     */
+    public void fromProperties(Properties p) {
+        this.setType(new SimpleStringProperty(p.getProperty("encoder.type")));
+        this.setResolution(new SimpleIntegerProperty(
+                Integer.parseInt(p.getProperty("encoder.resolution"))));
+        this.setCenterDiameter(new SimpleDoubleProperty(
+                Double.parseDouble(p.getProperty("encoder.centerDiameter"))));
+        this.setInnerDiameter(new SimpleDoubleProperty(
+                Double.parseDouble(p.getProperty("encoder.innerDiameter"))));
+        this.setOuterDiameter(new SimpleDoubleProperty(
+                Double.parseDouble(p.getProperty("encoder.outerDiameter"))));
+        this.setIndexTrack(new SimpleBooleanProperty(
+                Boolean.parseBoolean(p.getProperty("encoder.indexTrack"))));
+        this.setInverted(new SimpleBooleanProperty(
+                Boolean.parseBoolean(p.getProperty("encoder.inverted"))));
+        this.setDirection(new SimpleBooleanProperty(
+                Boolean.parseBoolean(p.getProperty("encoder.inverted"))));
     }
     
     /**

@@ -46,15 +46,10 @@ public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
         
         v = valueProperty().get();
 
-        System.out.println("v="+v+" inc="+increment+" steps="+steps);
-
         while (steps-- > 0 && e.validResolution(v + increment)) {
             v += increment;
-            System.out.println("v=" + v + " inc=" + increment + " steps=" + steps);
         }    
         
-        System.out.println("v=" + v + " inc=" + increment + " steps=" + steps);
-
         return v;
     }
     

@@ -30,33 +30,23 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class EncoderFile {
     
-    Properties p;
-    
-    EncoderFile() {
-    }
+//    EncoderFile(String filename) {
+////OutputStream out,         
+//    }
 
     /* storeProperties()
      *
      * The properties object represents what is stored on disk. It's only called from
      * the routine used to save the object's data to disk.
      */
-    private void storeProperties(OutputStream out, EncoderProperties ep) {
-        
-        p.setProperty("encoder.type", ep.getType().get());
-        p.setProperty("encoder.resolution", ep.getResolution().toString());
-        p.setProperty("encoder.centerDiameter", ep.getCenterDiameter().toString());
-        p.setProperty("encoder.innerDiameter", ep.getInnerDiameter().toString());
-        p.setProperty("encoder.outerDiameter", ep.getOuterDiameter().toString());
-        p.setProperty("encoder.indexTrack", ep.getIndexTrack().toString());
-        p.setProperty("encoder.inverted", ep.getInverted().toString());
-        p.setProperty("encoder.clockwise", ep.getDirection().toString());
-        p.setProperty("encoder.units", ep.getUnits().get());
-        try {
-            p.store(out, "WheelEncoder Generator v2 format");
-        } catch (IOException ex) {
-            ex.printStackTrace(); // TODO - handle gracefully
-        }
-    }
+//    private void store(Properties p) {
+//        
+////        try {
+////            p.store(out, "WheelEncoder Generator v2 format");
+////        } catch (IOException ex) {
+////            ex.printStackTrace(); // TODO - handle gracefully
+////        }
+//    }
 
     /* loadProperties()
      *
@@ -64,20 +54,12 @@ public class EncoderFile {
      * file into the properties object, then immediately set the object's attributes
      * to the corresponding properties.
      */
-    private void loadProperties(InputStream in, EncoderProperties ep) {
-        ep.setType(new SimpleStringProperty(p.getProperty("encoder.type")));
-        ep.setResolution(new SimpleIntegerProperty(Integer.parseInt(p.getProperty("encoder.resolution"))));
-        ep.setCenterDiameter(new SimpleDoubleProperty(Double.parseDouble(p.getProperty("encoder.centerDiameter"))));
-        ep.setInnerDiameter(new SimpleDoubleProperty(Double.parseDouble(p.getProperty("encoder.innerDiameter"))));
-        ep.setOuterDiameter(new SimpleDoubleProperty(Double.parseDouble(p.getProperty("encoder.outerDiameter"))));
-        ep.setIndexTrack(new SimpleBooleanProperty(Boolean.parseBoolean(p.getProperty("encoder.indexTrack"))));
-        ep.setInverted(new SimpleBooleanProperty(Boolean.parseBoolean(p.getProperty("encoder.inverted"))));
-        ep.setDirection(new SimpleBooleanProperty(Boolean.parseBoolean(p.getProperty("encoder.inverted"))));
-        try {
-            p.load(in);
-        } catch (IOException ex) {
-            ex.printStackTrace(); // TODO - handle gracefully
-        }
-    }
+//    private void loadProperties(InputStream in, EncoderProperties ep) {
+//        try {
+//            p.load(in);
+//        } catch (IOException ex) {
+//            ex.printStackTrace(); // TODO - handle gracefully
+//        }
+//    }
     
 }

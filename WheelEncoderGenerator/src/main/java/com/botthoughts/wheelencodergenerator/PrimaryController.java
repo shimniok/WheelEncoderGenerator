@@ -67,6 +67,32 @@ public class PrimaryController implements Initializable {
     @FXML
     AnchorPane canvasContainer;
     
+    @FXML
+    public void saveFileAs() {
+    }
+
+    @FXML
+    public void saveFile() {
+    }
+
+    @FXML
+    public void openFile() {
+    }
+    
+    @FXML
+    public void newFile() {
+    }
+    
+    @FXML
+    public void print() {
+        
+    }
+    
+    @FXML
+    public void export() {
+        
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {   
         

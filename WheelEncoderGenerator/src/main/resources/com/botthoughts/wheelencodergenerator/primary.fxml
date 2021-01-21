@@ -47,7 +47,7 @@
         <items>
           <Button fx:id="newButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="New">
                <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
+                  <ImageView onMouseClicked="#newFile" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@icons/New.png" />
                      </image>
@@ -56,7 +56,7 @@
             </Button>
             <Button fx:id="openButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Open">
                <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
+                  <ImageView onMouseClicked="#openFile" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@icons/Open.png" />
                      </image>
@@ -64,7 +64,7 @@
                </graphic></Button>
             <Button fx:id="saveButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Save">
                <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
+                  <ImageView onMouseClicked="#saveFile" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@icons/Save.png" />
                      </image>
@@ -72,7 +72,7 @@
                </graphic></Button>
             <Button fx:id="saveAsButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Save As">
                <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
+                  <ImageView onMouseClicked="#saveFileAs" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@icons/SaveAs.png" />
                      </image>
@@ -80,7 +80,7 @@
                </graphic></Button>
             <Button fx:id="exportButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Export">
                <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
+                  <ImageView onMouseClicked="#export" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@icons/Export.png" />
                      </image>
@@ -88,7 +88,7 @@
                </graphic></Button>
             <Button fx:id="printButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Print">
                <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
+                  <ImageView onMouseClicked="#print" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@icons/Print.png" />
                      </image>
