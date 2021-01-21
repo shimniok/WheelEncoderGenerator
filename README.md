@@ -1,11 +1,13 @@
 # Wheel Encoder Generator
 *Design and print wheel encoder discs for robotics and more. Cross platform, open source!*
 
-## Update
+## Update - Jan 21, 2021
 
-I'm in the process of rewriting this software in Java 11 with JavaFX 13.
+Stay tuned for an MVP release by Mar 1. See branch [0.3](https://github.com/shimniok/WheelEncoderGenerator/tree/0.3) 
+for current progress rewriting my [original application](https://code.google.com/archive/p/wheel-encoder-generator/) to
+use Java 11 with JavaFX 13.
 
-## Todo List - updated Jan 21, 2021
+## Task List - updated Jan 21, 2021
 
  * ~~Initial view created~~
  * ~~Model created~~
