@@ -24,7 +24,9 @@ import javafx.fxml.Initializable;
 import javafx.print.Printer;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DialogPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 /**
  *
@@ -32,6 +34,8 @@ import javafx.scene.layout.AnchorPane;
  */
 public class PrintController implements Initializable {
 
+    @FXML
+    DialogPane dialogUI;
     @FXML
     AnchorPane previewUI;
     @FXML
@@ -125,6 +129,8 @@ public class PrintController implements Initializable {
     
     public void doCancel() {
         System.out.println("doCancel()");
+        Stage stage = (Stage) cancelUI.getScene().getWindow();
+        stage.close();
     }
     
     private void generatePrinterList() {
