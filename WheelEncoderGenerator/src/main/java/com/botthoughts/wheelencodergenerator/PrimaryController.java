@@ -15,22 +15,30 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.property.Property;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.print.PrinterJob;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
-
 public class PrimaryController implements Initializable {
-    
+
     EncoderProperties ep;
     BasicEncoder basicEncoder;
     QuadratureEncoder quadratureEncoder;
@@ -41,7 +49,6 @@ public class PrimaryController implements Initializable {
 //    private Color bg; // background
 //    private Color fg; // foreground
 
-    
     @FXML
     ComboBox typeUI;
     @FXML
@@ -66,7 +73,7 @@ public class PrimaryController implements Initializable {
     ToggleButton indexUI;
     @FXML
     AnchorPane canvasContainer;
-    
+
     @FXML
     public void saveFileAs() {
     }
@@ -78,24 +85,63 @@ public class PrimaryController implements Initializable {
     @FXML
     public void openFile() {
     }
-    
+
     @FXML
     public void newFile() {
     }
-    
+
     @FXML
-    public void print() {
-        
+    public void print(Event e) {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("print.fxml"));
+        Parent parent;
+        Scene scene;
+        Stage stage;
+
+        System.out.println("print()");
+
+        try {
+            parent = fxmlLoader.load();
+            stage = new Stage();
+            scene = new Scene(parent, 300, 200);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(scene);
+            stage.showAndWait();
+        } catch (IOException ex) {
+            ex.printStackTrace(); // TODO - remove
+        }
+
+
+//        double pr = 600; // dpi
+//        double w = 8.5; // inches
+//        
+//        EncoderRenderer er = new EncoderRenderer(ep);
+//        
+//        er.setWidth(w*pr);
+//        er.setHeight(w*pr);
+//
+//        er.drawEncoder();
+//        
+//        PrinterJob job = PrinterJob.createPrinterJob();
+//        if (job != null) {
+//            boolean success = job.printPage(er);
+//            if (success) {
+//                job.endJob();
+//            }
+//        }
     }
-    
+
     @FXML
     public void export() {
-        
+
     }
-    
+
+    @FXML
+    void onOpenDialog(ActionEvent event) throws IOException {
+    }
+
     @Override
-    public void initialize(URL url, ResourceBundle rb) {   
-        
+    public void initialize(URL url, ResourceBundle rb) {
+
         basicEncoder = new BasicEncoder();
         binaryEncoder = new BinaryEncoder();
         quadratureEncoder = new QuadratureEncoder();
@@ -106,7 +152,7 @@ public class PrimaryController implements Initializable {
         renderer.setHeight(500);
 
         canvasContainer.getChildren().add(renderer);
-        
+
         // TODO - convert type to property on eProperties
         typeUI.getItems().setAll(ep.getTypeOptions());
         typeUI.valueProperty().bindBidirectional(ep.getType());
@@ -122,31 +168,30 @@ public class PrimaryController implements Initializable {
             // TODO - fix invalid values upon type change
         });
 
-        outerUI.textProperty().bindBidirectional((Property) ep.getOuterDiameter(), 
+        outerUI.textProperty().bindBidirectional((Property) ep.getOuterDiameter(),
                 new DoubleStringConverter());
         outerUI.textProperty().addListener(renderer);
 
-        innerUI.textProperty().bindBidirectional((Property) ep.getInnerDiameter(), 
+        innerUI.textProperty().bindBidirectional((Property) ep.getInnerDiameter(),
                 new DoubleStringConverter());
         innerUI.textProperty().addListener(renderer);
 
-        centerUI.textProperty().bindBidirectional((Property) ep.getCenterDiameter(), 
+        centerUI.textProperty().bindBidirectional((Property) ep.getCenterDiameter(),
                 new DoubleStringConverter());
         centerUI.textProperty().addListener(renderer);
-        
+
         unitsUI.getItems().addAll(ep.getUnitOptions());
         unitsUI.valueProperty().bindBidirectional(ep.getUnits());
         unitsUI.valueProperty().addListener(renderer);
-        
+
         invertedUI.selectedProperty().bindBidirectional(ep.getInverted());
         invertedUI.selectedProperty().addListener(renderer);
-        
+
         indexUI.selectedProperty().bindBidirectional(ep.getIndexTrack());
         indexUI.selectedProperty().addListener(renderer);
-        
+
         // TODO - direction
         // directionUI
-                
         cwUI.selectedProperty().bindBidirectional(ep.getDirection());
         cwUI.selectedProperty().addListener((observable, oldvalue, newvalue) -> {
             System.out.println("cwUI, newvalue: " + newvalue);
@@ -155,7 +200,7 @@ public class PrimaryController implements Initializable {
         });
 
         renderer.drawEncoder();
-        
+
         // TODO print
         // TODO input verification for all fields
         // TODO file save
@@ -163,6 +208,10 @@ public class PrimaryController implements Initializable {
         // TODO file open
         // TODO file new
         // TODO file export
-    }    
-     
+    }
+
+    private Parent loadFXML(String print) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -86,9 +86,9 @@
                      </image>
                   </ImageView>
                </graphic></Button>
-            <Button fx:id="printButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Print">
+            <Button fx:id="printButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#print" text="Print">
                <graphic>
-                  <ImageView onMouseClicked="#print" pickOnBounds="true" preserveRatio="true">
+                  <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@icons/Print.png" />
                      </image>
