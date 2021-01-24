@@ -19,12 +19,14 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.print.Paper;
 import javafx.print.Printer;
 import javafx.print.PrinterJob;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.Spinner;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -41,9 +43,19 @@ public class PrintController implements Initializable {
     @FXML
     ComboBox destinationUI;
     @FXML
-    ComboBox sizeUI;
+    ComboBox paperUI;
     @FXML
-    ComboBox layoutUI;
+    ComboBox orientationUI;
+    @FXML
+    Spinner copiesUI;
+    @FXML
+    ComboBox sourceUI;
+    @FXML
+    ComboBox collationUI;
+    @FXML
+    ComboBox qualityUI;
+    @FXML
+    ComboBox resolutionUI;
     @FXML
     Button cancelUI;
     @FXML
@@ -118,21 +130,48 @@ public class PrintController implements Initializable {
         System.out.println("generatePrinterList()");
         Printer dp = Printer.getDefaultPrinter();
 
-        destinationUI.getItems().add(dp);
-        destinationUI.getSelectionModel().selectFirst();
+//        destinationUI.getItems().add(dp);
         for (Printer p: Printer.getAllPrinters()) {
-            if (!dp.equals(p)) destinationUI.getItems().add(p);
+            destinationUI.getItems().add(p);
         }
+        destinationUI.getSelectionModel().select(dp);
     }
 
-    private void updateLayoutList() {
-        System.out.println("generateLayoutList()");
-        layoutUI.getItems().setAll(printer.getPrinterAttributes().getSupportedPageOrientations());
-        layoutUI.getSelectionModel().select(printer.getPrinterAttributes().getDefaultPageOrientation());
+    private void updatePaperList() {
+        paperUI.getItems().setAll(printer.getPrinterAttributes().getSupportedPapers());
+        paperUI.getSelectionModel().select(printer.getPrinterAttributes().getDefaultPaper());
+//        sizeUI.setCellFactory((item) -> {
+//            String s;
+//            Paper i = (Paper) item;
+//            s = i.getName();
+//            return s;
+//        });
+    }
+    
+
+    private void updateMaxCopies() {
+        
+    }
+    
+    private void updateOrientationList() {
+        orientationUI.getItems().setAll(printer.getPrinterAttributes().getSupportedPageOrientations());
+        orientationUI.getSelectionModel().select(printer.getPrinterAttributes().getDefaultPageOrientation());
         // there's a limited set of orientations defined by PageOrientation constants
     }
     
-    private void updatePageSizes() {
+    private void updatePaperSource() {
+        
+    }    
+    
+    private void updatePrintColor() {
+        
+    }
+
+    private void updatePrintQuality() {
+        
+    }
+    
+    private void updatePrintResolution() {
         
     }
     
@@ -142,7 +181,8 @@ public class PrintController implements Initializable {
         destinationUI.getSelectionModel().selectedItemProperty().addListener((obs, ov, nv) -> {
             System.out.println("Printer changed");
             this.printer = (Printer) obs.getValue();
-            updateLayoutList();
+            updateOrientationList();
+            updatePaperList();
         });
         updatePrinterList();
     }

@@ -5,13 +5,13 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DialogPane?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-
 
 <DialogPane fx:id="dialogUI" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.botthoughts.wheelencodergenerator.PrintController">
    <content>
@@ -25,20 +25,33 @@
                         <GridPane alignment="TOP_CENTER" hgap="5.0" vgap="10.0">
                            <columnConstraints>
                               <ColumnConstraints halignment="RIGHT" minWidth="10.0" />
-                              <ColumnConstraints hgrow="NEVER" minWidth="10.0" />
+                              <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
                            </columnConstraints>
                            <rowConstraints>
                               <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
                               <Label text="Destination" />
                               <ComboBox fx:id="destinationUI" prefWidth="150.0" GridPane.columnIndex="1" />
-                              <Label text="Layout" GridPane.rowIndex="1" />
-                              <ComboBox fx:id="layoutUI" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Label text="Paper size" GridPane.rowIndex="2" />
-                              <ComboBox fx:id="sizeUI" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label text="Orientation" GridPane.rowIndex="1" />
+                              <ComboBox fx:id="orientationUI" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label text="Paper" GridPane.rowIndex="2" />
+                              <ComboBox fx:id="paperUI" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <ComboBox fx:id="qualityUI" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <ComboBox fx:id="resolutionUI" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                              <Label text="Copies" GridPane.rowIndex="3" />
+                              <Label text="Quality" GridPane.rowIndex="4" />
+                              <Label text="Resolution" GridPane.rowIndex="5" />
+                              <Spinner fx:id="copiesUI" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Label text="Source" GridPane.rowIndex="6" />
+                              <ComboBox fx:id="sourceUI" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                            </children>
                            <VBox.margin>
                               <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
