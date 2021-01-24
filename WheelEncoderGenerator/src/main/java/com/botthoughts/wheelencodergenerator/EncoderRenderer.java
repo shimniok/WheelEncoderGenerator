@@ -23,7 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 
 /**
- *
+ * EncoderRenderer renders an encoder on a canvas based on encoder properties
  * @author mes
  */
 public class EncoderRenderer extends Canvas implements ChangeListener {
@@ -33,9 +33,25 @@ public class EncoderRenderer extends Canvas implements ChangeListener {
     private Color fg; // foreground
     private EncoderProperties ep;
             
+    /**
+     * Create renderer node 
+     * @param ep encoder properties to render
+     */
     EncoderRenderer(EncoderProperties ep) {
         this.gc = this.getGraphicsContext2D();
         this.ep = ep;
+    }
+    
+    /**
+     * Create renderer node with specified width and height
+     * @param ep encoder properties to render
+     * @param width width of node
+     * @param height height of node
+     */
+    EncoderRenderer(EncoderProperties ep, double width, double height) {
+        this(ep);
+        this.setWidth(width);
+        this.setHeight(height);
     }
     
     /**
@@ -160,5 +176,5 @@ public class EncoderRenderer extends Canvas implements ChangeListener {
     public void changed(ObservableValue ov, Object t, Object t1) {
         this.drawEncoder();
     }
-
+    
 }
