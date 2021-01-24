@@ -47,6 +47,9 @@ public class PrimaryController implements Initializable {
     GrayEncoder grayEncoder;
     EncoderInterface currentEncoder;
     EncoderRenderer renderer;
+    EncoderRenderer preview;
+    EncoderRenderer printview;
+    
 //    private Color bg; // background
 //    private Color fg; // foreground
 
@@ -135,7 +138,6 @@ public class PrimaryController implements Initializable {
         renderer = new EncoderRenderer(ep);
         renderer.setWidth(500);
         renderer.setHeight(500);
-
         canvasContainer.getChildren().add(renderer);
 
         // TODO - convert type to property on eProperties
