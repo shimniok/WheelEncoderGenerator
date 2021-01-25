@@ -106,14 +106,15 @@ public class PrimaryController implements Initializable {
         try {
             parent = fxmlLoader.load();
             PrintController pc = fxmlLoader.getController();
-            pc.setEncoderProperties(ep);
+            //pc.setEncoderProperties(ep);
             stage = new Stage();
             scene = new Scene(parent);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(scene);
             stage.showAndWait();
         } catch (IOException ex) {
-            ex.printStackTrace(); // TODO: error handling
+            System.out.println("IOException in print(): "+ex);
+            //ex.printStackTrace(); // TODO: error handling
         }
 
     }

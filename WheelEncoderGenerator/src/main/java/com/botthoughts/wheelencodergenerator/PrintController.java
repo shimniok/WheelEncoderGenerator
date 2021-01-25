@@ -18,7 +18,7 @@ package com.botthoughts.wheelencodergenerator;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Set;
-import javafx.beans.value.ChangeListener;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.PageOrientation;
@@ -29,12 +29,15 @@ import javafx.print.PrintResolution;
 import javafx.print.Printer;
 import javafx.print.PrinterJob;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 /**
@@ -46,7 +49,9 @@ public class PrintController implements Initializable {
     @FXML
     DialogPane dialogUI;
     @FXML
-    AnchorPane previewUI;
+    VBox previewWindowUI;
+    @FXML
+    Canvas previewUI;
     @FXML
     ComboBox destinationUI;
     @FXML
@@ -74,19 +79,29 @@ public class PrintController implements Initializable {
     private EncoderRenderer preview;
     private EncoderProperties ep;
     
+    private SimpleObjectProperty<Printer> printerProperty;
+    private SimpleObjectProperty<Paper> paperProperty;
+    
 //    Printer PrinterAttributes
 //    PrintResolution PrinterJob
 //    JobSettings Paper
 //    PageLayout
 //    PageRange
     
-   
+    public PrintController() {
+        System.out.println("PrintController constructor");
+        printerProperty = new SimpleObjectProperty<>();
+        paperProperty = new SimpleObjectProperty<>();        
+    }
+    
+    
     void setEncoderProperties(EncoderProperties ep) {
         System.out.println("setEncoderPropertes()");
         this.ep = ep;
-        preview = new EncoderRenderer(ep, 100, 100);
-        previewUI.getChildren().add(preview);
-        preview.drawEncoder();
+        //preview = new EncoderRenderer(ep, 100, 100);
+        //previewUI.getChildren().add(preview);
+        //preview.drawEncoder();
+        System.out.println("setEncoderProperties() exit");
     }
 
    
@@ -117,12 +132,13 @@ public class PrintController implements Initializable {
     
     private void updatePrinterList() {
         System.out.println("generatePrinterList()");
-        for (Printer p: Printer.getAllPrinters()) {
+        Printer.getAllPrinters().forEach(p -> {
             destinationUI.getItems().add(p);
-        }
+        });
     }
 
     private void updatePaperList() {
+        System.out.println("updatePaperList()");
         Set<Paper> pl = printer.getPrinterAttributes().getSupportedPapers();
         Paper pp = printer.getPrinterAttributes().getDefaultPaper();
         
@@ -133,6 +149,7 @@ public class PrintController implements Initializable {
     
 
     private void updateCopies() {
+        System.out.println("updateCopies()");
         int max = printer.getPrinterAttributes().getMaxCopies();
         int c = printer.getPrinterAttributes().getDefaultCopies();
         
@@ -140,6 +157,7 @@ public class PrintController implements Initializable {
     }
     
     private void updateOrientationList() {
+        System.out.println("updateOrientationList()");
         Set<PageOrientation> po = printer.getPrinterAttributes().getSupportedPageOrientations();
         PageOrientation o = printer.getPrinterAttributes().getDefaultPageOrientation();
 
@@ -149,6 +167,7 @@ public class PrintController implements Initializable {
     }
     
     private void updatePaperSource() {
+        System.out.println("updatePaperSource()");
         Set<PaperSource> ps = printer.getPrinterAttributes().getSupportedPaperSources();
         PaperSource ds = printer.getPrinterAttributes().getDefaultPaperSource();
 
@@ -158,6 +177,7 @@ public class PrintController implements Initializable {
     }    
 
     private void updatePrintQuality() {
+        System.out.println("updatePrintQuality()");
         Set<PrintQuality> pq = printer.getPrinterAttributes().getSupportedPrintQuality();
         PrintQuality q = printer.getPrinterAttributes().getDefaultPrintQuality();
         
@@ -167,6 +187,7 @@ public class PrintController implements Initializable {
     }
     
     private void updatePrintResolution() {
+        System.out.println("updatePrintResolution()");
         Set<PrintResolution> pr = printer.getPrinterAttributes().getSupportedPrintResolutions();
         System.out.println(pr);
 //        PrintResolution dr = printer.getPrinterAttributes().getDefaultPrintResolution();
@@ -175,55 +196,115 @@ public class PrintController implements Initializable {
 //        if (dr != null) resolutionUI.getSelectionModel().select(dr);
     }
 
+        
+    private void updatePaper(GraphicsContext gc, Paper p) {
+        double padding=10;
+        double w;
+        double wPage;
+        double wMax;
+        double wScale;
+        double h;
+        double hPage;
+        double hMax;
+        double hScale;
+        double scale;
+                
+        System.out.println("updatePaper()");
+
+        // Maximum dimensions
+        wMax = previewWindowUI.getPrefWidth()-padding*2;
+        hMax = previewWindowUI.getPrefHeight()-padding*2;
+        System.out.println("wmax="+wMax+" hmax="+hMax);
+        
+        // Paper dimensions in points
+        wPage = p.getWidth();
+        hPage = p.getHeight();
+        System.out.println("pw="+wPage+" ph="+hPage);
+        
+        // Compute h/w scaling factors
+        wScale = wMax / wPage;
+        hScale = hMax / hPage;
+        scale = Math.min(wScale, hScale);
+        System.out.println("scale="+scale+" wScale="+wScale+" hScale="+hScale);
+        
+        w = scale * wPage;
+        h = scale * hPage;
+        System.out.println("w="+w+" h="+h);
+        
+        previewUI.setWidth(w);
+        previewUI.setHeight(h);
+        
+        double x2 = gc.getCanvas().getWidth();
+        double y2 = gc.getCanvas().getHeight();
+
+        // redraw
+        gc.setFill(Color.WHITE);
+        gc.fillRect(0, 0, x2, y2);
+    }
+
+    
     private void updatePreview() {
+        System.out.println("updatePreview()");
         Paper paper = (Paper) paperUI.getSelectionModel().getSelectedItem();
         System.out.println(paper.getName());
+
         PrintResolution res = printer.getPrinterAttributes().getDefaultPrintResolution();
         System.out.println("cross feed res="+res.getCrossFeedResolution());
         System.out.println("feed res="+res.getFeedResolution());
 //        res.getCrossFeedResolution()*
 //        res.getFeedResolution()*
-        double w = paper.getWidth();
-        double h = paper.getHeight();
-        System.out.println("w="+w);
-        System.out.println("h="+h);
-        if (preview != null && ep != null) {
-            preview.setWidth(w);
-            preview.setHeight(h);
-//            preview.setScaleX(4);
-//            preview.setScaleY(4);
-            preview.drawEncoder();
-        }
+
+        // Get width & height of page in points (1/72nds of an inch)
+        double widthPoints = paper.getWidth();
+        double heightPoints = paper.getHeight();
+        // Determine scaling factor to fit page in preview window
+        double scaleWidth = widthPoints / previewUI.getWidth();
+        double scaleHeight = heightPoints / previewUI.getHeight();
+        System.out.println("scaleWidth="+scaleWidth+" scaleHeight="+scaleHeight);
+        // Find raw x and y scaling factor
+        // Pick the smallest
+
     }
 
-    
-    private void updatePrinter(Printer p) {
-        System.out.println("Printer changed");
-        this.printer = p;
-        updateOrientationList();
-        updatePaperList();
-        updateCopies();
-        updateOrientationList();
-        updatePaperSource();
-        updatePrintQuality();
-        updatePrintResolution();
-        updatePreview();
-    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         System.out.println("initialize()");
+
+        GraphicsContext gc = previewUI.getGraphicsContext2D();
+
         updatePrinterList();
-        ChangeListener cl = (obs, ov, nv) -> {
-          updatePrinter((Printer) obs.getValue());
-        };
+//        destinationUI.selectionModelProperty().bindBidirectional(printerProperty);
+ 
         destinationUI.getSelectionModel().selectedItemProperty().addListener((obs, ov, nv) -> {
-            updatePrinter((Printer) obs.getValue());
+            System.out.println("Printer changed");
+            this.printer = (Printer) nv;
+//            updateOrientationList();
+            updatePaperList();
+            
+            
+//            updateCopies();
+//            updateOrientationList();
+//            updatePaperSource();
+//            updatePrintQuality();
+//            updatePrintResolution();
+//            updatePreview();
         });
-        destinationUI.getSelectionModel().select(Printer.getDefaultPrinter());
+        
         paperUI.getSelectionModel().selectedItemProperty().addListener((obs, ov, nv) -> {
-            updatePreview();
+            System.out.println("paper changed");
+            updatePaper(gc, (Paper) nv);
         });
+        
+//        DropShadow dropShadow = new DropShadow();
+//        dropShadow.setRadius(5.0);
+//        dropShadow.setOffsetX(10.0);
+//        dropShadow.setOffsetY(10.0);
+//        dropShadow.setColor(Color.color(0.4, 0.5, 0.5));
+//        gc.setEffect(dropShadow);
+    
+        destinationUI.getSelectionModel().select(Printer.getDefaultPrinter());
+
     }
 
 }
