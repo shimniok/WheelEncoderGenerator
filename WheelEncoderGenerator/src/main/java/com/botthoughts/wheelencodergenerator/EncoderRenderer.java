@@ -32,7 +32,7 @@ public class EncoderRenderer extends Canvas implements ChangeListener {
     private Color bg; // background
     private Color fg; // foreground
     private EncoderProperties ep;
-            
+
     /**
      * Create renderer node 
      * @param ep encoder properties to render
@@ -87,6 +87,12 @@ public class EncoderRenderer extends Canvas implements ChangeListener {
         gc.setFill(bg);
         gc.fillOval(x + trackWidth, y + trackWidth, inner, inner);
         gc.strokeOval(x + trackWidth, y + trackWidth, inner, inner);
+    }
+    
+    
+    public void render(GraphicsContext gc) {
+        this.gc = gc;
+        drawEncoder();
     }
     
     

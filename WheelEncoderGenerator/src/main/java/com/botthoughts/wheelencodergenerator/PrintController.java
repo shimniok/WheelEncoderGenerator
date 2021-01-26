@@ -108,7 +108,6 @@ public class PrintController implements Initializable {
     public void doPrint() {
         System.out.println("doPrint()");
         job = PrinterJob.createPrinterJob();
-        Node node;
         
         if (job != null && renderer != null) {
             boolean printed = job.printPage(renderer);
@@ -139,57 +138,57 @@ public class PrintController implements Initializable {
 
     private void updatePaperList() {
         System.out.println("updatePaperList()");
-        Set<Paper> pl = printer.getPrinterAttributes().getSupportedPapers();
-        Paper pp = printer.getPrinterAttributes().getDefaultPaper();
+        Set<Paper> paperList = printer.getPrinterAttributes().getSupportedPapers();
+        Paper defaultPaper = printer.getPrinterAttributes().getDefaultPaper();
         
-        paperUI.getItems().setAll(pl);
-        paperUI.getSelectionModel().select(pp);
+        paperUI.getItems().setAll(paperList);
+        paperUI.getSelectionModel().select(defaultPaper);
         // TODO: improve display name
     }
     
 
     private void updateCopies() {
         System.out.println("updateCopies()");
-        int max = printer.getPrinterAttributes().getMaxCopies();
-        int c = printer.getPrinterAttributes().getDefaultCopies();
+        int maxCopies = printer.getPrinterAttributes().getMaxCopies();
+        int defaultCopies = printer.getPrinterAttributes().getDefaultCopies();
         
-        copiesUI.setValueFactory(new IntegerSpinnerValueFactory(1, max, c, 1));
+        copiesUI.setValueFactory(new IntegerSpinnerValueFactory(1, maxCopies, defaultCopies, 1));
     }
     
     private void updateOrientationList() {
         System.out.println("updateOrientationList()");
-        Set<PageOrientation> po = printer.getPrinterAttributes().getSupportedPageOrientations();
-        PageOrientation o = printer.getPrinterAttributes().getDefaultPageOrientation();
+        Set<PageOrientation> orientationList = printer.getPrinterAttributes().getSupportedPageOrientations();
+        PageOrientation defaultOrientation = printer.getPrinterAttributes().getDefaultPageOrientation();
 
-        orientationUI.getItems().setAll(po);
-        orientationUI.getSelectionModel().select(o);
+        orientationUI.getItems().setAll(orientationList);
+        orientationUI.getSelectionModel().select(defaultOrientation);
         // there's a limited set of orientations defined by PageOrientation constants
     }
     
     private void updatePaperSource() {
         System.out.println("updatePaperSource()");
-        Set<PaperSource> ps = printer.getPrinterAttributes().getSupportedPaperSources();
-        PaperSource ds = printer.getPrinterAttributes().getDefaultPaperSource();
+        Set<PaperSource> paperSourceList = printer.getPrinterAttributes().getSupportedPaperSources();
+        PaperSource defaultSource = printer.getPrinterAttributes().getDefaultPaperSource();
 
-        sourceUI.getItems().setAll(ps);
-        sourceUI.getSelectionModel().select(ds);
+        sourceUI.getItems().setAll(paperSourceList);
+        sourceUI.getSelectionModel().select(defaultSource);
         // TODO: improve display name
     }    
 
     private void updatePrintQuality() {
         System.out.println("updatePrintQuality()");
-        Set<PrintQuality> pq = printer.getPrinterAttributes().getSupportedPrintQuality();
-        PrintQuality q = printer.getPrinterAttributes().getDefaultPrintQuality();
+        Set<PrintQuality> qualityList = printer.getPrinterAttributes().getSupportedPrintQuality();
+        PrintQuality defaultQuality = printer.getPrinterAttributes().getDefaultPrintQuality();
         
-        qualityUI.getItems().setAll(pq);
-        qualityUI.getSelectionModel().select(q);
+        qualityUI.getItems().setAll(qualityList);
+        qualityUI.getSelectionModel().select(defaultQuality);
         // TODO: improve display name
     }
     
     private void updatePrintResolution() {
         System.out.println("updatePrintResolution()");
-        Set<PrintResolution> pr = printer.getPrinterAttributes().getSupportedPrintResolutions();
-        System.out.println(pr);
+        Set<PrintResolution> resolutionList = printer.getPrinterAttributes().getSupportedPrintResolutions();
+        System.out.println(resolutionList);
 //        PrintResolution dr = printer.getPrinterAttributes().getDefaultPrintResolution();
 //
 //        if (pr != null) resolutionUI.getItems().setAll(pr);
@@ -197,7 +196,7 @@ public class PrintController implements Initializable {
     }
 
         
-    private void updatePaper(GraphicsContext gc, Paper p) {
+    private void drawPaper(GraphicsContext gc, Paper p) {
         double padding=10;
         double w;
         double wPage;
@@ -231,8 +230,8 @@ public class PrintController implements Initializable {
         h = scale * hPage;
         System.out.println("w="+w+" h="+h);
         
-        previewUI.setWidth(w);
-        previewUI.setHeight(h);
+        gc.getCanvas().setWidth(w);
+        gc.getCanvas().setHeight(h);
         
         double x2 = gc.getCanvas().getWidth();
         double y2 = gc.getCanvas().getHeight();
@@ -282,7 +281,6 @@ public class PrintController implements Initializable {
 //            updateOrientationList();
             updatePaperList();
             
-            
 //            updateCopies();
 //            updateOrientationList();
 //            updatePaperSource();
@@ -293,7 +291,7 @@ public class PrintController implements Initializable {
         
         paperUI.getSelectionModel().selectedItemProperty().addListener((obs, ov, nv) -> {
             System.out.println("paper changed");
-            updatePaper(gc, (Paper) nv);
+            drawPaper(gc, (Paper) nv);
         });
         
 //        DropShadow dropShadow = new DropShadow();
