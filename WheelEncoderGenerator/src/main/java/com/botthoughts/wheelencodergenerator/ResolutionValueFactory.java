@@ -24,9 +24,9 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
 
-    EncoderInterface e;
+    EncoderModel e;
     
-    public ResolutionValueFactory(EncoderInterface e, Integer initial) {
+    public ResolutionValueFactory(EncoderModel e, Integer initial) {
         super();
         this.e = e;
         setConverter(new IntegerStringConverter());
@@ -37,7 +37,7 @@ public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
         this.setValue(initial);
     }
 
-    public void setEncoder(EncoderInterface e) {
+    public void setEncoder(EncoderModel e) {
         this.e = e;
     }
     

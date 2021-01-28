@@ -75,12 +75,12 @@ public class PrintController implements Initializable {
 
     private Printer printer;
     private PrinterJob job;
-    private EncoderRenderer renderer;
-    private EncoderRenderer preview;
+    private EncoderView renderer;
+    private EncoderView preview;
     private EncoderProperties ep;
     
-    private SimpleObjectProperty<Printer> printerProperty;
-    private SimpleObjectProperty<Paper> paperProperty;
+//    private SimpleObjectProperty<Printer> printerProperty;
+//    private SimpleObjectProperty<Paper> paperProperty;
     
 //    Printer PrinterAttributes
 //    PrintResolution PrinterJob
@@ -88,19 +88,12 @@ public class PrintController implements Initializable {
 //    PageLayout
 //    PageRange
     
-    public PrintController() {
-        System.out.println("PrintController constructor");
-        printerProperty = new SimpleObjectProperty<>();
-        paperProperty = new SimpleObjectProperty<>();        
-    }
-    
-    
+
     void setEncoderProperties(EncoderProperties ep) {
         System.out.println("setEncoderPropertes()");
         this.ep = ep;
-        //preview = new EncoderRenderer(ep, 100, 100);
-        //previewUI.getChildren().add(preview);
-        //preview.drawEncoder();
+        preview.setEncoderProperties(ep);
+//        preview.drawEncoder();
         System.out.println("setEncoderProperties() exit");
     }
 
@@ -272,6 +265,8 @@ public class PrintController implements Initializable {
 
         GraphicsContext gc = previewUI.getGraphicsContext2D();
 
+        this.preview = new EncoderView(previewUI);
+
         updatePrinterList();
 //        destinationUI.selectionModelProperty().bindBidirectional(printerProperty);
  
@@ -287,11 +282,14 @@ public class PrintController implements Initializable {
 //            updatePrintQuality();
 //            updatePrintResolution();
 //            updatePreview();
+            //preview.render();
+
         });
         
         paperUI.getSelectionModel().selectedItemProperty().addListener((obs, ov, nv) -> {
             System.out.println("paper changed");
             drawPaper(gc, (Paper) nv);
+            //preview.render();
         });
         
 //        DropShadow dropShadow = new DropShadow();

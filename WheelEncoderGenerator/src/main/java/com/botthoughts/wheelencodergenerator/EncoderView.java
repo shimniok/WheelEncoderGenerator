@@ -23,10 +23,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 
 /**
- * EncoderRenderer renders an encoder on a canvas based on encoder properties
+ * EncoderView renders an encoder on a canvas based on encoder properties
  * @author mes
  */
-public class EncoderRenderer extends Canvas implements ChangeListener {
+public class EncoderView extends Canvas implements ChangeListener {
 
     private GraphicsContext gc;
     private Color bg; // background
@@ -37,9 +37,15 @@ public class EncoderRenderer extends Canvas implements ChangeListener {
      * Create renderer node 
      * @param ep encoder properties to render
      */
-    EncoderRenderer(EncoderProperties ep) {
+    EncoderView(EncoderProperties ep) {
         this.gc = this.getGraphicsContext2D();
         this.ep = ep;
+    }
+    
+    EncoderView(Canvas c) {
+        this.gc = c.getGraphicsContext2D();
+        this.setWidth(c.getWidth());
+        this.setHeight(c.getHeight());
     }
     
     /**
@@ -48,12 +54,16 @@ public class EncoderRenderer extends Canvas implements ChangeListener {
      * @param width width of node
      * @param height height of node
      */
-    EncoderRenderer(EncoderProperties ep, double width, double height) {
+    EncoderView(EncoderProperties ep, double width, double height) {
         this(ep);
         this.setWidth(width);
         this.setHeight(height);
     }
-    
+
+    public void setEncoderProperties(EncoderProperties ep) {
+        this.ep = ep;
+    }
+
     /**
      * Draws a single track with specified number of stripes at specified start angle.
      * This method can draw encoder tracks for absolute or standard/incremental encoders,
@@ -90,13 +100,7 @@ public class EncoderRenderer extends Canvas implements ChangeListener {
     }
     
     
-    public void render(GraphicsContext gc) {
-        this.gc = gc;
-        drawEncoder();
-    }
-    
-    
-    public void drawEncoder() {
+    public void render() {
         // Encoder measurements
         Double id; // inside diameter
         Double od; // outside diameter
@@ -125,7 +129,7 @@ public class EncoderRenderer extends Canvas implements ChangeListener {
         
         // TODO - real lines separating each track
         
-        EncoderInterface enc = ep.getEncoder();
+        EncoderModel enc = ep.getEncoder();
         
         if (id >= od || cd >= id) return;
         
@@ -180,7 +184,7 @@ public class EncoderRenderer extends Canvas implements ChangeListener {
 
     @Override
     public void changed(ObservableValue ov, Object t, Object t1) {
-        this.drawEncoder();
+        this.render();
     }
     
 }

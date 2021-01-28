@@ -22,7 +22,7 @@ import java.util.List;
  * 
  * @author mes
  */
-public interface EncoderInterface {
+public interface EncoderModel {
 
     /**
      * Return minimum resolution for the encoder.

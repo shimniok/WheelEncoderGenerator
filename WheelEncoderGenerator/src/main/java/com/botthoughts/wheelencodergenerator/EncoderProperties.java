@@ -64,10 +64,10 @@ public final class EncoderProperties {
         this.encoderMap.put("Binary", new BinaryEncoder());
         this.encoderMap.put("Gray", new GrayEncoder());
         
-        this.qvf = new ResolutionValueFactory((EncoderInterface) encoderMap.get("Quadrature"), 4); // TODO initial value
-        this.svf = new ResolutionValueFactory((EncoderInterface) encoderMap.get("Simple"), 4); // TODO initial value
-        this.bvf = new ResolutionValueFactory((EncoderInterface) encoderMap.get("Binary"), 2); // TODO initial value
-        this.gvf = new ResolutionValueFactory((EncoderInterface) encoderMap.get("Gray"), 2); // TODO initial value
+        this.qvf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Quadrature"), 4); // TODO initial value
+        this.svf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Simple"), 4); // TODO initial value
+        this.bvf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Binary"), 2); // TODO initial value
+        this.gvf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Gray"), 2); // TODO initial value
         
         this.outerDiameter = new SimpleDoubleProperty(50);
         this.innerDiameter = new SimpleDoubleProperty(30);
@@ -271,8 +271,8 @@ public final class EncoderProperties {
      * Get the encoder associated with these properties
      * @return the encoder associated with these properties
      */
-    public EncoderInterface getEncoder() {
-        return (EncoderInterface) this.encoderMap.get(this.type.get());
+    public EncoderModel getEncoder() {
+        return (EncoderModel) this.encoderMap.get(this.type.get());
     }
     
 

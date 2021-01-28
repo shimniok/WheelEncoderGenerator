@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author mes
  */
-public class BasicEncoder implements EncoderInterface {
+public class BasicEncoder implements EncoderModel {
 
     protected List<EncoderTrack> tracks; // list of tracks
     protected static int RESOLUTION_MIN = 1;

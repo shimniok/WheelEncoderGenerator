@@ -24,11 +24,9 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.print.PrinterJob;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -45,10 +43,10 @@ public class PrimaryController implements Initializable {
     QuadratureEncoder quadratureEncoder;
     BinaryEncoder binaryEncoder;
     GrayEncoder grayEncoder;
-    EncoderInterface currentEncoder;
-    EncoderRenderer renderer;
-    EncoderRenderer preview;
-    EncoderRenderer printview;
+    EncoderModel currentEncoder;
+    EncoderView renderer;
+    EncoderView preview;
+    EncoderView printview;
     
 //    private Color bg; // background
 //    private Color fg; // foreground
@@ -106,7 +104,7 @@ public class PrimaryController implements Initializable {
         try {
             parent = fxmlLoader.load();
             PrintController pc = fxmlLoader.getController();
-            //pc.setEncoderProperties(ep);
+            pc.setEncoderProperties(ep);
             stage = new Stage();
             scene = new Scene(parent);
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -121,7 +119,6 @@ public class PrimaryController implements Initializable {
 
     @FXML
     public void export() {
-
     }
 
     @FXML
@@ -136,7 +133,7 @@ public class PrimaryController implements Initializable {
         quadratureEncoder = new QuadratureEncoder();
         grayEncoder = new GrayEncoder();
         ep = new EncoderProperties();
-        renderer = new EncoderRenderer(ep);
+        renderer = new EncoderView(ep);
         renderer.setWidth(500);
         renderer.setHeight(500);
         canvasContainer.getChildren().add(renderer);
@@ -187,7 +184,7 @@ public class PrimaryController implements Initializable {
             ccwUI.selectedProperty().set(oldvalue); // make sure the other toggle toggles
         });
 
-        renderer.drawEncoder();
+        renderer.render();
 
         // TODO print
         // TODO input verification for all fields
