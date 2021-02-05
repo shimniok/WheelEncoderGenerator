@@ -39,11 +39,11 @@ import javafx.util.converter.DoubleStringConverter;
 
 public class PrimaryController implements Initializable {
 
-    BasicEncoder basicEncoder;
-    QuadratureEncoder quadratureEncoder;
-    BinaryEncoder binaryEncoder;
-    GrayEncoder grayEncoder;
-    EncoderModel currentEncoder;
+//    BasicEncoder basicEncoder;
+//    QuadratureEncoder quadratureEncoder;
+//    BinaryEncoder binaryEncoder;
+//    GrayEncoder grayEncoder;
+//    EncoderModel currentEncoder;
     EncoderView encoderDrawing;
     EncoderView preview;
     EncoderView printview;
@@ -130,12 +130,20 @@ public class PrimaryController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         EncoderProperties ep = EncoderProperties.getInstance();
 
-        basicEncoder = new BasicEncoder();
-        binaryEncoder = new BinaryEncoder();
-        quadratureEncoder = new QuadratureEncoder();
-        grayEncoder = new GrayEncoder();
+//        basicEncoder = new BasicEncoder();
+//        binaryEncoder = new BinaryEncoder();
+//        quadratureEncoder = new QuadratureEncoder();
+//        grayEncoder = new GrayEncoder();
+        
         encoderDrawing = new EncoderView(encoderUI);
-        ep.addListener(encoderDrawing);
+        ep.addListener((observable, oldvalue, newvalue) -> {
+            double od = ep.getOuterDiameter().get();
+            double w = encoderUI.getWidth()-2;
+            double h = encoderUI.getHeight()-2;
+            double scale = Math.min(w/od, h/od);
+            encoderDrawing.setScale(scale);
+            encoderDrawing.render();
+        });
 
         // TODO - convert type to property on eProperties
         typeUI.getItems().setAll(ep.getTypeOptions());

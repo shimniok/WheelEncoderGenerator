@@ -219,7 +219,6 @@ public class PrintController implements Initializable {
 
         this.encoderRenderer = new EncoderView(encoderPreviewUI);
         
-        
         updatePrinterList();
 //        destinationUI.selectionModelProperty().bindBidirectional(printerProperty);
  

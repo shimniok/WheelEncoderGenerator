@@ -360,6 +360,13 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
         return (EncoderModel) EncoderProperties.encoderMap.get(this.type.get());
     }
     
+    
+    public List<EncoderTrack> getTracks() {
+        return getEncoder().getTracks(this.getInnerDiameter().get(), 
+                this.getOuterDiameter().get(), this.getResolution().get(), 
+                this.getIndexTrack().get());
+    }
+    
 
     /**
      * Return a Properties object representing this object.
