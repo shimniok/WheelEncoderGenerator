@@ -88,16 +88,6 @@ public class PrintController implements Initializable {
 //    PageLayout
 //    PageRange
     
-
-    void setEncoderProperties(EncoderProperties ep) {
-        System.out.println("setEncoderPropertes()");
-        this.ep = ep;
-        preview.setEncoderProperties(ep);
-//        preview.drawEncoder();
-        System.out.println("setEncoderProperties() exit");
-    }
-
-   
     public void doPrint() {
         System.out.println("doPrint()");
         job = PrinterJob.createPrinterJob();

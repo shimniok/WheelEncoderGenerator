@@ -15,32 +15,80 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 /**
  *
  * @author mes
  */
-public final class EncoderProperties {
+public final class EncoderProperties implements ObservableValue, ChangeListener {
 
+    // Singleton pattern
+    private static EncoderProperties INSTANCE = null;
+    
     public static String MM = "mm";
     public static String INCH = "inch";
     public static Boolean CLOCKWISE = true;
     public static Boolean COUNTERCLOCKWISE = false;
     
-    protected final HashMap encoderMap;
-    protected SimpleStringProperty type;
-    protected final List<String> unitOptions = Arrays.asList(
+    /**
+     * A hash map relating encoder type to EncoderModels
+     */
+    protected static Map<String, EncoderModel> encoderMap = Map.ofEntries(
+            new AbstractMap.SimpleEntry<String, EncoderModel>("Quadrature", 
+                    new QuadratureEncoder()),
+            new AbstractMap.SimpleEntry<String, EncoderModel>("Simple", 
+                    new BasicEncoder()),
+            new AbstractMap.SimpleEntry<String, EncoderModel>("Binary", 
+                    new BinaryEncoder()),
+            new AbstractMap.SimpleEntry<String, EncoderModel>("Gray", 
+                    new GrayEncoder())
+        );
+
+    /**
+     *
+     */
+    protected static List<String> unitOptions = Arrays.asList(
             EncoderProperties.MM, EncoderProperties.INCH);
+
+    /**
+     * Encoder types
+     */
+//    public static enum EncoderTypes {
+//        QUADRATURE("Quadrature"),
+//        SIMPLE("Simple"),
+//        BINARY("Binary"),
+//        GRAY("Gray");
+//        
+//        public final String label;
+//        
+//        private EncoderTypes(String label) {
+//            this.label = label;
+//        }
+//    }
+            
+    /**
+     * A list of strings representing available encoder types
+     */
+    protected static List<String> typeOptions = Arrays.asList(
+            "Quadrature", "Simple", "Binary", "Gray"
+    );
+            
+    protected SimpleStringProperty type;
     protected SimpleStringProperty units; // see this.unitOptions
     protected SimpleDoubleProperty outerDiameter;
     protected SimpleDoubleProperty innerDiameter;
@@ -49,39 +97,76 @@ public final class EncoderProperties {
     protected SimpleBooleanProperty inverted;
     protected SimpleBooleanProperty indexTrack;
     protected BooleanProperty direction; // see this.CLOCKWISE
-    protected ResolutionValueFactory qvf;
-    protected ResolutionValueFactory svf;
-    protected ResolutionValueFactory bvf;
-    protected ResolutionValueFactory gvf;
-   
+    private List<ChangeListener> changeListeners;
+    private List<InvalidationListener> invalidationListeners;
+
+//    protected ResolutionValueFactory qvf;
+//    protected ResolutionValueFactory svf;
+//    protected ResolutionValueFactory bvf;
+//    protected ResolutionValueFactory gvf;  
+    
     /**
-     * Make new encoder properties object
+     * Make new encoder properties object; Singleton pattern
      */
-    public EncoderProperties() {
-        this.encoderMap = new HashMap();
-        this.encoderMap.put("Quadrature", new QuadratureEncoder());
-        this.encoderMap.put("Simple", new BasicEncoder());
-        this.encoderMap.put("Binary", new BinaryEncoder());
-        this.encoderMap.put("Gray", new GrayEncoder());
-        
-        this.qvf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Quadrature"), 4); // TODO initial value
-        this.svf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Simple"), 4); // TODO initial value
-        this.bvf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Binary"), 2); // TODO initial value
-        this.gvf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Gray"), 2); // TODO initial value
-        
-        this.outerDiameter = new SimpleDoubleProperty(50);
-        this.innerDiameter = new SimpleDoubleProperty(30);
-        this.centerDiameter = new SimpleDoubleProperty(10);
-        this.inverted = new SimpleBooleanProperty(false);
-        this.units = new SimpleStringProperty(unitOptions.get(0));
-        this.resolution = new SimpleIntegerProperty(2);
-        this.direction = new SimpleBooleanProperty(CLOCKWISE);
-        this.indexTrack = new SimpleBooleanProperty(false);
-        this.type = new SimpleStringProperty(getTypeOptions().get(0));
+    private EncoderProperties() {
+//        EncoderProperties.encoderMap.put("Quadrature", new QuadratureEncoder());
+//        EncoderProperties.encoderMap.put("Simple", new BasicEncoder());
+//        EncoderProperties.encoderMap.put("Binary", new BinaryEncoder());
+//        EncoderProperties.encoderMap.put("Gray", new GrayEncoder());
     }
+    
+    
+    /**
+     * Returns Singleton instance of EncoderProperites with lazy instantiation
+     * and initialization.
+     * @return EncoderProperties singleton instance
+     */
+    public static synchronized EncoderProperties getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new EncoderProperties();
+                
+            INSTANCE.changeListeners = new ArrayList();
+            INSTANCE.invalidationListeners = new ArrayList();
+
+//            INSTANCE.qvf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Quadrature"), 4); // TODO initial value
+//            INSTANCE.svf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Simple"), 4); // TODO initial value
+//            INSTANCE.bvf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Binary"), 2); // TODO initial value
+//            INSTANCE.gvf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Gray"), 2); // TODO initial value
+
+            INSTANCE.outerDiameter = new SimpleDoubleProperty(50);
+            INSTANCE.outerDiameter.addListener(INSTANCE);
+
+            INSTANCE.innerDiameter = new SimpleDoubleProperty(30);
+            INSTANCE.innerDiameter.addListener(INSTANCE);
+
+            INSTANCE.centerDiameter = new SimpleDoubleProperty(10);
+            INSTANCE.centerDiameter.addListener(INSTANCE);
+
+            INSTANCE.inverted = new SimpleBooleanProperty(false);
+            INSTANCE.inverted.addListener(INSTANCE);
+
+            INSTANCE.units = new SimpleStringProperty(unitOptions.get(0));
+            INSTANCE.units.addListener(INSTANCE);
+
+            INSTANCE.resolution = new SimpleIntegerProperty(2);
+            INSTANCE.resolution.addListener(INSTANCE);
+
+            INSTANCE.direction = new SimpleBooleanProperty(CLOCKWISE);
+            INSTANCE.direction.addListener(INSTANCE);
+
+            INSTANCE.indexTrack = new SimpleBooleanProperty(false);
+            INSTANCE.indexTrack.addListener(INSTANCE);
+
+            // Prime candidate for invalidation listener??
+            INSTANCE.type = new SimpleStringProperty(INSTANCE.getTypeOptions().get(0));
+            INSTANCE.type.addListener(INSTANCE);        
+        }
+        return INSTANCE;
+    }
+    
 
     public List<String> getTypeOptions() {
-        return new ArrayList<>(this.encoderMap.keySet());
+        return new ArrayList<>(EncoderProperties.encoderMap.keySet());
     }
     
     /**
@@ -272,7 +357,7 @@ public final class EncoderProperties {
      * @return the encoder associated with these properties
      */
     public EncoderModel getEncoder() {
-        return (EncoderModel) this.encoderMap.get(this.type.get());
+        return (EncoderModel) EncoderProperties.encoderMap.get(this.type.get());
     }
     
 
@@ -319,16 +404,40 @@ public final class EncoderProperties {
         this.setDirection(new SimpleBooleanProperty(
                 Boolean.parseBoolean(p.getProperty("encoder.inverted"))));
     }
-    
-    /**
-     * Set the encoder associated with these properties
-     * @param e the encoder to associate with these properties
-     */
-//    public void setEncoder(EncoderInterface e) {
-//        System.out.println("setEncoder");
-//        this.encoder = e;
-//    }
 
+    @Override
+    public void addListener(ChangeListener cl) {
+        changeListeners.add(cl);
+    }
+
+    @Override
+    public void removeListener(ChangeListener cl) {
+        changeListeners.remove(cl);
+    }
+
+    @Override
+    public Object getValue() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void addListener(InvalidationListener il) {
+        invalidationListeners.add(il);
+    }
+
+    @Override
+    public void removeListener(InvalidationListener il) {
+        invalidationListeners.remove(il);
+    }
+
+    @Override
+    public void changed(ObservableValue obsV, Object oldV, Object newV) {
+        System.out.println("EncoderProperties changed()");
+        changeListeners.forEach((ChangeListener cl) -> {
+            cl.changed(obsV, oldV, newV);
+        });
+    }
+    
 //    /**
 //     * Return the appropriate spinner value factory based on type
 //     * @return value factory or null if unexpected type value

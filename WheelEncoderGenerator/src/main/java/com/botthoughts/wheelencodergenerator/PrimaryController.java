@@ -38,13 +38,12 @@ import javafx.util.converter.DoubleStringConverter;
 
 public class PrimaryController implements Initializable {
 
-    EncoderProperties ep;
     BasicEncoder basicEncoder;
     QuadratureEncoder quadratureEncoder;
     BinaryEncoder binaryEncoder;
     GrayEncoder grayEncoder;
     EncoderModel currentEncoder;
-    EncoderView renderer;
+    EncoderView encoderDrawing;
     EncoderView preview;
     EncoderView printview;
     
@@ -104,7 +103,6 @@ public class PrimaryController implements Initializable {
         try {
             parent = fxmlLoader.load();
             PrintController pc = fxmlLoader.getController();
-            pc.setEncoderProperties(ep);
             stage = new Stage();
             scene = new Scene(parent);
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -127,26 +125,25 @@ public class PrimaryController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        EncoderProperties ep = EncoderProperties.getInstance();
 
         basicEncoder = new BasicEncoder();
         binaryEncoder = new BinaryEncoder();
         quadratureEncoder = new QuadratureEncoder();
         grayEncoder = new GrayEncoder();
-        ep = new EncoderProperties();
-        renderer = new EncoderView(ep);
-        renderer.setWidth(500);
-        renderer.setHeight(500);
-        canvasContainer.getChildren().add(renderer);
+        encoderDrawing = new EncoderView();
+        encoderDrawing.setWidth(500);
+        encoderDrawing.setHeight(500);
+        canvasContainer.getChildren().add(encoderDrawing);
+        ep.addListener(encoderDrawing);
 
         // TODO - convert type to property on eProperties
         typeUI.getItems().setAll(ep.getTypeOptions());
         typeUI.valueProperty().bindBidirectional(ep.getType());
 //        typeUI.getSelectionModel().select(0);
-        typeUI.valueProperty().addListener(renderer); // TODO - rendering breaks switching type
 
         resolutionUI.setValueFactory(new ResolutionValueFactory(ep.getEncoder(), ep.getResolution().get()));
         resolutionUI.getValueFactory().valueProperty().bindBidirectional(ep.getResolution());
-        resolutionUI.getValueFactory().valueProperty().addListener(renderer);
         ep.getType().addListener((observable, oldvalue, newvalue) -> {
             ResolutionValueFactory vf = (ResolutionValueFactory) resolutionUI.getValueFactory();
             vf.setEncoder(ep.getEncoder());
@@ -155,25 +152,19 @@ public class PrimaryController implements Initializable {
 
         outerUI.textProperty().bindBidirectional((Property) ep.getOuterDiameter(),
                 new DoubleStringConverter());
-        outerUI.textProperty().addListener(renderer);
 
         innerUI.textProperty().bindBidirectional((Property) ep.getInnerDiameter(),
                 new DoubleStringConverter());
-        innerUI.textProperty().addListener(renderer);
 
         centerUI.textProperty().bindBidirectional((Property) ep.getCenterDiameter(),
                 new DoubleStringConverter());
-        centerUI.textProperty().addListener(renderer);
 
         unitsUI.getItems().addAll(ep.getUnitOptions());
         unitsUI.valueProperty().bindBidirectional(ep.getUnits());
-        unitsUI.valueProperty().addListener(renderer);
 
         invertedUI.selectedProperty().bindBidirectional(ep.getInverted());
-        invertedUI.selectedProperty().addListener(renderer);
 
         indexUI.selectedProperty().bindBidirectional(ep.getIndexTrack());
-        indexUI.selectedProperty().addListener(renderer);
 
         // TODO - direction
         // directionUI
@@ -184,7 +175,7 @@ public class PrimaryController implements Initializable {
             ccwUI.selectedProperty().set(oldvalue); // make sure the other toggle toggles
         });
 
-        renderer.render();
+        encoderDrawing.render();
 
         // TODO print
         // TODO input verification for all fields

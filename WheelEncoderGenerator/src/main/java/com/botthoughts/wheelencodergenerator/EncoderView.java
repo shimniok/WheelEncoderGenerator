@@ -31,15 +31,12 @@ public class EncoderView extends Canvas implements ChangeListener {
     private GraphicsContext gc;
     private Color bg; // background
     private Color fg; // foreground
-    private EncoderProperties ep;
 
     /**
      * Create renderer node 
-     * @param ep encoder properties to render
      */
-    EncoderView(EncoderProperties ep) {
+    EncoderView() {
         this.gc = this.getGraphicsContext2D();
-        this.ep = ep;
     }
     
     EncoderView(Canvas c) {
@@ -50,18 +47,12 @@ public class EncoderView extends Canvas implements ChangeListener {
     
     /**
      * Create renderer node with specified width and height
-     * @param ep encoder properties to render
      * @param width width of node
      * @param height height of node
      */
-    EncoderView(EncoderProperties ep, double width, double height) {
-        this(ep);
+    EncoderView(double width, double height) {
         this.setWidth(width);
         this.setHeight(height);
-    }
-
-    public void setEncoderProperties(EncoderProperties ep) {
-        this.ep = ep;
     }
 
     /**
@@ -110,6 +101,8 @@ public class EncoderView extends Canvas implements ChangeListener {
         Boolean index; // index track present?
         Boolean inverted; // invert image?
 
+        EncoderProperties ep = EncoderProperties.getInstance();
+       
         id = ep.getInnerDiameter().getValue();
         od = ep.getOuterDiameter().getValue();
         cd = ep.getCenterDiameter().getValue();
@@ -144,7 +137,7 @@ public class EncoderView extends Canvas implements ChangeListener {
         gc.clearRect(0, 0, getWidth(), getHeight());
 
         if (enc != null) {
-            for (EncoderTrack t : enc.getTracks(id, od, res, index)) {
+            enc.getTracks(id, od, res, index).forEach(t -> {
                 double outerPx = t.outerDiameter * scale;
                 double innerPx = t.innerDiameter * scale;            
                 double offsetX = centerX - outerPx/2;
@@ -153,10 +146,10 @@ public class EncoderView extends Canvas implements ChangeListener {
                 System.out.println("o=" + t.outerDiameter + " i=" + t.innerDiameter
                         + " a=" + t.stripeAngle + " c=" + t.stripeCount + " index=" + 
                         index.toString() + " inverted=" + inverted.toString());
-
+                
                 this.drawTrack(offsetX, offsetY, outerPx, innerPx, 
                         t.stripeCount, t.startAngle, t.stripeAngle);
-            }
+            });
         }
 
         // Draw center circle diameter
@@ -184,6 +177,7 @@ public class EncoderView extends Canvas implements ChangeListener {
 
     @Override
     public void changed(ObservableValue ov, Object t, Object t1) {
+        System.out.println("EncoderView changed()");
         this.render();
     }
     
