@@ -126,6 +126,7 @@ public class EncoderView implements ChangeListener {
         double centerX = widthPx/2;
         double centerY = heightPx/2;
         
+        // Set foreground and background colors
         if (ep.getInverted().get()) {
             fg = Color.WHITE;
             bg = Color.BLACK;
@@ -134,6 +135,7 @@ public class EncoderView implements ChangeListener {
             bg = Color.WHITE;
         }
         
+        // Draw tracks
         if (enc != null) {
             ep.getTracks().forEach(t -> {
                 double od = t.outerDiameter*scale;
@@ -145,21 +147,16 @@ public class EncoderView implements ChangeListener {
             });
         }
         
-        // Draw center circle diameter
-//        gc.setFill(Color.DARKGRAY);
-//        double x = centerX - ep.getCenterDiameter().get()/2;
-//        double y = centerY - ep.getCenterDiameter().get()/2;
-//        gc.fillOval(x, y, ep.getCenterDiameter().get(), ep.getCenterDiameter().get());
-//        gc.strokeOval(x, y, ep.getCenterDiameter().get(), ep.getCenterDiameter().get());
-        
-        // Draw crosshairs
-//        double x1 = x + ep.getCenterDiameter().get()/2.0;
-//        double y1 = y;
-//        double x2 = x1;
-//        double y2 = y1 + ep.getCenterDiameter().get();
-//        gc.setStroke(Color.BLACK);
-//        gc.strokeLine(x1, y1, x2, y2); // draw vertical line
-//        gc.strokeLine(y1, x1, y2, x2); // draw the horizontal line
+        // Draw center circle and crosshairs
+        gc.setFill(Color.DARKGRAY);
+        double cd = ep.getCenterDiameter().get()*scale;
+        double x = centerX - cd/2;
+        double y = centerY - cd/2;
+        gc.fillOval(x, y, cd, cd);
+        gc.strokeOval(x, y, cd, cd);
+        gc.setStroke(Color.BLACK);
+        gc.strokeLine(centerX, y, centerX, y+cd); // draw vertical line
+        gc.strokeLine(x, centerY, x+cd, centerY); // draw the horizontal line
     }
     
     
