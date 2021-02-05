@@ -18,7 +18,6 @@ package com.botthoughts.wheelencodergenerator;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Set;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.PageOrientation;
@@ -28,7 +27,6 @@ import javafx.print.PrintQuality;
 import javafx.print.PrintResolution;
 import javafx.print.Printer;
 import javafx.print.PrinterJob;
-import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -36,7 +34,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -49,9 +47,11 @@ public class PrintController implements Initializable {
     @FXML
     DialogPane dialogUI;
     @FXML
-    VBox previewWindowUI;
+    StackPane previewWindowUI;
     @FXML
-    Canvas previewUI;
+    Canvas paperPreviewUI;
+    @FXML
+    Canvas encoderPreviewUI;
     @FXML
     ComboBox destinationUI;
     @FXML
@@ -75,9 +75,7 @@ public class PrintController implements Initializable {
 
     private Printer printer;
     private PrinterJob job;
-    private EncoderView renderer;
-    private EncoderView preview;
-    private EncoderProperties ep;
+    private EncoderView encoderRenderer;
     
 //    private SimpleObjectProperty<Printer> printerProperty;
 //    private SimpleObjectProperty<Paper> paperProperty;
@@ -92,13 +90,13 @@ public class PrintController implements Initializable {
         System.out.println("doPrint()");
         job = PrinterJob.createPrinterJob();
         
-        if (job != null && renderer != null) {
-            boolean printed = job.printPage(renderer);
-            if (printed) {
-                job.endJob();
-            } else {
-                System.out.println("Error printing");
-            }
+        if (job != null && encoderRenderer != null) {
+//            boolean printed = job.printPage(encoderRenderer);
+//            if (printed) {
+//                job.endJob();
+//            } else {
+//                System.out.println("Error printing");
+//            }
         } else {
             System.out.println("Error setting up job"); // TODO: error handling
         }
@@ -178,50 +176,16 @@ public class PrintController implements Initializable {
 //        if (dr != null) resolutionUI.getSelectionModel().select(dr);
     }
 
-        
-    private void drawPaper(GraphicsContext gc, Paper p) {
-        double padding=10;
-        double w;
-        double wPage;
-        double wMax;
-        double wScale;
-        double h;
-        double hPage;
-        double hMax;
-        double hScale;
-        double scale;
-                
-        System.out.println("updatePaper()");
 
-        // Maximum dimensions
-        wMax = previewWindowUI.getPrefWidth()-padding*2;
-        hMax = previewWindowUI.getPrefHeight()-padding*2;
-        System.out.println("wmax="+wMax+" hmax="+hMax);
-        
-        // Paper dimensions in points
-        wPage = p.getWidth();
-        hPage = p.getHeight();
-        System.out.println("pw="+wPage+" ph="+hPage);
-        
-        // Compute h/w scaling factors
-        wScale = wMax / wPage;
-        hScale = hMax / hPage;
-        scale = Math.min(wScale, hScale);
-        System.out.println("scale="+scale+" wScale="+wScale+" hScale="+hScale);
-        
-        w = scale * wPage;
-        h = scale * hPage;
-        System.out.println("w="+w+" h="+h);
-        
-        gc.getCanvas().setWidth(w);
-        gc.getCanvas().setHeight(h);
-        
-        double x2 = gc.getCanvas().getWidth();
-        double y2 = gc.getCanvas().getHeight();
+    private void drawPaperPreview(GraphicsContext gc) {
+        System.out.println("drawPaperPreview()");
 
-        // redraw
-        gc.setFill(Color.WHITE);
-        gc.fillRect(0, 0, x2, y2);
+        if (gc != null) {
+            // redraw
+            gc.setFill(Color.WHITE);
+            gc.fillRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+            // TODO: Page margins
+        }       
     }
 
     
@@ -240,12 +204,12 @@ public class PrintController implements Initializable {
         double widthPoints = paper.getWidth();
         double heightPoints = paper.getHeight();
         // Determine scaling factor to fit page in preview window
-        double scaleWidth = widthPoints / previewUI.getWidth();
-        double scaleHeight = heightPoints / previewUI.getHeight();
+        double scaleWidth = widthPoints / paperPreviewUI.getWidth();
+        double scaleHeight = heightPoints / paperPreviewUI.getHeight();
         System.out.println("scaleWidth="+scaleWidth+" scaleHeight="+scaleHeight);
         // Find raw x and y scaling factor
         // Pick the smallest
-
+        
     }
 
     
@@ -253,10 +217,9 @@ public class PrintController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         System.out.println("initialize()");
 
-        GraphicsContext gc = previewUI.getGraphicsContext2D();
-
-        this.preview = new EncoderView(previewUI);
-
+        this.encoderRenderer = new EncoderView(encoderPreviewUI);
+        
+        
         updatePrinterList();
 //        destinationUI.selectionModelProperty().bindBidirectional(printerProperty);
  
@@ -277,9 +240,64 @@ public class PrintController implements Initializable {
         });
         
         paperUI.getSelectionModel().selectedItemProperty().addListener((obs, ov, nv) -> {
-            System.out.println("paper changed");
-            drawPaper(gc, (Paper) nv);
-            //preview.render();
+            double w;
+            double h;
+            double pageWidthPoints;
+            double maxWidthPixels;
+            double scaleX;
+            double pageHeightPoints;
+            double maxHeightPixels;
+            double scaleY;
+            double scale;
+            double dpi = 300;
+            
+            Paper p = (Paper) nv;
+            
+            System.out.println("paper changed: " + nv.toString());
+
+            // Maximum preview dimensions
+            maxWidthPixels = previewWindowUI.getPrefWidth();
+            maxHeightPixels = previewWindowUI.getPrefHeight();
+            System.out.println("wmax="+maxWidthPixels+" hmax="+maxHeightPixels);
+
+            // Determine page dimensions
+            pageWidthPoints = p.getWidth();
+            pageHeightPoints = p.getHeight();
+            System.out.println("pw="+pageWidthPoints+" ph="+pageHeightPoints);
+
+            // Determine scaling to fit page preview into available space
+            scaleX = maxWidthPixels / pageWidthPoints;
+            scaleY = maxHeightPixels / pageHeightPoints;
+            scale = Math.min(scaleX, scaleY);
+            System.out.println("scale="+scale+" scaleX="+scaleX+" scaleY="+scaleY);
+
+            w = scale * pageWidthPoints;
+            h = scale * pageHeightPoints;
+            System.out.println("w="+w+" h="+h);
+    
+            GraphicsContext gc = paperPreviewUI.getGraphicsContext2D();
+
+            gc.getCanvas().setWidth(w);
+            gc.getCanvas().setHeight(h);
+
+            drawPaperPreview(paperPreviewUI.getGraphicsContext2D());
+
+            EncoderProperties ep = EncoderProperties.getInstance();
+            
+            // TODO: fix broken scaling
+            // TODO: fix rendering location within canvas
+            double encWidthPoints = ep.getOuterDiameter().get() * 72.0;
+            if (ep.getUnits().get().equals(EncoderProperties.MM)) {
+                System.out.println("mm conversion");
+                encWidthPoints /= 25.4;
+            }
+            System.out.println("encWidth="+encWidthPoints+
+                    " canvasW="+encWidthPoints*scale);
+            
+            encoderPreviewUI.setWidth(scale * encWidthPoints);
+            encoderPreviewUI.setHeight(scale * encWidthPoints);
+            
+            this.encoderRenderer.render();
         });
         
 //        DropShadow dropShadow = new DropShadow();

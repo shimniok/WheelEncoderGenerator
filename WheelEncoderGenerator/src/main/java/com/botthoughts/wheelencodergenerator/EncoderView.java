@@ -26,8 +26,9 @@ import javafx.scene.shape.ArcType;
  * EncoderView renders an encoder on a canvas based on encoder properties
  * @author mes
  */
-public class EncoderView extends Canvas implements ChangeListener {
+public class EncoderView implements ChangeListener {
 
+    private Canvas canvas;
     private GraphicsContext gc;
     private Color bg; // background
     private Color fg; // foreground
@@ -35,14 +36,9 @@ public class EncoderView extends Canvas implements ChangeListener {
     /**
      * Create renderer node 
      */
-    EncoderView() {
-        this.gc = this.getGraphicsContext2D();
-    }
-    
     EncoderView(Canvas c) {
+        this.canvas = c;
         this.gc = c.getGraphicsContext2D();
-        this.setWidth(c.getWidth());
-        this.setHeight(c.getHeight());
     }
     
     /**
@@ -50,10 +46,10 @@ public class EncoderView extends Canvas implements ChangeListener {
      * @param width width of node
      * @param height height of node
      */
-    EncoderView(double width, double height) {
-        this.setWidth(width);
-        this.setHeight(height);
-    }
+//    EncoderView(double width, double height) {
+//        this.setWidth(width);
+//        this.setHeight(height);
+//    }
 
     /**
      * Draws a single track with specified number of stripes at specified start angle.
@@ -112,12 +108,12 @@ public class EncoderView extends Canvas implements ChangeListener {
         inverted = ep.getInverted().getValue();
         
         // Real Pixels & Scaling
-        double padding = 10.0; // TODO - configurable?
-        double centerX = getWidth() / 2;
-        double centerY = getHeight() / 2;
-        double canvasPx = Math.min(getWidth(), getHeight()); // canvas min width
+        //double padding = 10.0; // TODO - configurable?
+        double centerX = canvas.getWidth() / 2;
+        double centerY = canvas.getHeight() / 2;
+        double canvasPx = Math.min(canvas.getWidth(), canvas.getHeight()); // canvas min width
         double max = Math.max(od, Math.max(id, cd)); // get max dimension (in case of bad input)
-        double scale = (canvasPx-2*padding)/max; // scaling factor: px / units
+        double scale = (canvasPx)/max; // scaling factor: px / units
         double cdPx = cd * scale; // scaled center diameter
         
         // TODO - real lines separating each track
@@ -134,7 +130,7 @@ public class EncoderView extends Canvas implements ChangeListener {
             bg = Color.WHITE;
         }
         
-        gc.clearRect(0, 0, getWidth(), getHeight());
+        //gc.clearRect(0, 0, getWidth(), getHeight());
 
         if (enc != null) {
             enc.getTracks(id, od, res, index).forEach(t -> {

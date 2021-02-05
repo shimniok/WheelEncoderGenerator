@@ -26,6 +26,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
@@ -50,6 +51,8 @@ public class PrimaryController implements Initializable {
 //    private Color bg; // background
 //    private Color fg; // foreground
 
+    @FXML
+    Canvas encoderUI;
     @FXML
     ComboBox typeUI;
     @FXML
@@ -131,10 +134,7 @@ public class PrimaryController implements Initializable {
         binaryEncoder = new BinaryEncoder();
         quadratureEncoder = new QuadratureEncoder();
         grayEncoder = new GrayEncoder();
-        encoderDrawing = new EncoderView();
-        encoderDrawing.setWidth(500);
-        encoderDrawing.setHeight(500);
-        canvasContainer.getChildren().add(encoderDrawing);
+        encoderDrawing = new EncoderView(encoderUI);
         ep.addListener(encoderDrawing);
 
         // TODO - convert type to property on eProperties
