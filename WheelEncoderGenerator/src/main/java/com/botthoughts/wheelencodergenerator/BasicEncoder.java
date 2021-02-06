@@ -57,6 +57,7 @@ public class BasicEncoder implements EncoderModel {
         return RESOLUTION_MIN <= resolution && resolution <= RESOLUTION_MAX;
     }
     
+    
     public int fixResolution(int resolution) {
         int r = resolution;
         if (r < this.getMinResolution()) r = this.getMinResolution();

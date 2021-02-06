@@ -44,7 +44,7 @@ public class PrimaryController implements Initializable {
 //    BinaryEncoder binaryEncoder;
 //    GrayEncoder grayEncoder;
 //    EncoderModel currentEncoder;
-    EncoderView encoderDrawing;
+    EncoderView encoderPreview;
     EncoderView preview;
     EncoderView printview;
     
@@ -135,14 +135,9 @@ public class PrimaryController implements Initializable {
 //        quadratureEncoder = new QuadratureEncoder();
 //        grayEncoder = new GrayEncoder();
         
-        encoderDrawing = new EncoderView(encoderUI);
+        encoderPreview = new EncoderView(encoderUI);
         ep.addListener((observable, oldvalue, newvalue) -> {
-            double od = ep.getOuterDiameter().get();
-            double w = encoderUI.getWidth()-2;
-            double h = encoderUI.getHeight()-2;
-            double scale = Math.min(w/od, h/od);
-            encoderDrawing.setScale(scale);
-            encoderDrawing.render();
+            encoderPreview.render();
         });
 
         // TODO - convert type to property on eProperties
@@ -183,7 +178,7 @@ public class PrimaryController implements Initializable {
             ccwUI.selectedProperty().set(oldvalue); // make sure the other toggle toggles
         });
 
-        encoderDrawing.render();
+        encoderPreview.render();
 
         // TODO print
         // TODO input verification for all fields

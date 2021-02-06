@@ -366,6 +366,17 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
                 this.getOuterDiameter().get(), this.getResolution().get(), 
                 this.getIndexTrack().get());
     }
+
+
+    /**
+     * Determine if model is valid
+     * @return true if valid, false if not
+     */
+    public boolean isValid() {
+        return (this.getOuterDiameter().get() > this.getInnerDiameter().get()) &&
+                (this.getInnerDiameter().get() >= this.getCenterDiameter().get());
+    }
+    
     
 
     /**
