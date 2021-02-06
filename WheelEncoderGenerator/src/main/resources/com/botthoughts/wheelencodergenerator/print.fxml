@@ -22,7 +22,7 @@
          <children>
             <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <StackPane fx:id="previewWindowUI" prefHeight="650.0" prefWidth="500.0">
+                  <StackPane fx:id="previewWindowUI" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="650.0" prefWidth="500.0">
                      <children>
                         <Canvas fx:id="paperPreviewUI" height="200.0" width="200.0" StackPane.alignment="CENTER">
                            <effect>
