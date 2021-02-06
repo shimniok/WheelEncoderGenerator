@@ -18,6 +18,7 @@ package com.botthoughts.wheelencodergenerator;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Set;
+import javafx.beans.property.IntegerProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.PageOrientation;
@@ -76,25 +77,8 @@ public class PrintController implements Initializable {
     private Printer printer;
     private PrinterJob job;
     private EncoderView encoderPreview;
-    
-//    private SimpleObjectProperty<Printer> printerProperty;
-//    private SimpleObjectProperty<Paper> paperProperty;
-    
-//    Printer PrinterAttributes
-//    PrintResolution PrinterJob
-//    JobSettings Paper
-//    PageLayout
-//    PageRange
     private PaperView paperPreview;
-    
-    
-    private double pointsToInches() {
-        return 0;
-    }
-    
-    private double pointsToMm() {
-        return 0;
-    }
+    private EncoderProperties ep;
     
     
     public void doPrint() {
@@ -132,7 +116,7 @@ public class PrintController implements Initializable {
         System.out.println("updatePaperList()");
         Set<Paper> paperList = printer.getPrinterAttributes().getSupportedPapers();
         Paper defaultPaper = printer.getPrinterAttributes().getDefaultPaper();
-        
+
         paperUI.getItems().setAll(paperList);
         paperUI.getSelectionModel().select(defaultPaper);
         // TODO: improve display name
@@ -188,84 +172,61 @@ public class PrintController implements Initializable {
     }
 
 
-    private void updatePreview() {
-        System.out.println("updatePreview()");
-        Paper paper = (Paper) paperUI.getSelectionModel().getSelectedItem();
-        System.out.println(paper.getName());
-
-        PrintResolution res = printer.getPrinterAttributes().getDefaultPrintResolution();
-        System.out.println("cross feed res="+res.getCrossFeedResolution());
-        System.out.println("feed res="+res.getFeedResolution());
-//        res.getCrossFeedResolution()*
-//        res.getFeedResolution()*
-
-        // Get width & height of page in points (1/72nds of an inch)
-        double widthPoints = paper.getWidth();
-        double heightPoints = paper.getHeight();
-        // Determine scaling factor to fit page in preview window
-        double scaleWidth = widthPoints / paperPreviewUI.getWidth();
-        double scaleHeight = heightPoints / paperPreviewUI.getHeight();
-        System.out.println("scaleWidth="+scaleWidth+" scaleHeight="+scaleHeight);
-        // Find raw x and y scaling factor
-        // Pick the smallest
-        
-    }
+//    private void updatePreview() {
+//        System.out.println("updatePreview()");
+//        Paper paper = (Paper) paperUI.getSelectionModel().getSelectedItem();
+//        System.out.println(paper.getName());
+//
+//        PrintResolution res = printer.getPrinterAttributes().getDefaultPrintResolution();
+//        System.out.println("cross feed res="+res.getCrossFeedResolution());
+//        System.out.println("feed res="+res.getFeedResolution());
+////        res.getCrossFeedResolution()*
+////        res.getFeedResolution()*
+//
+//        // Get width & height of page in points (1/72nds of an inch)
+//        double widthPoints = paper.getWidth();
+//        double heightPoints = paper.getHeight();
+//        // Determine scaling factor to fit page in preview window
+//        double scaleWidth = widthPoints / paperPreviewUI.getWidth();
+//        double scaleHeight = heightPoints / paperPreviewUI.getHeight();
+//        System.out.println("scaleWidth="+scaleWidth+" scaleHeight="+scaleHeight);
+//        // Find raw x and y scaling factor
+//        // Pick the smallest
+//        
+//    }
 
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         System.out.println("initialize()");
 
+        this.ep = EncoderProperties.getInstance();
         this.encoderPreview = new EncoderView(paperPreviewUI);
         this.paperPreview = new PaperView(paperPreviewUI, 
                 previewWindowUI.getPrefWidth(), previewWindowUI.getPrefHeight());
         
-        // TODO: disable paper list items that are too small to fit encoder
         updatePrinterList();
-//        destinationUI.selectionModelProperty().bindBidirectional(printerProperty);
+        //destinationUI.selectionModelProperty().bindBidirectional(printerProperty);
  
-        destinationUI.getSelectionModel().selectedItemProperty().addListener((obs, ov, nv) -> {
+        destinationUI.getSelectionModel().selectedItemProperty()
+                .addListener((obs, ov, nv) -> {
             System.out.println("Printer changed");
             this.printer = (Printer) nv;
-//            updateOrientationList();
             updatePaperList();
-            
-//            updateCopies();
-//            updateOrientationList();
-//            updatePaperSource();
-//            updatePrintQuality();
+            updateCopies();
+            updateOrientationList();
+            updatePaperSource();
+            updatePrintQuality();
 //            updatePrintResolution();
-//            updatePreview();
-            //preview.render();
-
         });
         
-        
-        paperUI.getSelectionModel().selectedItemProperty().addListener((obs, ov, nv) -> {
-            
-            ///////////////////////////////////////////////////////////////////
-            //// Render paper
-            ///////////////////////////////////////////////////////////////////
-            
-            System.out.println("paper changed: " + nv.toString());
-
+        paperUI.getSelectionModel().selectedItemProperty()
+                .addListener((obs, ov, nv) -> {
             paperPreview.render((Paper) nv);
-
-            ///////////////////////////////////////////////////////////////////
-            //// Render encoder
-            ///////////////////////////////////////////////////////////////////
-            
             this.encoderPreview.setScale(paperPreview.getPixelsPerMm());
             this.encoderPreview.render();
         });
         
-//        DropShadow dropShadow = new DropShadow();
-//        dropShadow.setRadius(5.0);
-//        dropShadow.setOffsetX(10.0);
-//        dropShadow.setOffsetY(10.0);
-//        dropShadow.setColor(Color.color(0.4, 0.5, 0.5));
-//        gc.setEffect(dropShadow);
-    
         destinationUI.getSelectionModel().select(Printer.getDefaultPrinter());
 
     }

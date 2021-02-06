@@ -57,7 +57,7 @@
                               <ComboBox fx:id="qualityUI" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                               <Label text="Copies" GridPane.rowIndex="3" />
                               <Label text="Quality" GridPane.rowIndex="4" />
-                              <Spinner fx:id="copiesUI" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Spinner fx:id="copiesUI" editable="true" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                               <Label text="Source" GridPane.rowIndex="5" />
                               <ComboBox fx:id="sourceUI" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                            </children>

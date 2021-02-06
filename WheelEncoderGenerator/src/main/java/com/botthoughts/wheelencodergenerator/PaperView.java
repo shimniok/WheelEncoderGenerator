@@ -74,6 +74,8 @@ public class PaperView {
         double scaleX;
         double scaleY;
 
+        if (paper == null) return;
+        
         // Determine page dimensions
         pageWidthPoints = paper.getWidth();
         pageHeightPoints = paper.getHeight();
