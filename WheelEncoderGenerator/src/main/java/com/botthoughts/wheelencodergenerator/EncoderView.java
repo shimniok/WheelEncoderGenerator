@@ -51,7 +51,7 @@ public final class EncoderView {
      * @param c canvas on which to render
      */
     EncoderView(Canvas c) {
-        this(c, 0);
+        this(c, FIT_TO_CANVAS);
     }
     
 

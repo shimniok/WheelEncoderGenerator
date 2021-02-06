@@ -29,6 +29,7 @@ public class PaperView {
     private final Canvas canvas;
     private final GraphicsContext gc;
     private double scale;
+    private double pixelsPerMm;
     private double maxWidthPixels;
     private double maxHeightPixels;
 
@@ -60,6 +61,11 @@ public class PaperView {
         return this.scale;
     }
     
+    public double getPixelsPerMm() {
+        System.out.println("Pixels/mm="+pixelsPerMm);
+        return pixelsPerMm;
+    }
+    
     public void render(Paper paper) {
         double w;
         double h;
@@ -71,7 +77,8 @@ public class PaperView {
         // Determine page dimensions
         pageWidthPoints = paper.getWidth();
         pageHeightPoints = paper.getHeight();
-        System.out.println("pw="+pageWidthPoints+" ph="+pageHeightPoints);
+        System.out.println("pageWidthPoints="+pageWidthPoints+
+                " pageHeightPoints="+pageHeightPoints);
 
         // Determine scaling to fit page preview into available space
         scaleX = maxWidthPixels / pageWidthPoints;
@@ -81,12 +88,14 @@ public class PaperView {
 
         w = scale * pageWidthPoints;
         h = scale * pageHeightPoints;
-        System.out.println("w="+w+" h="+h);
+        System.out.println("wPx="+w+" hPx="+h);
 
         canvas.setWidth(w);
         canvas.setHeight(h);
 
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        
+        pixelsPerMm = scale * 72.0 / 25.4;
     }
 }

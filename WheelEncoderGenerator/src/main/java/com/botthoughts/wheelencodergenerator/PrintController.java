@@ -247,9 +247,6 @@ public class PrintController implements Initializable {
             //// Render paper
             ///////////////////////////////////////////////////////////////////
             
-            Paper p = (Paper) nv;
-            
-            
             System.out.println("paper changed: " + nv.toString());
 
             paperPreview.render((Paper) nv);
@@ -258,27 +255,7 @@ public class PrintController implements Initializable {
             //// Render encoder
             ///////////////////////////////////////////////////////////////////
             
-//            EncoderProperties ep = EncoderProperties.getInstance();
-//            
-//            // TODO: fix broken scaling
-//            // TODO: fix rendering location within canvas
-//            double encWidthPoints = ep.getOuterDiameter().get() * 72.0;
-//            if (ep.getUnits().get().equals(EncoderProperties.MM)) {
-//                System.out.println("mm conversion");
-//                encWidthPoints /= 25.4;
-//            }
-//            System.out.println("encWidth="+encWidthPoints+
-//                    " canvasW="+encWidthPoints*scale);
-//            
-//            encoderPreviewUI.setWidth(scale * encWidthPoints);
-//            encoderPreviewUI.setHeight(scale * encWidthPoints);
-            
-            // TODO: Convert scale from pixels/point to pixels/unit
-            double scalePx2Pt = paperPreview.getScalePixelsToPoints();
-            double scalePx2In = scalePx2Pt * 72;
-            double scalePx2Mm = scalePx2In * 25.4;
-
-            this.encoderPreview.setScale(scalePx2Mm);
+            this.encoderPreview.setScale(paperPreview.getPixelsPerMm());
             this.encoderPreview.render();
         });
         
