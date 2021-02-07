@@ -79,6 +79,7 @@ public class PrintController implements Initializable {
     private EncoderView encoderPreview;
     private PaperView paperPreview;
     private EncoderProperties ep;
+    private double dpi = 300.0;
     
     
     public void doPrint() {
@@ -86,15 +87,29 @@ public class PrintController implements Initializable {
         job = PrinterJob.createPrinterJob();
         
         if (job != null && encoderPreview != null) {
-//            boolean printed = job.printPage(encoderRenderer);
-//            if (printed) {
-//                job.endJob();
-//            } else {
-//                System.out.println("Error printing");
-//            }
+            Canvas c = new Canvas();
+            EncoderView view = new EncoderView(c);
+            double encWidthInch = ep.getOuterDiameter().get();
+            
+            if (ep.getUnits().get().equals(EncoderProperties.MM)) {
+                encWidthInch /= 25.4;
+            }
+            System.out.println("canvas width="+encWidthInch*dpi);
+            c.setWidth(encWidthInch*dpi+2); // padding :(
+            c.setHeight(encWidthInch*dpi+2); // padding :(
+            view.render();
+            
+            boolean printed = job.printPage(c);
+            if (printed) {
+                job.endJob();
+            } else {
+                System.out.println("Error printing");
+            }
         } else {
             System.out.println("Error setting up job"); // TODO: error handling
         }
+        
+        // TODO: close dialog on success
     }
     
     public void doCancel() {
@@ -164,7 +179,10 @@ public class PrintController implements Initializable {
     private void updatePrintResolution() {
         System.out.println("updatePrintResolution()");
         Set<PrintResolution> resolutionList = printer.getPrinterAttributes().getSupportedPrintResolutions();
-        System.out.println(resolutionList);
+        
+        for (PrintResolution r: resolutionList) {
+            System.out.println(r);
+        }
 //        PrintResolution dr = printer.getPrinterAttributes().getDefaultPrintResolution();
 //
 //        if (pr != null) resolutionUI.getItems().setAll(pr);
