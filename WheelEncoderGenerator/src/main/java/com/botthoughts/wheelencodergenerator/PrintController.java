@@ -86,28 +86,33 @@ public class PrintController implements Initializable {
         System.out.println("doPrint()");
         job = PrinterJob.createPrinterJob();
         
-        if (job != null && encoderPreview != null) {
-            Canvas c = new Canvas();
-            EncoderView view = new EncoderView(c);
-            double encWidthInch = ep.getOuterDiameter().get();
-            
-            if (ep.getUnits().get().equals(EncoderProperties.MM)) {
-                encWidthInch /= 25.4;
-            }
-            System.out.println("canvas width="+encWidthInch*dpi);
-            c.setWidth(encWidthInch*dpi+2); // padding :(
-            c.setHeight(encWidthInch*dpi+2); // padding :(
-            view.render();
-            
-            boolean printed = job.printPage(c);
-            if (printed) {
-                job.endJob();
-            } else {
-                System.out.println("Error printing");
-            }
-        } else {
-            System.out.println("Error setting up job"); // TODO: error handling
-        }
+        
+//                    Printer printer = job.getPrinter();
+//            PageLayout pageLayout = printer.createPageLayout(
+//                    Paper.A4, 
+//                    PageOrientation.LANDSCAPE, Printer.MarginType.HARDWARE_MINIMUM);
+
+//        if (job != null && encoderPreview != null) {
+//            Canvas c = new Canvas();
+//            EncoderView view = new EncoderView(c);
+//            double encWidthInch = ep.getOuterDiameter().get();
+//            
+//            if (ep.getUnits().get().equals(EncoderProperties.MM)) {
+//                encWidthInch /= 25.4;
+//            }
+//            System.out.println("canvas width="+encWidthInch*dpi);
+//            c.setWidth(encWidthInch*dpi+2); // padding :(
+//            c.setHeight(encWidthInch*dpi+2); // padding :(
+//            view.render();
+//            boolean printed = job.printPage(c);
+//            if (printed) {
+//                job.endJob();
+//            } else {
+//                System.out.println("Error printing");
+//            }
+//        } else {
+//            System.out.println("Error setting up job"); // TODO: error handling
+//        }
         
         // TODO: close dialog on success
     }
@@ -134,6 +139,7 @@ public class PrintController implements Initializable {
 
         paperUI.getItems().setAll(paperList);
         paperUI.getSelectionModel().select(defaultPaper);
+        // TODO: focus on selected
         // TODO: improve display name
     }
     
@@ -153,6 +159,7 @@ public class PrintController implements Initializable {
 
         orientationUI.getItems().setAll(orientationList);
         orientationUI.getSelectionModel().select(defaultOrientation);
+        // TODO: focus on selected
         // there's a limited set of orientations defined by PageOrientation constants
     }
     
@@ -163,6 +170,7 @@ public class PrintController implements Initializable {
 
         sourceUI.getItems().setAll(paperSourceList);
         sourceUI.getSelectionModel().select(defaultSource);
+        // TODO: focus on selected
         // TODO: improve display name
     }    
 
@@ -174,6 +182,7 @@ public class PrintController implements Initializable {
         qualityUI.getItems().setAll(qualityList);
         qualityUI.getSelectionModel().select(defaultQuality);
         // TODO: improve display name
+        // TODO: focus on selected
     }
     
     private void updatePrintResolution() {

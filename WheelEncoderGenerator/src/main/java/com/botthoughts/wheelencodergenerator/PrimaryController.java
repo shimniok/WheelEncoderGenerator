@@ -22,19 +22,27 @@ import javafx.beans.property.Property;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.print.PageLayout;
+import javafx.print.PrintQuality;
+import javafx.print.PrintResolution;
+import javafx.print.Printer;
+import javafx.print.PrinterJob;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.transform.Scale;
+import javafx.stage.Screen;
 import javafx.util.converter.DoubleStringConverter;
 
 public class PrimaryController implements Initializable {
@@ -96,24 +104,113 @@ public class PrimaryController implements Initializable {
 
     @FXML
     public void print(Event e) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("print.fxml"));
-        Parent parent;
-        Scene scene;
-        Stage stage;
 
-        System.out.println("print()");
+        print(encoderUI);
+        
 
-        try {
-            parent = fxmlLoader.load();
-            PrintController pc = fxmlLoader.getController();
-            stage = new Stage();
-            scene = new Scene(parent);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(scene);
-            stage.showAndWait();
-        } catch (IOException ex) {
-            System.out.println("IOException in print(): "+ex);
-            //ex.printStackTrace(); // TODO: error handling
+//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("print.fxml"));
+//        Parent parent;
+//        Scene scene;
+//        Stage stage;
+//
+//        System.out.println("print()");
+//
+//        try {
+//            parent = fxmlLoader.load();
+//            PrintController pc = fxmlLoader.getController();
+//            stage = new Stage();
+//            scene = new Scene(parent);
+//            stage.initModality(Modality.APPLICATION_MODAL);
+//            stage.setScene(scene);
+//            stage.showAndWait();
+//        } catch (IOException ex) {
+//            System.out.println("IOException in print(): "+ex);
+//            //ex.printStackTrace(); // TODO: error handling
+//        }
+
+    }
+    
+    @FXML
+    public void print(Node node) {
+        PrinterJob job = PrinterJob.createPrinterJob();
+        EncoderProperties ep = EncoderProperties.getInstance();
+
+//        job.showPageSetupDialog(App.stage);
+
+        if (job != null && job.showPrintDialog(App.stage)) {
+//        if (job != null) {
+            Printer printer = job.getPrinter();
+
+// from stack exchange
+//double scaleX = 72.0/(Screen.getPrimary().getDpi());
+//double scaleY = scaleX;
+//This is sufficient if you add a Scale-instance to 'getTransforms()' 
+//  (as done in the question):
+//    double scaleX = pageLayout.getPrintableWidth() / bpToPrint.getWidth();
+//    double scaleY = pageLayout.getPrintableHeight() / bpToPrint.getHeight();
+//    Scale scale = new Scale(scaleX, scaleY);
+//    bpToPrint.getTransforms().add(scale);
+    
+            PageLayout pageLayout = job.getJobSettings().getPageLayout();
+            PrintResolution resolution = printer.getPrinterAttributes()
+                    .getDefaultPrintResolution();
+            double dpi = resolution.getFeedResolution(); // dpi
+            System.out.println("print dpi="+dpi);
+
+            double scale = 300/72;
+
+            double width = scale * pageLayout.getPrintableWidth();
+            double height = scale * pageLayout.getPrintableHeight();
+
+            System.out.println("width="+width+", height="+height);
+            
+//            double screenDPI = Screen.getPrimary().getDpi();
+//            System.out.println("screen dpi="+screenDPI);
+            
+//            Scene scene = new Scene();
+//            Scale scale = new Scale(1/sc, 1/sc);
+            Canvas c = new Canvas(width, height);
+            c.getTransforms().clear();
+            c.getTransforms().add(new Scale(1/scale, 1/scale));
+            c.setVisible(true); // won't print otherwise
+            AnchorPane pane = new AnchorPane();
+//            pane.setMinSize(width, height);
+//            pane.setPrefSize(width, height);
+//            pane.setMaxSize(width, height);
+            pane.getChildren().add(c); // required to print/scale
+            pane.setVisible(true);
+
+            GraphicsContext gc = c.getGraphicsContext2D();
+            gc.setImageSmoothing(false);
+            
+//            double scale = dpi/25.4;
+//            System.out.println("render scale="+scale);
+            EncoderView ev = new EncoderView(c, scale);
+            ev.render();
+
+            // test rectangle
+//            gc.setStroke(Color.BLACK);
+//            gc.setFill(Color.BLACK);
+//            double a = 100;
+//            double b = 300;
+//            //gc.strokeRect(10, 10, c.getWidth()-10, c.getHeight()-10);
+//            gc.setLineWidth(2.0);
+//            gc.strokeRect(a, a, b, b);
+
+//            Group root = new Group();
+//            Scene scene = new Scene(root);
+//            root.getChildren().add(c);
+//            App.stage.setScene(scene);
+//            App.stage.show();
+            job.getJobSettings().setPrintQuality(PrintQuality.HIGH);
+            
+            boolean success = job.printPage(pane);
+            if (success) {
+                job.endJob();
+            }
+
+//            c.getTransforms().remove(scale);
+
         }
 
     }
@@ -180,6 +277,7 @@ public class PrimaryController implements Initializable {
 
         encoderPreview.render();
 
+       
         // TODO print
         // TODO input verification for all fields
         // TODO file save

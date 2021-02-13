@@ -136,10 +136,10 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
             INSTANCE.outerDiameter = new SimpleDoubleProperty(50);
             INSTANCE.outerDiameter.addListener(INSTANCE);
 
-            INSTANCE.innerDiameter = new SimpleDoubleProperty(30);
+            INSTANCE.innerDiameter = new SimpleDoubleProperty(10);
             INSTANCE.innerDiameter.addListener(INSTANCE);
 
-            INSTANCE.centerDiameter = new SimpleDoubleProperty(10);
+            INSTANCE.centerDiameter = new SimpleDoubleProperty(5);
             INSTANCE.centerDiameter.addListener(INSTANCE);
 
             INSTANCE.inverted = new SimpleBooleanProperty(false);
@@ -148,7 +148,7 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
             INSTANCE.units = new SimpleStringProperty(unitOptions.get(0));
             INSTANCE.units.addListener(INSTANCE);
 
-            INSTANCE.resolution = new SimpleIntegerProperty(2);
+            INSTANCE.resolution = new SimpleIntegerProperty(10);
             INSTANCE.resolution.addListener(INSTANCE);
 
             INSTANCE.direction = new SimpleBooleanProperty(CLOCKWISE);

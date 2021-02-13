@@ -19,6 +19,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
+import javafx.scene.transform.Scale;
 
 /**
  * EncoderView renders an encoder on a canvas based on encoder properties
@@ -160,10 +161,10 @@ public final class EncoderView {
     private void drawTrack(double x1, double y1, EncoderTrack t) {
         double od = t.outerDiameter*scale;
         double id = t.innerDiameter*scale;
-        
-        // Draw circle with white background
+
         gc.setFill(backgroundColor);
         gc.fillOval(x1, y1, od, od);
+
         // Draw the stripes for the track
         gc.setFill(foregroundColor);
         for (int s=0; s < t.stripeCount; s += 2) {
@@ -172,10 +173,12 @@ public final class EncoderView {
                     t.startAngle+s*t.stripeAngle, 
                     t.stripeAngle, ArcType.ROUND);
         }
+
         // Draw outside stroke
         gc.setStroke(foregroundColor);
         gc.strokeOval(x1, y1, od, od);
-        // Draw inner filled circle
+
+        // Draw inner circle
         double trackWidth = (t.outerDiameter - t.innerDiameter)*scale/2;
         gc.setFill(backgroundColor);
         gc.fillOval(x1 + trackWidth, y1 + trackWidth, id, id);
@@ -185,11 +188,9 @@ public final class EncoderView {
     public void render() {
         EncoderProperties ep = EncoderProperties.getInstance();
         EncoderModel enc = ep.getEncoder();
-        double centerX = getCanvasCenterX();
-        double centerY = getCanvasCenterY();
-        
+
         System.out.println("render()");
-        
+              
         if (!ep.isValid()) return;
         
         // Set foreground and background colors
@@ -204,8 +205,22 @@ public final class EncoderView {
         if (this.fit) {
             this.adjustScaleToFit();
         }
+
+        gc.setImageSmoothing(false);
+        gc.getCanvas().setEffect(null);
+
+//        double width = canvas.getWidth();
+//        double height = canvas.getHeight();
+//        System.out.println("width="+width+", height="+height+" scale="+scale);
+//        Scale e = new Scale(scale, scale, width/2, height/2);
+//        canvas.getTransforms().clear();
+//        canvas.getTransforms().add(e);      
         
         // Draw tracks
+//        double centerX = getCanvasCenterX();
+//        double centerY = getCanvasCenterY();
+        double centerX = ep.getOuterDiameter().get()*scale/2.0;
+        double centerY = centerX;
         if (enc != null) {
             ep.getTracks().forEach(t -> {
                 double od = t.outerDiameter*scale;
@@ -225,6 +240,7 @@ public final class EncoderView {
         gc.setStroke(Color.BLACK);
         gc.strokeLine(centerX, y, centerX, y+cd); // draw vertical line
         gc.strokeLine(x, centerY, x+cd, centerY); // draw the horizontal line
+        
     }
     
 
