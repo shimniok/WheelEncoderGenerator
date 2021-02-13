@@ -107,7 +107,6 @@ public class PrimaryController implements Initializable {
 
         print(encoderUI);
         
-
 //        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("print.fxml"));
 //        Parent parent;
 //        Scene scene;
@@ -135,81 +134,44 @@ public class PrimaryController implements Initializable {
         PrinterJob job = PrinterJob.createPrinterJob();
         EncoderProperties ep = EncoderProperties.getInstance();
 
-//        job.showPageSetupDialog(App.stage);
-
         if (job != null && job.showPrintDialog(App.stage)) {
-//        if (job != null) {
             Printer printer = job.getPrinter();
-
-// from stack exchange
-//double scaleX = 72.0/(Screen.getPrimary().getDpi());
-//double scaleY = scaleX;
-//This is sufficient if you add a Scale-instance to 'getTransforms()' 
-//  (as done in the question):
-//    double scaleX = pageLayout.getPrintableWidth() / bpToPrint.getWidth();
-//    double scaleY = pageLayout.getPrintableHeight() / bpToPrint.getHeight();
-//    Scale scale = new Scale(scaleX, scaleY);
-//    bpToPrint.getTransforms().add(scale);
     
             PageLayout pageLayout = job.getJobSettings().getPageLayout();
             PrintResolution resolution = printer.getPrinterAttributes()
                     .getDefaultPrintResolution();
             double dpi = resolution.getFeedResolution(); // dpi
             System.out.println("print dpi="+dpi);
-
-            double scale = 300/72;
-
+            double scale = dpi/72;
             double width = scale * pageLayout.getPrintableWidth();
             double height = scale * pageLayout.getPrintableHeight();
-
             System.out.println("width="+width+", height="+height);
-            
+           
 //            double screenDPI = Screen.getPrimary().getDpi();
 //            System.out.println("screen dpi="+screenDPI);
-            
-//            Scene scene = new Scene();
-//            Scale scale = new Scale(1/sc, 1/sc);
             Canvas c = new Canvas(width, height);
-            c.getTransforms().clear();
             c.getTransforms().add(new Scale(1/scale, 1/scale));
             c.setVisible(true); // won't print otherwise
             AnchorPane pane = new AnchorPane();
-//            pane.setMinSize(width, height);
-//            pane.setPrefSize(width, height);
-//            pane.setMaxSize(width, height);
             pane.getChildren().add(c); // required to print/scale
             pane.setVisible(true);
 
             GraphicsContext gc = c.getGraphicsContext2D();
             gc.setImageSmoothing(false);
             
-//            double scale = dpi/25.4;
-//            System.out.println("render scale="+scale);
+            scale = dpi;
+            if (ep.getUnits().get().equals(EncoderProperties.MM))
+                scale /= 25.4;
+            
             EncoderView ev = new EncoderView(c, scale);
             ev.render();
 
-            // test rectangle
-//            gc.setStroke(Color.BLACK);
-//            gc.setFill(Color.BLACK);
-//            double a = 100;
-//            double b = 300;
-//            //gc.strokeRect(10, 10, c.getWidth()-10, c.getHeight()-10);
-//            gc.setLineWidth(2.0);
-//            gc.strokeRect(a, a, b, b);
-
-//            Group root = new Group();
-//            Scene scene = new Scene(root);
-//            root.getChildren().add(c);
-//            App.stage.setScene(scene);
-//            App.stage.show();
             job.getJobSettings().setPrintQuality(PrintQuality.HIGH);
             
             boolean success = job.printPage(pane);
             if (success) {
                 job.endJob();
             }
-
-//            c.getTransforms().remove(scale);
 
         }
 
