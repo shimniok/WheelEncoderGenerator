@@ -15,6 +15,7 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -30,7 +31,6 @@ import javafx.print.Printer;
 import javafx.print.PrinterJob;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ComboBox;
@@ -39,10 +39,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
-import javafx.stage.Screen;
+import javafx.stage.FileChooser;
 import javafx.util.converter.DoubleStringConverter;
 
 public class PrimaryController implements Initializable {
@@ -52,9 +50,10 @@ public class PrimaryController implements Initializable {
 //    BinaryEncoder binaryEncoder;
 //    GrayEncoder grayEncoder;
 //    EncoderModel currentEncoder;
-    EncoderView encoderPreview;
-    EncoderView preview;
-    EncoderView printview;
+    private EncoderView encoderPreview;
+    private EncoderView preview;
+    private EncoderView printview;
+    private File currentFile;
     
 //    private Color bg; // background
 //    private Color fg; // foreground
@@ -88,6 +87,15 @@ public class PrimaryController implements Initializable {
 
     @FXML
     public void saveFileAs() {
+        FileChooser fc = new FileChooser();
+        File f = fc.showSaveDialog(App.stage);
+        try {
+            currentFile = f; // only do this if save succeeds!
+            System.out.println("file="+f.getCanonicalPath());
+        } catch (IOException ex) {
+            System.out.println("IOException"+ex);
+            ex.printStackTrace(); // TODO: error handling
+        }
     }
 
     @FXML
