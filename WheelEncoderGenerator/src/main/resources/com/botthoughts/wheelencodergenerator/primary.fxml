@@ -46,7 +46,7 @@
       </MenuBar>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
-          <Button fx:id="newButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="New">
+          <Button fx:id="newButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#newFile" text="New">
                <graphic>
                   <ImageView onMouseClicked="#newFile" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -55,7 +55,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="openButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Open">
+            <Button fx:id="openButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#openFile" text="Open">
                <graphic>
                   <ImageView onMouseClicked="#openFile" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -63,7 +63,7 @@
                      </image>
                   </ImageView>
                </graphic></Button>
-            <Button fx:id="saveButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Save">
+            <Button fx:id="saveButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#saveFile" text="Save">
                <graphic>
                   <ImageView onMouseClicked="#saveFile" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -71,7 +71,7 @@
                      </image>
                   </ImageView>
                </graphic></Button>
-            <Button fx:id="saveAsButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Save As">
+            <Button fx:id="saveAsButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#saveFileAs" text="Save As">
                <graphic>
                   <ImageView onMouseClicked="#saveFileAs" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -79,7 +79,7 @@
                      </image>
                   </ImageView>
                </graphic></Button>
-            <Button fx:id="exportButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Export">
+            <Button fx:id="exportButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#export" text="Export">
                <graphic>
                   <ImageView onMouseClicked="#export" pickOnBounds="true" preserveRatio="true">
                      <image>
