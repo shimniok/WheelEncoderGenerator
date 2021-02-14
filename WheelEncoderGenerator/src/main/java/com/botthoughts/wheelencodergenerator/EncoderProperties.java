@@ -378,50 +378,50 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
     }
     
     
-
-    /**
-     * Return a Properties object representing this object.
-     * @return Properties object
-     */
-    public Properties toProperties() {
-        Properties p;
-        
-        p = new Properties();
-        
-        p.setProperty("encoder.type", this.getType().get());
-        p.setProperty("encoder.resolution", this.getResolution().toString());
-        p.setProperty("encoder.centerDiameter", this.getCenterDiameter().toString());
-        p.setProperty("encoder.innerDiameter", this.getInnerDiameter().toString());
-        p.setProperty("encoder.outerDiameter", this.getOuterDiameter().toString());
-        p.setProperty("encoder.indexTrack", this.getIndexTrack().toString());
-        p.setProperty("encoder.inverted", this.getInverted().toString());
-        p.setProperty("encoder.clockwise", this.getDirection().toString());
-        p.setProperty("encoder.units", this.getUnits().get());
-        
-        return p;
-    }
-    
-    /**
-     * Set this object's properties based on Properties object
-     * @param p properties object from which to set this object's properties
-     */
-    public void fromProperties(Properties p) {
-        this.setType(new SimpleStringProperty(p.getProperty("encoder.type")));
-        this.setResolution(new SimpleIntegerProperty(
-                Integer.parseInt(p.getProperty("encoder.resolution"))));
-        this.setCenterDiameter(new SimpleDoubleProperty(
-                Double.parseDouble(p.getProperty("encoder.centerDiameter"))));
-        this.setInnerDiameter(new SimpleDoubleProperty(
-                Double.parseDouble(p.getProperty("encoder.innerDiameter"))));
-        this.setOuterDiameter(new SimpleDoubleProperty(
-                Double.parseDouble(p.getProperty("encoder.outerDiameter"))));
-        this.setIndexTrack(new SimpleBooleanProperty(
-                Boolean.parseBoolean(p.getProperty("encoder.indexTrack"))));
-        this.setInverted(new SimpleBooleanProperty(
-                Boolean.parseBoolean(p.getProperty("encoder.inverted"))));
-        this.setDirection(new SimpleBooleanProperty(
-                Boolean.parseBoolean(p.getProperty("encoder.inverted"))));
-    }
+//
+//    /**
+//     * Return a Properties object representing this object.
+//     * @return Properties object
+//     */
+//    public Properties toProperties() {
+//        Properties p;
+//        
+//        p = new Properties();
+//        
+//        p.setProperty("encoder.type", this.getType().get());
+//        p.setProperty("encoder.resolution", this.getResolution().toString());
+//        p.setProperty("encoder.centerDiameter", this.getCenterDiameter().toString());
+//        p.setProperty("encoder.innerDiameter", this.getInnerDiameter().toString());
+//        p.setProperty("encoder.outerDiameter", this.getOuterDiameter().toString());
+//        p.setProperty("encoder.indexTrack", this.getIndexTrack().toString());
+//        p.setProperty("encoder.inverted", this.getInverted().toString());
+//        p.setProperty("encoder.clockwise", this.getDirection().toString());
+//        p.setProperty("encoder.units", this.getUnits().get());
+//        
+//        return p;
+//    }
+//    
+//    /**
+//     * Set this object's properties based on Properties object
+//     * @param p properties object from which to set this object's properties
+//     */
+//    public void fromProperties(Properties p) {
+//        this.setType(new SimpleStringProperty(p.getProperty("encoder.type")));
+//        this.setResolution(new SimpleIntegerProperty(
+//                Integer.parseInt(p.getProperty("encoder.resolution"))));
+//        this.setCenterDiameter(new SimpleDoubleProperty(
+//                Double.parseDouble(p.getProperty("encoder.centerDiameter"))));
+//        this.setInnerDiameter(new SimpleDoubleProperty(
+//                Double.parseDouble(p.getProperty("encoder.innerDiameter"))));
+//        this.setOuterDiameter(new SimpleDoubleProperty(
+//                Double.parseDouble(p.getProperty("encoder.outerDiameter"))));
+//        this.setIndexTrack(new SimpleBooleanProperty(
+//                Boolean.parseBoolean(p.getProperty("encoder.indexTrack"))));
+//        this.setInverted(new SimpleBooleanProperty(
+//                Boolean.parseBoolean(p.getProperty("encoder.inverted"))));
+//        this.setDirection(new SimpleBooleanProperty(
+//                Boolean.parseBoolean(p.getProperty("encoder.inverted"))));
+//    }
 
     @Override
     public void addListener(ChangeListener cl) {
@@ -456,24 +456,4 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
         });
     }
     
-//    /**
-//     * Return the appropriate spinner value factory based on type
-//     * @return value factory or null if unexpected type value
-//     */
-//    public ResolutionSpinnerValueFactory getValueFactory() {
-//        switch (type.get()) {
-//            case "Quadrature":
-//                return qvf;
-//            case "Simple":
-//                return svf;
-//            case "Binary":
-//                return bvf;
-//            case "Gray":
-//                return gvf;
-//            default:
-//                System.out.println("Unrecognized type, can't find value factory");
-//                return null;
-//        }
-//    }
-
 }
