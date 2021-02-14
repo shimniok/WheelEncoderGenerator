@@ -51,8 +51,6 @@ public class PrimaryController implements Initializable {
 //    GrayEncoder grayEncoder;
 //    EncoderModel currentEncoder;
     private EncoderView encoderPreview;
-    private EncoderView preview;
-    private EncoderView printview;
     private File currentFile;
     
 //    private Color bg; // background
@@ -141,7 +139,7 @@ public class PrimaryController implements Initializable {
     public void print(Node node) {
         PrinterJob job = PrinterJob.createPrinterJob();
         EncoderProperties ep = EncoderProperties.getInstance();
-
+        
         if (job != null && job.showPrintDialog(App.stage)) {
             Printer printer = job.getPrinter();
     
@@ -201,7 +199,7 @@ public class PrimaryController implements Initializable {
 //        binaryEncoder = new BinaryEncoder();
 //        quadratureEncoder = new QuadratureEncoder();
 //        grayEncoder = new GrayEncoder();
-        
+
         encoderPreview = new EncoderView(encoderUI);
         ep.addListener((observable, oldvalue, newvalue) -> {
             encoderPreview.render();
@@ -241,14 +239,12 @@ public class PrimaryController implements Initializable {
         cwUI.selectedProperty().bindBidirectional(ep.getDirection());
         cwUI.selectedProperty().addListener((observable, oldvalue, newvalue) -> {
             System.out.println("cwUI, newvalue: " + newvalue);
-            ep.setDirection(cwUI.selectedProperty());
+            ep.getDirection().set(cwUI.selectedProperty().get());
             ccwUI.selectedProperty().set(oldvalue); // make sure the other toggle toggles
         });
 
         encoderPreview.render();
-
        
-        // TODO print
         // TODO input verification for all fields
         // TODO file save
         // TODO file save as
@@ -257,8 +253,8 @@ public class PrimaryController implements Initializable {
         // TODO file export
     }
 
-    private Parent loadFXML(String print) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+//    private Parent loadFXML(String print) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
+//
 }

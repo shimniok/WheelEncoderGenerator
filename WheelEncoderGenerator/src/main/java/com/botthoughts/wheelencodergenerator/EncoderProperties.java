@@ -18,10 +18,8 @@ package com.botthoughts.wheelencodergenerator;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -37,14 +35,21 @@ import javafx.beans.value.ObservableValue;
  */
 public final class EncoderProperties implements ObservableValue, ChangeListener {
 
-    // Singleton pattern
-    private static EncoderProperties INSTANCE = null;
-    
     public static String MM = "mm";
     public static String INCH = "inch";
     public static Boolean CLOCKWISE = true;
     public static Boolean COUNTERCLOCKWISE = false;
     
+    protected SimpleStringProperty type;
+    protected SimpleStringProperty units; // see this.unitOptions
+    protected SimpleDoubleProperty outerDiameter;
+    protected SimpleDoubleProperty innerDiameter;
+    protected SimpleDoubleProperty centerDiameter;
+    protected SimpleIntegerProperty resolution;
+    protected SimpleBooleanProperty inverted;
+    protected SimpleBooleanProperty indexTrack;
+    protected SimpleBooleanProperty clockwise; // see this.CLOCKWISE
+
     /**
      * A hash map relating encoder type to EncoderModels
      */
@@ -60,61 +65,28 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
         );
 
     /**
-     *
+     * List of options for Units
      */
     protected static List<String> unitOptions = Arrays.asList(
             EncoderProperties.MM, EncoderProperties.INCH);
 
-    /**
-     * Encoder types
-     */
-//    public static enum EncoderTypes {
-//        QUADRATURE("Quadrature"),
-//        SIMPLE("Simple"),
-//        BINARY("Binary"),
-//        GRAY("Gray");
-//        
-//        public final String label;
-//        
-//        private EncoderTypes(String label) {
-//            this.label = label;
-//        }
-//    }
-            
     /**
      * A list of strings representing available encoder types
      */
     protected static List<String> typeOptions = Arrays.asList(
             "Quadrature", "Simple", "Binary", "Gray"
     );
-            
-    protected SimpleStringProperty type;
-    protected SimpleStringProperty units; // see this.unitOptions
-    protected SimpleDoubleProperty outerDiameter;
-    protected SimpleDoubleProperty innerDiameter;
-    protected SimpleDoubleProperty centerDiameter;
-    protected SimpleIntegerProperty resolution;
-    protected SimpleBooleanProperty inverted;
-    protected SimpleBooleanProperty indexTrack;
-    protected BooleanProperty direction; // see this.CLOCKWISE
+
     private List<ChangeListener> changeListeners;
     private List<InvalidationListener> invalidationListeners;
 
-//    protected ResolutionValueFactory qvf;
-//    protected ResolutionValueFactory svf;
-//    protected ResolutionValueFactory bvf;
-//    protected ResolutionValueFactory gvf;  
+    // Singleton pattern
+    private static EncoderProperties INSTANCE = null;
     
     /**
      * Make new encoder properties object; Singleton pattern
      */
-    private EncoderProperties() {
-//        EncoderProperties.encoderMap.put("Quadrature", new QuadratureEncoder());
-//        EncoderProperties.encoderMap.put("Simple", new BasicEncoder());
-//        EncoderProperties.encoderMap.put("Binary", new BinaryEncoder());
-//        EncoderProperties.encoderMap.put("Gray", new GrayEncoder());
-    }
-    
+    private EncoderProperties() {}    
     
     /**
      * Returns Singleton instance of EncoderProperites with lazy instantiation
@@ -128,13 +100,11 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
             INSTANCE.changeListeners = new ArrayList();
             INSTANCE.invalidationListeners = new ArrayList();
 
-//            INSTANCE.qvf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Quadrature"), 4); // TODO initial value
-//            INSTANCE.svf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Simple"), 4); // TODO initial value
-//            INSTANCE.bvf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Binary"), 2); // TODO initial value
-//            INSTANCE.gvf = new ResolutionValueFactory((EncoderModel) encoderMap.get("Gray"), 2); // TODO initial value
-
             INSTANCE.outerDiameter = new SimpleDoubleProperty(50);
             INSTANCE.outerDiameter.addListener(INSTANCE);
+            INSTANCE.outerDiameter.addListener((obsv, oldv, newv) -> {
+                INSTANCE.odTest = newv.doubleValue();
+            });
 
             INSTANCE.innerDiameter = new SimpleDoubleProperty(10);
             INSTANCE.innerDiameter.addListener(INSTANCE);
@@ -151,8 +121,8 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
             INSTANCE.resolution = new SimpleIntegerProperty(10);
             INSTANCE.resolution.addListener(INSTANCE);
 
-            INSTANCE.direction = new SimpleBooleanProperty(CLOCKWISE);
-            INSTANCE.direction.addListener(INSTANCE);
+            INSTANCE.clockwise = new SimpleBooleanProperty(CLOCKWISE);
+            INSTANCE.clockwise.addListener(INSTANCE);
 
             INSTANCE.indexTrack = new SimpleBooleanProperty(false);
             INSTANCE.indexTrack.addListener(INSTANCE);
@@ -179,19 +149,12 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
         return getEncoder().validResolution(resolution);
     }
 
-    
+    /**
+     * Get the type of encoder, represented as a string; see getTypeOptions()
+     * @return type of encoder
+     */
     final public SimpleStringProperty getType() {
         return type;
-    }
-    
-    final public void setType(SimpleStringProperty type) {
-        if (getTypeOptions().contains(type.getValue())) {
-            this.type = type;
-            
-            System.out.println("type set to "+type.getValue());
-        } else {
-            System.out.println("typeOptions doesn't contain "+type.getValue());
-        }
     }
     
     /**
@@ -211,15 +174,6 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
     }
 
     /**
-     * Sets the outer diameter of the encoder disc
-     * @param outerDiameter 
-     */
-    final public void setOuterDiameter(SimpleDoubleProperty outerDiameter) {
-        System.out.println("setOuterDiameter");
-        if (outerDiameter.getValue() >= 0) this.outerDiameter = outerDiameter;
-    }
-
-    /**
      * Gets the inner diameter of the encoder disc
      * @return inner diameter
      */
@@ -228,29 +182,11 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
     }
 
     /**
-     * Sets the inner diameter of the encoder disc
-     * @param innerDiameter 
-     */   
-    final public void setInnerDiameter(SimpleDoubleProperty innerDiameter) {
-        System.out.println("setInnerDiameter");
-        if (innerDiameter.getValue() >= 0) this.innerDiameter = innerDiameter;
-    }
-
-    /**
      * Gets the center diameter of the encoder disc
      * @return center diameter
      */
     final public SimpleDoubleProperty getCenterDiameter() {
         return centerDiameter;
-    }
-
-    /**
-     * Sets the center diameter of the encoder disc
-     * @param centerDiameter is the center diameter property to set
-     */
-    final public void setCenterDiameter(SimpleDoubleProperty centerDiameter) {
-        System.out.println("setCenterDiameter");
-        if (centerDiameter.getValue() >= 0) this.centerDiameter = centerDiameter;
     }
 
     /**
@@ -263,54 +199,19 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
     }
 
     /**
-     * Sets the units being used; see getUnitOptions()
-     * 
-     * @param units 
-     */
-    final public void setUnits(SimpleStringProperty units) {
-        System.out.println("setUnits");
-        // TODO - check validity
-        this.units = units;
-    }
-
-    /**
      * Gets the resolution of the encoder
      * @return resolution
      */
     final public SimpleIntegerProperty getResolution() {
         return this.resolution;
     }
-    
-    /**
-     * Sets the resolution of the encoder
-     * @param resolution of the encoder
-     */
-    final public void setResolution(SimpleIntegerProperty resolution) {
-        int r = resolution.getValue();
 
-        System.out.println("setResolution");
-        
-        if (validResolution(r)) {
-            this.resolution.set(r);
-        }
-    }
-    
     /**
      * Return whether encoder pattern is inverted or not.
      * @return true if inverted, false if not
      */
     final public SimpleBooleanProperty getInverted() {
         return this.inverted;
-    }
-    
-    /**
-     * Set the encoder pattern to be inverted, or not.
-     * 
-     * @param inverted
-     */
-    final public void setInverted(SimpleBooleanProperty inverted) {
-        System.out.println("setInverted");
-        this.inverted = inverted;
     }
 
     /**
@@ -321,35 +222,15 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
     public SimpleBooleanProperty getIndexTrack() {
         return this.indexTrack;
     }
-
-    /**
-     * Enable or disable index track.
-     * 
-     * @param indexTrack true to enable index track
-     */
-    public void setIndexTrack(SimpleBooleanProperty indexTrack) {
-        System.out.println("setIndexTrack");
-        this.indexTrack = indexTrack;
-    }
     
     /**
-     * Set direction of rotation.
+     * Get direction of rotation of the encoder.
      * 
      * @return CLOCKWISE (true), or COUNTERCLOCKWISE(false)
      */
     public BooleanProperty getDirection() {
         // check validity
-        return this.direction;
-    }
-
-    /**
-     * Set direction of rotation.
-     * 
-     * @param direction is either CLOCKWISE (true), or COUNTERCLOCKWISE(false)
-     */
-    public void setDirection(BooleanProperty direction) {
-        System.out.println("setDirection");
-        this.direction = direction;
+        return this.clockwise;
     }
 
     /**
@@ -376,7 +257,6 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
         return (this.getOuterDiameter().get() > this.getInnerDiameter().get()) &&
                 (this.getInnerDiameter().get() >= this.getCenterDiameter().get());
     }
-    
     
 //
 //    /**
