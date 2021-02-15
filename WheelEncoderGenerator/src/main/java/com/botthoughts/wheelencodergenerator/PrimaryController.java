@@ -17,11 +17,16 @@ package com.botthoughts.wheelencodergenerator;
 
 import java.io.File;
 import java.io.IOException;
+import static java.lang.Double.NaN;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
 import javafx.beans.property.Property;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener.Change;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.PageLayout;
@@ -36,6 +41,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
@@ -188,9 +194,19 @@ public class PrimaryController implements Initializable {
     }
 
     @FXML
-    void onOpenDialog(ActionEvent event) throws IOException {
+    public void onOpenDialog(ActionEvent event) throws IOException {
     }
 
+    private Double parseDouble(String s) {
+        if (s == null || s.equals(""))
+            return 0.0;
+        try {
+            return Double.parseDouble(s);
+        } catch (NumberFormatException nfe) {
+            return NaN;
+        }
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         EncoderProperties ep = EncoderProperties.getInstance();
@@ -210,22 +226,30 @@ public class PrimaryController implements Initializable {
         typeUI.valueProperty().bindBidirectional(ep.getType());
 //        typeUI.getSelectionModel().select(0);
 
-        resolutionUI.setValueFactory(new ResolutionValueFactory(ep.getEncoder(), ep.getResolution().get()));
-        resolutionUI.getValueFactory().valueProperty().bindBidirectional(ep.getResolution());
+        resolutionUI.setValueFactory(new ResolutionValueFactory(
+                ep.getEncoder(), ep.getResolution().get()));
+        resolutionUI.getValueFactory().valueProperty().bindBidirectional(
+                ep.getResolution());
+        // TODO: change valuevactory whenever type changes
         ep.getType().addListener((observable, oldvalue, newvalue) -> {
-            ResolutionValueFactory vf = (ResolutionValueFactory) resolutionUI.getValueFactory();
+            ResolutionValueFactory vf = 
+                    (ResolutionValueFactory) resolutionUI.getValueFactory();
             vf.setEncoder(ep.getEncoder());
-            // TODO - fix invalid values upon type change
         });
-
-        outerUI.textProperty().bindBidirectional((Property) ep.getOuterDiameter(),
+        outerUI.textProperty().bindBidirectional(
+                (Property) ep.getOuterDiameter(),
                 new DoubleStringConverter());
-
-        innerUI.textProperty().bindBidirectional((Property) ep.getInnerDiameter(),
+        outerUI.setTextFormatter(new DoubleTextFormatter(100.0).get());
+        
+        innerUI.textProperty().bindBidirectional(
+                (Property) ep.getInnerDiameter(),
                 new DoubleStringConverter());
+        innerUI.setTextFormatter(new DoubleTextFormatter(10.0).get());
 
-        centerUI.textProperty().bindBidirectional((Property) ep.getCenterDiameter(),
+        centerUI.textProperty().bindBidirectional(
+                (Property) ep.getCenterDiameter(),
                 new DoubleStringConverter());
+        centerUI.setTextFormatter(new DoubleTextFormatter(5.0).get());
 
         unitsUI.getItems().addAll(ep.getUnitOptions());
         unitsUI.valueProperty().bindBidirectional(ep.getUnits());
@@ -245,7 +269,7 @@ public class PrimaryController implements Initializable {
 
         encoderPreview.render();
        
-        // TODO input verification for all fields
+        // TODO input verification for resolution
         // TODO file save
         // TODO file save as
         // TODO file open

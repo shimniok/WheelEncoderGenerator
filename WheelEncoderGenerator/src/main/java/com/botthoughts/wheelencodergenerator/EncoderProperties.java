@@ -100,11 +100,8 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
             INSTANCE.changeListeners = new ArrayList();
             INSTANCE.invalidationListeners = new ArrayList();
 
-            INSTANCE.outerDiameter = new SimpleDoubleProperty(50);
+            INSTANCE.outerDiameter = new SimpleDoubleProperty(100);
             INSTANCE.outerDiameter.addListener(INSTANCE);
-            INSTANCE.outerDiameter.addListener((obsv, oldv, newv) -> {
-                INSTANCE.odTest = newv.doubleValue();
-            });
 
             INSTANCE.innerDiameter = new SimpleDoubleProperty(10);
             INSTANCE.innerDiameter.addListener(INSTANCE);
