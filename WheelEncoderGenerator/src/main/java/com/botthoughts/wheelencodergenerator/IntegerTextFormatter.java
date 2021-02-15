@@ -22,15 +22,15 @@ import javafx.scene.control.TextFormatter;
  *
  * @author mes
  */
-public class DoubleTextFormatter {
+public class IntegerTextFormatter {
     
     private UnaryOperator<TextFormatter.Change> filter;
-    private Double defaultValue;
+    private Integer defaultValue;
 
-    public DoubleTextFormatter(Double defaultValue) {
+    public IntegerTextFormatter(Integer defaultValue) {
         this.defaultValue = defaultValue;
         this.filter = (change) -> {
-            String doubleRegex = "([0-9]*\\.?[0-9]*)";
+            String doubleRegex = "[0-9]*";
             String newText = change.getControlNewText();
             int start = change.getRangeStart();
             int end = change.getRangeEnd();
@@ -46,13 +46,6 @@ public class DoubleTextFormatter {
                     change.setAnchor(caret - addedText.length());
                 }
 
-                // Special case to allow .25 without breaking parsing)
-                if (change.getControlNewText().equals(".")) {
-                    change.setText("0.");
-                    change.setCaretPosition(caret + 1);
-                    change.setAnchor(caret + 1);
-                }
-                
             } else if (change.isDeleted()) {
                 if (!newText.matches(doubleRegex)) {
                     change.setRange(start, start);

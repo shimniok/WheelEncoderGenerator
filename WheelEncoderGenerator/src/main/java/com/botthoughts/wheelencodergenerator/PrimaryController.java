@@ -230,6 +230,7 @@ public class PrimaryController implements Initializable {
                 ep.getEncoder(), ep.getResolution().get()));
         resolutionUI.getValueFactory().valueProperty().bindBidirectional(
                 ep.getResolution());
+        resolutionUI.getEditor().setTextFormatter(new IntegerTextFormatter(8).get());
         // TODO: change valuevactory whenever type changes
         ep.getType().addListener((observable, oldvalue, newvalue) -> {
             ResolutionValueFactory vf = 
