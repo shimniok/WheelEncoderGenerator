@@ -17,7 +17,6 @@ package com.botthoughts.wheelencodergenerator;
 
 import java.util.function.UnaryOperator;
 import javafx.scene.control.TextFormatter;
-import javafx.util.converter.DoubleStringConverter;
 
 /**
  *
@@ -31,7 +30,7 @@ public class DoubleTextFormatter {
     public DoubleTextFormatter(Double defaultValue) {
         this.defaultValue = defaultValue;
         this.filter = (change) -> {
-            String doubleRegex = "[0-9]*\\.?[0-9]+"; // TODO: 500 + . fails
+            String doubleRegex = "([0-9]*\\.?[0-9]*)"; // TODO: 500 + . fails
             String newText = change.getControlNewText();
             int start = change.getRangeStart();
             int end = change.getRangeEnd();
@@ -55,6 +54,13 @@ public class DoubleTextFormatter {
                     change.setCaretPosition(caret - addedText.length());
                     change.setAnchor(caret - addedText.length());
                 }
+
+                // Special case to allow .25 without breaking parsing)
+                if (change.getControlNewText().equals(".")) {
+                    change.setText("0.");
+                    change.setCaretPosition(caret + 1);
+                    change.setAnchor(caret + 1);
+                }
                 
             } else if (change.isDeleted()) {
                 if (!newText.matches(doubleRegex)) {
@@ -64,6 +70,7 @@ public class DoubleTextFormatter {
                 // This never seems to get called in normal operation ??
                 System.out.println("replaced");
             }
+
             return change;
         };
     }
