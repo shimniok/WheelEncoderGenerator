@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -35,302 +36,312 @@ import javafx.beans.value.ObservableValue;
  */
 public final class EncoderProperties implements ObservableValue, ChangeListener {
 
-    public static String MM = "mm";
-    public static String INCH = "inch";
-    public static Boolean CLOCKWISE = true;
-    public static Boolean COUNTERCLOCKWISE = false;
-    
-    protected SimpleStringProperty type;
-    protected SimpleStringProperty units; // see this.unitOptions
-    protected SimpleDoubleProperty outerDiameter;
-    protected SimpleDoubleProperty innerDiameter;
-    protected SimpleDoubleProperty centerDiameter;
-    protected SimpleIntegerProperty resolution;
-    protected SimpleBooleanProperty inverted;
-    protected SimpleBooleanProperty indexTrack;
-    protected SimpleBooleanProperty clockwise; // see this.CLOCKWISE
+  public static String MM = "mm";
+  public static String INCH = "inch";
+  public static Boolean CLOCKWISE = true;
+  public static Boolean COUNTERCLOCKWISE = false;
 
-    /**
-     * A hash map relating encoder type to EncoderModels
-     */
-    protected static Map<String, EncoderModel> encoderMap = Map.ofEntries(
-            new AbstractMap.SimpleEntry<String, EncoderModel>("Quadrature", 
-                    new QuadratureEncoder()),
-            new AbstractMap.SimpleEntry<String, EncoderModel>("Simple", 
-                    new BasicEncoder()),
-            new AbstractMap.SimpleEntry<String, EncoderModel>("Binary", 
-                    new BinaryEncoder()),
-            new AbstractMap.SimpleEntry<String, EncoderModel>("Gray", 
-                    new GrayEncoder())
-        );
+  protected SimpleStringProperty type;
+  protected SimpleStringProperty units; // see this.unitOptions
+  protected SimpleDoubleProperty outerDiameter;
+  protected SimpleDoubleProperty innerDiameter;
+  protected SimpleDoubleProperty centerDiameter;
+  protected SimpleIntegerProperty resolution;
+  protected SimpleBooleanProperty inverted;
+  protected SimpleBooleanProperty indexTrack;
+  protected SimpleBooleanProperty clockwise; // see this.CLOCKWISE
 
-    /**
-     * List of options for Units
-     */
-    protected static List<String> unitOptions = Arrays.asList(
-            EncoderProperties.MM, EncoderProperties.INCH);
+  /**
+   * A hash map relating encoder type to EncoderModels
+   */
+  protected static Map<String, EncoderModel> encoderMap = Map.ofEntries(
+      new AbstractMap.SimpleEntry<String, EncoderModel>("Quadrature", new QuadratureEncoder()),
+      new AbstractMap.SimpleEntry<String, EncoderModel>("Simple", new BasicEncoder()),
+      new AbstractMap.SimpleEntry<String, EncoderModel>("Binary", new BinaryEncoder()),
+      new AbstractMap.SimpleEntry<String, EncoderModel>("Gray", new GrayEncoder())
+  );
 
-    /**
-     * A list of strings representing available encoder types
-     */
-    protected static List<String> typeOptions = Arrays.asList(
-            "Quadrature", "Simple", "Binary", "Gray"
-    );
+  /**
+   * List of options for Units
+   */
+  protected static List<String> unitOptions = Arrays.asList(
+      EncoderProperties.MM, EncoderProperties.INCH);
 
-    private List<ChangeListener> changeListeners;
-    private List<InvalidationListener> invalidationListeners;
+  /**
+   * A list of strings representing available encoder types
+   */
+  protected static List<String> typeOptions = Arrays.asList(
+      "Quadrature", "Simple", "Binary", "Gray"
+  );
 
-    // Singleton pattern
-    private static EncoderProperties INSTANCE = null;
-    
-    /**
-     * Make new encoder properties object; Singleton pattern
-     */
-    private EncoderProperties() {}    
-    
-    /**
-     * Returns Singleton instance of EncoderProperites with lazy instantiation
-     * and initialization.
-     * @return EncoderProperties singleton instance
-     */
-    public static synchronized EncoderProperties getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new EncoderProperties();
-                
-            INSTANCE.changeListeners = new ArrayList();
-            INSTANCE.invalidationListeners = new ArrayList();
+  private List<ChangeListener> changeListeners;
+  private List<InvalidationListener> invalidationListeners;
 
-            INSTANCE.outerDiameter = new SimpleDoubleProperty(100);
-            INSTANCE.outerDiameter.addListener(INSTANCE);
+  // Singleton pattern
+  private static EncoderProperties INSTANCE = null;
 
-            INSTANCE.innerDiameter = new SimpleDoubleProperty(10);
-            INSTANCE.innerDiameter.addListener(INSTANCE);
+  /**
+   * Make new encoder properties object; Singleton pattern
+   */
+  private EncoderProperties() {
+  }
 
-            INSTANCE.centerDiameter = new SimpleDoubleProperty(5);
-            INSTANCE.centerDiameter.addListener(INSTANCE);
+  /**
+   * Returns Singleton instance of EncoderProperites with lazy instantiation and
+   * initialization.
+   *
+   * @return EncoderProperties singleton instance
+   */
+  public static synchronized EncoderProperties getInstance() {
+    if (INSTANCE == null) {
+      INSTANCE = new EncoderProperties();
 
-            INSTANCE.inverted = new SimpleBooleanProperty(false);
-            INSTANCE.inverted.addListener(INSTANCE);
+      INSTANCE.changeListeners = new ArrayList();
+      INSTANCE.invalidationListeners = new ArrayList();
 
-            INSTANCE.units = new SimpleStringProperty(unitOptions.get(0));
-            INSTANCE.units.addListener(INSTANCE);
+      INSTANCE.outerDiameter = new SimpleDoubleProperty(100);
+      INSTANCE.outerDiameter.addListener(INSTANCE);
 
-            INSTANCE.resolution = new SimpleIntegerProperty(10);
-            INSTANCE.resolution.addListener(INSTANCE);
+      INSTANCE.innerDiameter = new SimpleDoubleProperty(10);
+      INSTANCE.innerDiameter.addListener(INSTANCE);
 
-            INSTANCE.clockwise = new SimpleBooleanProperty(CLOCKWISE);
-            INSTANCE.clockwise.addListener(INSTANCE);
+      INSTANCE.centerDiameter = new SimpleDoubleProperty(5);
+      INSTANCE.centerDiameter.addListener(INSTANCE);
 
-            INSTANCE.indexTrack = new SimpleBooleanProperty(false);
-            INSTANCE.indexTrack.addListener(INSTANCE);
+      INSTANCE.inverted = new SimpleBooleanProperty(false);
+      INSTANCE.inverted.addListener(INSTANCE);
 
-            // Prime candidate for invalidation listener??
-            INSTANCE.type = new SimpleStringProperty(INSTANCE.getTypeOptions().get(0));
-            INSTANCE.type.addListener(INSTANCE);        
-        }
-        return INSTANCE;
+      INSTANCE.units = new SimpleStringProperty(unitOptions.get(0));
+      INSTANCE.units.addListener(INSTANCE);
+
+      INSTANCE.resolution = new SimpleIntegerProperty(10);
+      INSTANCE.resolution.addListener(INSTANCE);
+
+      INSTANCE.clockwise = new SimpleBooleanProperty(CLOCKWISE);
+      INSTANCE.clockwise.addListener(INSTANCE);
+
+      INSTANCE.indexTrack = new SimpleBooleanProperty(false);
+      INSTANCE.indexTrack.addListener(INSTANCE);
+
+      // Prime candidate for invalidation listener??
+      INSTANCE.type = new SimpleStringProperty(INSTANCE.getTypeOptions().get(0));
+      INSTANCE.type.addListener(INSTANCE);
+      
+//      Persistence p = new Persistence();
+//      p.register("encoder.type", INSTANCE.type);
+//      p.register("encoder.outsideDiameter", INSTANCE.outerDiameter);
+//      p.register("encoder.resolution", INSTANCE.resolution);
+//      p.register("encoder.centerDiameter", INSTANCE.centerDiameter);
+//      p.register("encoder.innerDiameter", INSTANCE.innerDiameter);
+//      p.register("encoder.indexTrack", INSTANCE.indexTrack);
+//      p.register("encoder.inverted", INSTANCE.inverted);
+//      p.register("encoder.clockwise", INSTANCE.clockwise);
+//      p.register("encoder.units", INSTANCE.units);
+      
     }
-    
+    return INSTANCE;
+  }
 
-    public List<String> getTypeOptions() {
-        return new ArrayList<>(EncoderProperties.encoderMap.keySet());
-    }
-    
-    /**
-     * Determine if specified resolution is valid for this encoder
-     * 
-     * @param resolution
-     * @return true if valid, false otherwise
-     */
-    final public boolean validResolution(int resolution) {
-        return getEncoder().validResolution(resolution);
-    }
+  public List<String> getTypeOptions() {
+    return new ArrayList<>(EncoderProperties.encoderMap.keySet());
+  }
 
-    /**
-     * Get the type of encoder, represented as a string; see getTypeOptions()
-     * @return type of encoder
-     */
-    final public SimpleStringProperty getType() {
-        return type;
-    }
-    
-    /**
-     * Return list of options for valid unit setting
-     * @return list of options
-     */
-    final public List<String> getUnitOptions() {
-        return unitOptions;
-    }
-    
-    /**
-     * Gets the outer diameter of the encoder disc
-     * @return outer diameter
-     */
-    final public SimpleDoubleProperty getOuterDiameter() {
-        return outerDiameter;
-    }
+  /**
+   * Determine if specified resolution is valid for this encoder
+   *
+   * @param resolution
+   * @return true if valid, false otherwise
+   */
+  final public boolean validResolution(int resolution) {
+    return getEncoder().validResolution(resolution);
+  }
 
-    /**
-     * Gets the inner diameter of the encoder disc
-     * @return inner diameter
-     */
-    final public SimpleDoubleProperty getInnerDiameter() {
-        return innerDiameter;
-    }
+  /**
+   * Get the type of encoder, represented as a string; see getTypeOptions()
+   *
+   * @return type of encoder
+   */
+  final public SimpleStringProperty getType() {
+    return type;
+  }
 
-    /**
-     * Gets the center diameter of the encoder disc
-     * @return center diameter
-     */
-    final public SimpleDoubleProperty getCenterDiameter() {
-        return centerDiameter;
-    }
+  /**
+   * Return list of options for valid unit setting
+   *
+   * @return list of options
+   */
+  final public List<String> getUnitOptions() {
+    return unitOptions;
+  }
 
-    /**
-     * Gets the units being used; see getUnitOptions()
-     *
-     * @return units
-     */
-    final public SimpleStringProperty getUnits() {
-        return units;
-    }
+  /**
+   * Gets the outer diameter of the encoder disc
+   *
+   * @return outer diameter
+   */
+  final public SimpleDoubleProperty getOuterDiameter() {
+    return outerDiameter;
+  }
 
-    /**
-     * Gets the resolution of the encoder
-     * @return resolution
-     */
-    final public SimpleIntegerProperty getResolution() {
-        return this.resolution;
-    }
+  /**
+   * Gets the inner diameter of the encoder disc
+   *
+   * @return inner diameter
+   */
+  final public SimpleDoubleProperty getInnerDiameter() {
+    return innerDiameter;
+  }
 
-    /**
-     * Return whether encoder pattern is inverted or not.
-     * @return true if inverted, false if not
-     */
-    final public SimpleBooleanProperty getInverted() {
-        return this.inverted;
-    }
+  /**
+   * Gets the center diameter of the encoder disc
+   *
+   * @return center diameter
+   */
+  final public SimpleDoubleProperty getCenterDiameter() {
+    return centerDiameter;
+  }
 
-    /**
-     * Return whether an index track is enabled.
-     * 
-     * @return true if index track enabled, false otherwise
-     */
-    public SimpleBooleanProperty getIndexTrack() {
-        return this.indexTrack;
-    }
-    
-    /**
-     * Get direction of rotation of the encoder.
-     * 
-     * @return CLOCKWISE (true), or COUNTERCLOCKWISE(false)
-     */
-    public BooleanProperty getDirection() {
-        // check validity
-        return this.clockwise;
-    }
+  /**
+   * Gets the units being used; see getUnitOptions()
+   *
+   * @return units
+   */
+  final public SimpleStringProperty getUnits() {
+    return units;
+  }
 
-    /**
-     * Get the encoder associated with these properties
-     * @return the encoder associated with these properties
-     */
-    public EncoderModel getEncoder() {
-        return (EncoderModel) EncoderProperties.encoderMap.get(this.type.get());
-    }
-    
-    
-    public List<EncoderTrack> getTracks() {
-        return getEncoder().getTracks(this.getInnerDiameter().get(), 
-                this.getOuterDiameter().get(), this.getResolution().get(), 
-                this.getIndexTrack().get());
-    }
+  /**
+   * Gets the resolution of the encoder
+   *
+   * @return resolution
+   */
+  final public SimpleIntegerProperty getResolution() {
+    return this.resolution;
+  }
 
+  /**
+   * Return whether encoder pattern is inverted or not.
+   *
+   * @return true if inverted, false if not
+   */
+  final public SimpleBooleanProperty getInverted() {
+    return this.inverted;
+  }
 
-    /**
-     * Determine if model is valid
-     * @return true if valid, false if not
-     */
-    public boolean isValid() {
-        return (this.getOuterDiameter().get() > this.getInnerDiameter().get()) &&
-                (this.getInnerDiameter().get() >= this.getCenterDiameter().get());
-    }
-    
-//
-//    /**
-//     * Return a Properties object representing this object.
-//     * @return Properties object
-//     */
-//    public Properties toProperties() {
-//        Properties p;
-//        
-//        p = new Properties();
-//        
-//        p.setProperty("encoder.type", this.getType().get());
-//        p.setProperty("encoder.resolution", this.getResolution().toString());
-//        p.setProperty("encoder.centerDiameter", this.getCenterDiameter().toString());
-//        p.setProperty("encoder.innerDiameter", this.getInnerDiameter().toString());
-//        p.setProperty("encoder.outerDiameter", this.getOuterDiameter().toString());
-//        p.setProperty("encoder.indexTrack", this.getIndexTrack().toString());
-//        p.setProperty("encoder.inverted", this.getInverted().toString());
-//        p.setProperty("encoder.clockwise", this.getDirection().toString());
-//        p.setProperty("encoder.units", this.getUnits().get());
-//        
-//        return p;
-//    }
-//    
-//    /**
-//     * Set this object's properties based on Properties object
-//     * @param p properties object from which to set this object's properties
-//     */
-//    public void fromProperties(Properties p) {
-//        this.setType(new SimpleStringProperty(p.getProperty("encoder.type")));
-//        this.setResolution(new SimpleIntegerProperty(
-//                Integer.parseInt(p.getProperty("encoder.resolution"))));
-//        this.setCenterDiameter(new SimpleDoubleProperty(
-//                Double.parseDouble(p.getProperty("encoder.centerDiameter"))));
-//        this.setInnerDiameter(new SimpleDoubleProperty(
-//                Double.parseDouble(p.getProperty("encoder.innerDiameter"))));
-//        this.setOuterDiameter(new SimpleDoubleProperty(
-//                Double.parseDouble(p.getProperty("encoder.outerDiameter"))));
-//        this.setIndexTrack(new SimpleBooleanProperty(
-//                Boolean.parseBoolean(p.getProperty("encoder.indexTrack"))));
-//        this.setInverted(new SimpleBooleanProperty(
-//                Boolean.parseBoolean(p.getProperty("encoder.inverted"))));
-//        this.setDirection(new SimpleBooleanProperty(
-//                Boolean.parseBoolean(p.getProperty("encoder.inverted"))));
-//    }
+  /**
+   * Return whether an index track is enabled.
+   *
+   * @return true if index track enabled, false otherwise
+   */
+  public SimpleBooleanProperty getIndexTrack() {
+    return this.indexTrack;
+  }
 
-    @Override
-    public void addListener(ChangeListener cl) {
-        changeListeners.add(cl);
-    }
+  /**
+   * Get direction of rotation of the encoder.
+   *
+   * @return CLOCKWISE (true), or COUNTERCLOCKWISE(false)
+   */
+  public BooleanProperty getDirection() {
+    // check validity
+    return this.clockwise;
+  }
 
-    @Override
-    public void removeListener(ChangeListener cl) {
-        changeListeners.remove(cl);
-    }
+  /**
+   * Get the encoder associated with these properties
+   *
+   * @return the encoder associated with these properties
+   */
+  public EncoderModel getEncoder() {
+    return (EncoderModel) EncoderProperties.encoderMap.get(this.type.get());
+  }
 
-    @Override
-    public Object getValue() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+  public List<EncoderTrack> getTracks() {
+    return getEncoder().getTracks(this.getInnerDiameter().get(),
+        this.getOuterDiameter().get(), this.getResolution().get(),
+        this.getIndexTrack().get());
+  }
 
-    @Override
-    public void addListener(InvalidationListener il) {
-        invalidationListeners.add(il);
-    }
+  /**
+   * Determine if model is valid
+   *
+   * @return true if valid, false if not
+   */
+  public boolean isValid() {
+    return (this.getOuterDiameter().get() > this.getInnerDiameter().get())
+        && (this.getInnerDiameter().get() >= this.getCenterDiameter().get());
+  }
 
-    @Override
-    public void removeListener(InvalidationListener il) {
-        invalidationListeners.remove(il);
-    }
+  /**
+   * Return a Properties object representing this object.
+   *
+   * @return Properties object
+   */
+  public Properties toProperties() {
+    Properties p;
 
-    @Override
-    public void changed(ObservableValue obsV, Object oldV, Object newV) {
-        System.out.println("EncoderProperties changed()");
-        changeListeners.forEach((ChangeListener cl) -> {
-            cl.changed(obsV, oldV, newV);
-        });
-    }
-    
+    p = new Properties();
+
+    p.setProperty("encoder.type", this.getType().get());
+    p.setProperty("encoder.resolution", this.getResolution().toString());
+    p.setProperty("encoder.centerDiameter", this.getCenterDiameter().toString());
+    p.setProperty("encoder.innerDiameter", this.getInnerDiameter().toString());
+    p.setProperty("encoder.outerDiameter", this.getOuterDiameter().toString());
+    p.setProperty("encoder.indexTrack", this.getIndexTrack().toString());
+    p.setProperty("encoder.inverted", this.getInverted().toString());
+    p.setProperty("encoder.clockwise", this.getDirection().toString());
+    p.setProperty("encoder.units", this.getUnits().get());
+
+    return p;
+  }
+
+//  /**
+//   * Set this object's properties based on Properties object
+//   *
+//   * @param p properties object from which to set this object's properties
+//   */
+//  public void fromProperties(Properties p) {
+//    this.getType().set(p.getProperty("encoder.type"));
+//    this.getResolution().set(Integer.parseInt(p.getProperty("encoder.resolution")));
+//    this.getCenterDiameter().set(Double.parseDouble(p.getProperty("encoder.centerDiameter")));
+//    this.getInnerDiameter().set(Double.parseDouble(p.getProperty("encoder.innerDiameter")));
+//    this.getOuterDiameter().set(Double.parseDouble(p.getProperty("encoder.outerDiameter")));
+//    this.getIndexTrack().set(Boolean.parseBoolean(p.getProperty("encoder.indexTrack")));
+//    this.getInverted().set(Boolean.parseBoolean(p.getProperty("encoder.inverted")));
+//    this.getDirection().set(Boolean.parseBoolean(p.getProperty("encoder.inverted")));
+//  }
+
+  @Override
+  public void addListener(ChangeListener cl) {
+    changeListeners.add(cl);
+  }
+
+  @Override
+  public void removeListener(ChangeListener cl) {
+    changeListeners.remove(cl);
+  }
+
+  @Override
+  public Object getValue() {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void addListener(InvalidationListener il) {
+    invalidationListeners.add(il);
+  }
+
+  @Override
+  public void removeListener(InvalidationListener il) {
+    invalidationListeners.remove(il);
+  }
+
+  @Override
+  public void changed(ObservableValue obsV, Object oldV, Object newV) {
+    System.out.println("EncoderProperties changed()");
+    changeListeners.forEach((ChangeListener cl) -> {
+      cl.changed(obsV, oldV, newV);
+    });
+  }
+
 }

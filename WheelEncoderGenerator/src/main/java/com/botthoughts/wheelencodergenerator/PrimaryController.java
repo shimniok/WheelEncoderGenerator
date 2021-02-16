@@ -16,9 +16,11 @@
 package com.botthoughts.wheelencodergenerator;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import static java.lang.Double.NaN;
 import java.net.URL;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 import javafx.beans.property.Property;
@@ -94,8 +96,12 @@ public class PrimaryController implements Initializable {
         FileChooser fc = new FileChooser();
         File f = fc.showSaveDialog(App.stage);
         try {
-            currentFile = f; // only do this if save succeeds!
+            EncoderProperties ep = EncoderProperties.getInstance();
+            FileOutputStream out = new FileOutputStream(f);
+            Properties p = ep.toProperties();
+            p.store(out, "");
             System.out.println("file="+f.getCanonicalPath());
+            currentFile = f; // only do this if save succeeds!
         } catch (IOException ex) {
             System.out.println("IOException"+ex);
             ex.printStackTrace(); // TODO: error handling
@@ -237,6 +243,7 @@ public class PrimaryController implements Initializable {
                     (ResolutionValueFactory) resolutionUI.getValueFactory();
             vf.setEncoder(ep.getEncoder());
         });
+        
         outerUI.textProperty().bindBidirectional(
                 (Property) ep.getOuterDiameter(),
                 new DoubleStringConverter());

@@ -46,7 +46,7 @@ public class DoubleTextFormatter {
                     change.setAnchor(caret - addedText.length());
                 }
 
-                // Special case to allow .25 without breaking parsing)
+                // Special case to allow .N without breaking parsing)
                 if (change.getControlNewText().equals(".")) {
                     change.setText("0.");
                     change.setCaretPosition(caret + 1);
