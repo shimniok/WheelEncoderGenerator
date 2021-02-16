@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -57,9 +58,11 @@ public class PrimaryController implements Initializable {
 //    EncoderModel currentEncoder;
     private EncoderView encoderPreview;
     private File currentFile;
+    private static final String extension = ".we2";
     private static final ExtensionFilter extensionFilter = 
-        new ExtensionFilter("Wheel Encoder Generator v2", "*.we2");    
-
+        new ExtensionFilter("Wheel Encoder Generator v2", "*"+extension);    
+    private SimpleStringProperty filename;
+    
 //    private Color bg; // background
 //    private Color fg; // foreground
 
@@ -91,16 +94,19 @@ public class PrimaryController implements Initializable {
     AnchorPane canvasContainer;
 
     public void saveFile(File f) {
-      try {
-        EncoderProperties ep = EncoderProperties.getInstance();
-        FileOutputStream out = new FileOutputStream(f);
-        Properties p = ep.toProperties();
-        p.store(out, "Wheel Encoder Generator");
-        System.out.println("file=" + f.getCanonicalPath());
-        currentFile = f; // only do this if save succeeds!
-      } catch (IOException ex) {
-        System.out.println("IOException" + ex);
-        ex.printStackTrace(); // TODO: error handling
+      if (f != null) {
+        try {
+          EncoderProperties ep = EncoderProperties.getInstance();
+          FileOutputStream out = new FileOutputStream(f);
+          Properties p = ep.toProperties();
+          p.store(out, "Wheel Encoder Generator");
+          System.out.println("file=" + f.getCanonicalPath());
+          currentFile = f; // only do this if save succeeds!
+          filename.set(f.getName());
+        } catch (IOException ex) {
+          System.out.println("IOException" + ex);
+          ex.printStackTrace(); // TODO: error handling
+        }
       }
     }
     
@@ -116,6 +122,7 @@ public class PrimaryController implements Initializable {
     @FXML
     public void saveFileAs() {
         FileChooser fc = new FileChooser();
+        fc.setInitialFileName(filename.get());
         fc.getExtensionFilters().add(extensionFilter);
         saveFile(fc.showSaveDialog(App.stage));
     }
@@ -131,6 +138,8 @@ public class PrimaryController implements Initializable {
         Properties p = new Properties();
         p.load(in);
         EncoderProperties.getInstance().fromProperties(p);
+        currentFile = f;
+        filename.set(f.getName());
       } catch (FileNotFoundException ex) {
         System.out.println("FileNotFoundException" + ex);
         ex.printStackTrace(); // TODO: error handling
@@ -190,8 +199,6 @@ public class PrimaryController implements Initializable {
             double height = scale * pageLayout.getPrintableHeight();
             System.out.println("width="+width+", height="+height);
            
-//            double screenDPI = Screen.getPrimary().getDpi();
-//            System.out.println("screen dpi="+screenDPI);
             Canvas c = new Canvas(width, height);
             c.getTransforms().add(new Scale(1/scale, 1/scale));
             c.setVisible(true); // won't print otherwise
@@ -242,10 +249,9 @@ public class PrimaryController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         EncoderProperties ep = EncoderProperties.getInstance();
 
-//        basicEncoder = new BasicEncoder();
-//        binaryEncoder = new BinaryEncoder();
-//        quadratureEncoder = new QuadratureEncoder();
-//        grayEncoder = new GrayEncoder();
+        filename = new SimpleStringProperty();
+        filename.set("untitled"+extension);
+        App.stage.titleProperty().bindBidirectional(filename);
 
         encoderPreview = new EncoderView(encoderUI);
         ep.addListener((observable, oldvalue, newvalue) -> {
@@ -302,10 +308,7 @@ public class PrimaryController implements Initializable {
 
         encoderPreview.render();
        
-        // TODO input verification for resolution
         // TODO file save
-        // TODO file save as
-        // TODO file open
         // TODO file new
         // TODO file export
     }

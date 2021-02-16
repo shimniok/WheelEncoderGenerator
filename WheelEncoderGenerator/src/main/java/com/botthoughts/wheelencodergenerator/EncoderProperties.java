@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import javafx.beans.InvalidationListener;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -127,18 +126,6 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
       // Prime candidate for invalidation listener??
       INSTANCE.type = new SimpleStringProperty(INSTANCE.getTypeOptions().get(0));
       INSTANCE.type.addListener(INSTANCE);
-      
-//      Persistence p = new Persistence();
-//      p.register("encoder.type", INSTANCE.type);
-//      p.register("encoder.outsideDiameter", INSTANCE.outerDiameter);
-//      p.register("encoder.resolution", INSTANCE.resolution);
-//      p.register("encoder.centerDiameter", INSTANCE.centerDiameter);
-//      p.register("encoder.innerDiameter", INSTANCE.innerDiameter);
-//      p.register("encoder.indexTrack", INSTANCE.indexTrack);
-//      p.register("encoder.inverted", INSTANCE.inverted);
-//      p.register("encoder.clockwise", INSTANCE.clockwise);
-//      p.register("encoder.units", INSTANCE.units);
-      
     }
     return INSTANCE;
   }
