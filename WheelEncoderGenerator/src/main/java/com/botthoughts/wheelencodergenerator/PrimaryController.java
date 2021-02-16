@@ -16,19 +16,17 @@
 package com.botthoughts.wheelencodergenerator;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import static java.lang.Double.NaN;
 import java.net.URL;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.function.UnaryOperator;
 import javafx.beans.property.Property;
-import javafx.beans.value.ChangeListener;
-import javafx.collections.ListChangeListener.Change;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.PageLayout;
@@ -37,18 +35,17 @@ import javafx.print.PrintResolution;
 import javafx.print.Printer;
 import javafx.print.PrinterJob;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.converter.DoubleStringConverter;
 
 public class PrimaryController implements Initializable {
@@ -60,7 +57,9 @@ public class PrimaryController implements Initializable {
 //    EncoderModel currentEncoder;
     private EncoderView encoderPreview;
     private File currentFile;
-    
+    private static final ExtensionFilter extensionFilter = 
+        new ExtensionFilter("Wheel Encoder Generator v2", "*.we2");    
+
 //    private Color bg; // background
 //    private Color fg; // foreground
 
@@ -91,33 +90,59 @@ public class PrimaryController implements Initializable {
     @FXML
     AnchorPane canvasContainer;
 
+    public void saveFile(File f) {
+      try {
+        EncoderProperties ep = EncoderProperties.getInstance();
+        FileOutputStream out = new FileOutputStream(f);
+        Properties p = ep.toProperties();
+        p.store(out, "Wheel Encoder Generator");
+        System.out.println("file=" + f.getCanonicalPath());
+        currentFile = f; // only do this if save succeeds!
+      } catch (IOException ex) {
+        System.out.println("IOException" + ex);
+        ex.printStackTrace(); // TODO: error handling
+      }
+    }
+    
     @FXML
-    public void saveFileAs() {
-        FileChooser fc = new FileChooser();
-        File f = fc.showSaveDialog(App.stage);
-        try {
-            EncoderProperties ep = EncoderProperties.getInstance();
-            FileOutputStream out = new FileOutputStream(f);
-            Properties p = ep.toProperties();
-            p.store(out, "");
-            System.out.println("file="+f.getCanonicalPath());
-            currentFile = f; // only do this if save succeeds!
-        } catch (IOException ex) {
-            System.out.println("IOException"+ex);
-            ex.printStackTrace(); // TODO: error handling
-        }
+    public void saveFile() {
+      if (currentFile == null) {
+        saveFileAs();
+      } else {
+        saveFile(currentFile);
+      }
     }
 
     @FXML
-    public void saveFile() {
+    public void saveFileAs() {
+        FileChooser fc = new FileChooser();
+        fc.getExtensionFilters().add(extensionFilter);
+        saveFile(fc.showSaveDialog(App.stage));
     }
 
     @FXML
     public void openFile() {
+      FileChooser fc = new FileChooser();
+      fc.getExtensionFilters().add(extensionFilter);
+      File f = fc.showOpenDialog(App.stage);
+      try {
+        FileInputStream in;
+        in = new FileInputStream(f);
+        Properties p = new Properties();
+        p.load(in);
+        EncoderProperties.getInstance().fromProperties(p);
+      } catch (FileNotFoundException ex) {
+        System.out.println("FileNotFoundException" + ex);
+        ex.printStackTrace(); // TODO: error handling
+      } catch (IOException ex) {
+        System.out.println("IOException" + ex);
+        ex.printStackTrace(); // TODO: error handling
+      }
     }
 
     @FXML
     public void newFile() {
+      currentFile = null;
     }
 
     @FXML

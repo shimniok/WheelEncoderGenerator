@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import javafx.beans.InvalidationListener;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -283,33 +284,34 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
     p = new Properties();
 
     p.setProperty("encoder.type", this.getType().get());
-    p.setProperty("encoder.resolution", this.getResolution().toString());
-    p.setProperty("encoder.centerDiameter", this.getCenterDiameter().toString());
-    p.setProperty("encoder.innerDiameter", this.getInnerDiameter().toString());
-    p.setProperty("encoder.outerDiameter", this.getOuterDiameter().toString());
-    p.setProperty("encoder.indexTrack", this.getIndexTrack().toString());
-    p.setProperty("encoder.inverted", this.getInverted().toString());
-    p.setProperty("encoder.clockwise", this.getDirection().toString());
+    p.setProperty("encoder.resolution", Integer.toString(this.getResolution().get()));
+    p.setProperty("encoder.outerDiameter", Double.toString(this.getOuterDiameter().get()));
+    p.setProperty("encoder.innerDiameter", Double.toString(this.getInnerDiameter().get()));
+    p.setProperty("encoder.centerDiameter", Double.toString(this.getCenterDiameter().get()));
+    p.setProperty("encoder.indexTrack", Boolean.toString(this.getIndexTrack().get()));
+    p.setProperty("encoder.inverted", Boolean.toString(this.getInverted().get()));
+    p.setProperty("encoder.clockwise", Boolean.toString(this.getDirection().get()));
     p.setProperty("encoder.units", this.getUnits().get());
-
+    
     return p;
   }
 
-//  /**
-//   * Set this object's properties based on Properties object
-//   *
-//   * @param p properties object from which to set this object's properties
-//   */
-//  public void fromProperties(Properties p) {
-//    this.getType().set(p.getProperty("encoder.type"));
-//    this.getResolution().set(Integer.parseInt(p.getProperty("encoder.resolution")));
-//    this.getCenterDiameter().set(Double.parseDouble(p.getProperty("encoder.centerDiameter")));
-//    this.getInnerDiameter().set(Double.parseDouble(p.getProperty("encoder.innerDiameter")));
-//    this.getOuterDiameter().set(Double.parseDouble(p.getProperty("encoder.outerDiameter")));
-//    this.getIndexTrack().set(Boolean.parseBoolean(p.getProperty("encoder.indexTrack")));
-//    this.getInverted().set(Boolean.parseBoolean(p.getProperty("encoder.inverted")));
-//    this.getDirection().set(Boolean.parseBoolean(p.getProperty("encoder.inverted")));
-//  }
+  /**
+   * Set this object's properties based on Properties object
+   *
+   * @param p properties object from which to set this object's properties
+   */
+  public void fromProperties(Properties p) {
+    this.getType().set(p.getProperty("encoder.type"));
+    this.getResolution().set(Integer.parseInt(p.getProperty("encoder.resolution")));
+    this.getOuterDiameter().set(Double.parseDouble(p.getProperty("encoder.outerDiameter")));
+    this.getInnerDiameter().set(Double.parseDouble(p.getProperty("encoder.innerDiameter")));
+    this.getCenterDiameter().set(Double.parseDouble(p.getProperty("encoder.centerDiameter")));
+    this.getIndexTrack().set(Boolean.parseBoolean(p.getProperty("encoder.indexTrack")));
+    this.getInverted().set(Boolean.parseBoolean(p.getProperty("encoder.inverted")));
+    this.getDirection().set(Boolean.parseBoolean(p.getProperty("encoder.clockwise")));
+    this.getUnits().set(p.getProperty("encoder.units"));
+  }
 
   @Override
   public void addListener(ChangeListener cl) {
