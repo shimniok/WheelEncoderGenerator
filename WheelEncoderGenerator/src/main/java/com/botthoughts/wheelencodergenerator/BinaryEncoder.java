@@ -53,11 +53,12 @@ public class BinaryEncoder extends BasicEncoder {
 
     double trackWidth = (od - id) / resolution;
 
-    // TODO: Binary: implement direction in generating track info
     id = od - trackWidth;
     for (int b = resolution; b > 0; b--) {
       int res = 1 << b;
       double angle = 360.0 / res;
+      
+      if (clockwise) angle = -angle;
 
       tracks.add(new EncoderTrack(od, id, 0, angle, res));
       od -= trackWidth;
