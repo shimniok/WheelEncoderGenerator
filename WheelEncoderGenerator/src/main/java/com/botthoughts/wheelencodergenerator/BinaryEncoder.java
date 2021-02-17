@@ -24,58 +24,62 @@ import java.util.List;
  */
 public class BinaryEncoder extends BasicEncoder {
 
-    /**
-     * Check validity of resolution, which for this type is # bits.
-     * @param resolution
-     * @return true if valid resolution.
-     */
-    @Override
-    public boolean validResolution(int resolution) {
-        return resolution >= 1; // minimum resolution is 1 bit
-    }
-    
-    /**
-     * Return list of ordered Track objects for this encoder.
-     * Tracks are computed on-demand based on current properties
-     * @param id Inside diameter
-     * @param od Outside diameter
-     * @return list of tracks
-     */
-    @Override
-    public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index) {
-        tracks = new ArrayList<>();
+  /**
+   * Check validity of resolution, which for this type is # bits.
+   *
+   * @param resolution
+   * @return true if valid resolution.
+   */
+  @Override
+  public boolean validResolution(int resolution) {
+    return resolution >= 1; // minimum resolution is 1 bit
+  }
 
-        double trackWidth = (od - id)/resolution;
+  /**
+   * Return list of ordered Track objects for this encoder. Tracks are computed on-demand based on
+   * current properties
+   *
+   * @param id Inside diameter
+   * @param od Outside diameter
+   * @param resolution is the number of "bits" or separate tracks
+   * @param index is ignored for binary
+   * @param clockwise is true if encoder designed for clockwise rotation
+   * @return list of tracks
+   */
+  @Override
+  public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index,
+      boolean clockwise) {
+    tracks = new ArrayList<>();
 
-        // TODO: Binary: implement direction in generating track info
-        
-        id = od - trackWidth;
-        for (int b = resolution; b > 0; b--) {
-            int res = 1 << b;
-            double angle = 360.0/res;
+    double trackWidth = (od - id) / resolution;
 
-            tracks.add(new EncoderTrack(od, id, 0, angle, res));
-            od -= trackWidth;
-            id -= trackWidth;
-        }
-        
-        return tracks;
-    }
-    
-    @Override
-    
-    public int getMinResolution() {
-        return 1;
-    }
-    
-    @Override
-    public int getMaxResolution() {
-        return 12;
+    // TODO: Binary: implement direction in generating track info
+    id = od - trackWidth;
+    for (int b = resolution; b > 0; b--) {
+      int res = 1 << b;
+      double angle = 360.0 / res;
+
+      tracks.add(new EncoderTrack(od, id, 0, angle, res));
+      od -= trackWidth;
+      id -= trackWidth;
     }
 
-    @Override
-    public int getResolutionIncrement() {
-        return 1;
-    }
+    return tracks;
+  }
+
+  @Override
+  public int getMinResolution() {
+    return 1;
+  }
+
+  @Override
+  public int getMaxResolution() {
+    return 12;
+  }
+
+  @Override
+  public int getResolutionIncrement() {
+    return 1;
+  }
 
 }

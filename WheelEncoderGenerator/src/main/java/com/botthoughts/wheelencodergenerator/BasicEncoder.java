@@ -24,90 +24,85 @@ import java.util.List;
  */
 public class BasicEncoder implements EncoderModel {
 
-    protected List<EncoderTrack> tracks; // list of tracks
-    protected static int RESOLUTION_MIN = 1;
-    protected static int RESOLUTION_MAX = 1024;
-    protected static int INCREMENT = 1;
+  protected List<EncoderTrack> tracks; // list of tracks
+  protected static int RESOLUTION_MIN = 1;
+  protected static int RESOLUTION_MAX = 1024;
+  protected static int INCREMENT = 1;
 
-    /**
-     * Return list of tracks
-     * @param id inside diameter
-     * @param od outside diameter
-     * @param resolution resolution of encoder
-     * @param index
-     * @return list of tracks
-     */
-    @Override
-    public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index) {
-        tracks = new ArrayList<>();
-        int r = resolution * 2;
-        
-        EncoderTrack outer = new EncoderTrack(od, id, 0, 360.0/r, r);
-        tracks.add(outer);
-        
-        return tracks;
-    }
+  /**
+   * Return list of tracks
+   *
+   * @param id inside diameter
+   * @param od outside diameter
+   * @param resolution resolution of encoder
+   * @param index is true if an index track is present
+   * @param clockwise ignored for a single-track encoder
+   * @return list of tracks
+   */
+  @Override
+  public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index,
+      boolean clockwise) {
+    tracks = new ArrayList<>();
+    int r = resolution * 2;
+    int tc;
+    double tw;
+    double angle = 360.0 / r;
 
-    /**
-     * Determine if specified resolution is valid
-     * @return true if valid, false otherwise
-     */
-    @Override
-    public boolean validResolution(int resolution) {
-        return RESOLUTION_MIN <= resolution && resolution <= RESOLUTION_MAX;
+    if (index) {
+      tc = 2;
+    } else {
+      tc = 1;
     }
-    
-    
-    public int fixResolution(int resolution) {
-        int r = resolution;
-        if (r < this.getMinResolution()) r = this.getMinResolution();
-        if (r > this.getMaxResolution()) r = this.getMaxResolution();
-        return r;
-    }
-    
-    /**
-     * Attempt to increment the supplied resolution by one step.
-     * If the result is valid (see validResolution()) it its returned,
-     * otherwise the original resolution is returned
-     * 
-     * @param resolution 
-     * @return incremented resolution if valid, else original resolution
-     */
-//    public int incrementResolution(int resolution) {
-//        if (validResolution(resolution+1)) {
-//            return resolution+1;
-//        }
-//        return resolution;
-//    }
-    
-    /**
-     * Attempt to decrement the supplied resolution by one step.
-     * If the result is valid (see validResolution()) it its returned,
-     * otherwise the original resolution is returned
-     * 
-     * @return decremented resolution if valid, else original resolution
-     * @param resolution 
-     */
-//    public int decrementResolution(int resolution) {
-//        if (validResolution(resolution-1)) {
-//            return resolution-1;
-//        }
-//        return resolution;
-//    }
+    tw = (od - id) / tc;
 
-    @Override
-    public int getMinResolution() {
-        return RESOLUTION_MIN;
+    tracks.add(new EncoderTrack(od, od - tw, 0, angle, r));
+
+    if (index) {
+      od -= tw;
+      tracks.add(new EncoderTrack(od, od - tw, 0, angle, 1));
     }
 
-    @Override
-    public int getMaxResolution() {
-        return RESOLUTION_MAX;
-    }
+    return tracks;
+  }
 
-    @Override
-    public int getResolutionIncrement() {
-        return INCREMENT;
+  /**
+   * Determine if specified resolution is valid
+   *
+   * @return true if valid, false otherwise
+   */
+  @Override
+  public boolean validResolution(int resolution) {
+    return RESOLUTION_MIN <= resolution && resolution <= RESOLUTION_MAX;
+  }
+
+  
+  public int fixResolution(int resolution) {
+    int r = resolution;
+    if (r < this.getMinResolution()) {
+      r = this.getMinResolution();
     }
+    if (r > this.getMaxResolution()) {
+      r = this.getMaxResolution();
+    }
+    return r;
+  }
+
+
+  @Override
+  public int getMinResolution() {
+    return RESOLUTION_MIN;
+  }
+
+  
+  @Override
+  public int getMaxResolution() {
+    return RESOLUTION_MAX;
+  }
+
+  
+  @Override
+  public int getResolutionIncrement() {
+    return INCREMENT;
+  }
 
 }

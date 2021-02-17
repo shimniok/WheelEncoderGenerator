@@ -240,7 +240,7 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
   public List<EncoderTrack> getTracks() {
     return getEncoder().getTracks(this.getInnerDiameter().get(),
         this.getOuterDiameter().get(), this.getResolution().get(),
-        this.getIndexTrack().get());
+        this.getIndexTrack().get(), this.getDirection().get());
   }
 
   /**

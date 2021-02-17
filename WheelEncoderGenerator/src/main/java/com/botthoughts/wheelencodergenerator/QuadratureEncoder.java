@@ -23,46 +23,48 @@ import java.util.List;
  * @author mes
  */
 public class QuadratureEncoder extends BasicEncoder {
-    /**
-     * Return list of ordered Track objects for this encoder.Track information is computed on-demand
-     * @param id inside diameter of track
-     * @param od outside diameter of track
-     * @param resolution number of black stripes on track
-     * @param index include index track?
-     * @return list of tracks
-     */
-    @Override
-    public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index) {
-        int tc;    // track count
-        double tw; // track width
-        int r = resolution * 2;
-        double angle = 360.0/r;
-        
-        List<EncoderTrack> tracks = new ArrayList<>();
 
-        if (index) {
-            tc = 3;
-        } else {
-            tc = 2;
-        }
-        tw = (od - id)/tc;
+  /**
+   * Return list of ordered Track objects for this encoder.Track information is computed on-demand
+   *
+   * @param id inside diameter of track
+   * @param od outside diameter of track
+   * @param resolution number of black stripes on track
+   * @param index include index track?
+   * @return list of tracks
+   */
+  @Override
+  public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index,
+      boolean clockwise) {
+    int tc;    // track count
+    double tw; // track width
+    int r = resolution * 2;
+    double angle = 360.0 / r;
 
-        // TODO: Quadrature: implement direction in generating track info        
-        
-        // outer track
-        tracks.add(new EncoderTrack(od, od-tw, 0, angle, r));
-       
-        // inner track
-        od -= tw;
-        tracks.add(new EncoderTrack(od, od-tw, angle/2, angle, r));
-        
-        // index track
-        if (index) {
-            od -= tw;
-            tracks.add(new EncoderTrack(od, od-tw, angle/2, angle, 1));
-        }
-        
-        return tracks;
+    List<EncoderTrack> tracks = new ArrayList<>();
+
+    if (index) {
+      tc = 3;
+    } else {
+      tc = 2;
     }
+    tw = (od - id) / tc;
+
+    // TODO: Quadrature: implement direction in generating track info        
+    // outer track
+    tracks.add(new EncoderTrack(od, od - tw, 0, angle, r));
+
+    // inner track
+    od -= tw;
+    tracks.add(new EncoderTrack(od, od - tw, angle / 2, angle, r));
+
+    // index track
+    if (index) {
+      od -= tw;
+      tracks.add(new EncoderTrack(od, od - tw, angle / 2, angle, 1));
+    }
+
+    return tracks;
+  }
 
 }

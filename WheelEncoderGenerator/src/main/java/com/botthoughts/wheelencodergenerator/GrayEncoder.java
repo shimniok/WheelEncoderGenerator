@@ -24,43 +24,44 @@ import java.util.List;
  */
 public class GrayEncoder extends BinaryEncoder {
 
-    /**
-     * Return list of ordered Track objects for this encoder. Track information
-     * is computed on-demand
-     * @param id Inside diameter
-     * @param od Outside diameter
-     * @param resolution
-     * @param index ignored because it doesn't make sense for this type of encoder
-     * @return list of tracks
-     */
-    @Override
-    public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index) {
-        double tw = (od - id)/resolution; // track width
-        double angle = 0;
-        double start;
-        int res = 0;
+  /**
+   * Return list of ordered Track objects for this encoder. Track information is computed on-demand
+   *
+   * @param id Inside diameter
+   * @param od Outside diameter
+   * @param resolution
+   * @param index ignored because it doesn't make sense for this type of encoder
+   * @return list of tracks
+   */
+  @Override
+  public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index,
+      boolean clockwise) {
+    double tw = (od - id) / resolution; // track width
+    double angle = 0;
+    double start;
+    int res = 0;
 
-        tracks = new ArrayList<>();
+    tracks = new ArrayList<>();
 
-        id = od - tw;
-        for (int b = resolution-1; b >= 0; b--) {
-            if (b > 0) {
-                res = 1 << b;
-                angle = 360.0/res;
-                start = angle/2;
-            } else {
-                // for the final track, we keep the previous
-                // resolution and angle, and simply start it
-                // 90 degrees offset from the previous track
-                start = 0;
-            }
+    id = od - tw;
+    for (int b = resolution - 1; b >= 0; b--) {
+      if (b > 0) {
+        res = 1 << b;
+        angle = 360.0 / res;
+        start = angle / 2;
+      } else {
+        // for the final track, we keep the previous
+        // resolution and angle, and simply start it
+        // 90 degrees offset from the previous track
+        start = 0;
+      }
 
-            // TODO: Gray: implement direction in generating track info
-            tracks.add(new EncoderTrack(od, id, start, angle, res));
-            od -= tw;
-            id -= tw;            
-        }
-        
-        return tracks;
+      // TODO: Gray: implement direction in generating track info
+      tracks.add(new EncoderTrack(od, id, start, angle, res));
+      od -= tw;
+      id -= tw;
     }
+
+    return tracks;
+  }
 }

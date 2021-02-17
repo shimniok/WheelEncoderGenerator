@@ -19,66 +19,67 @@ import java.util.List;
 
 /**
  * Functionality required of--and unique to--each encoder type.
- * 
+ *
  * @author mes
  */
 public interface EncoderModel {
 
-    /**
-     * Return minimum resolution for the encoder.
-     * @return min resolution
-     */
-    abstract public int getMinResolution();
-    
-    /**
-     * Return maximum resolution for the encoder.
-     * @return max resolution
-     */
-    abstract public int getMaxResolution();
+  /**
+   * Return minimum resolution for the encoder.
+   *
+   * @return min resolution
+   */
+  abstract public int getMinResolution();
 
-    /**
-     * Return the amount by which resolution can increment
-     * @return resolution increment value
-     */
-    abstract public int getResolutionIncrement();
-   
-    /**
-     * Return list of ordered Track objects for this encoder. Track information
-     * is computed on-demand.
-     * @param id Inside diameter
-     * @param od Outside diameter
-     * @param resolution Resolution of encoder
-     * @param index include index track
-     * @return list of tracks
-     */
-    abstract public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index);
+  /**
+   * Return maximum resolution for the encoder.
+   *
+   * @return max resolution
+   */
+  abstract public int getMaxResolution();
 
-    /**
-     * Determine if provided resolution is valid for encoder type
-     * 
-     * @param resolution
-     * @return true if resolution is valid, false otherwise
-     */
-    abstract public boolean validResolution(int resolution);
+  /**
+   * Return the amount by which resolution can increment
+   *
+   * @return resolution increment value
+   */
+  abstract public int getResolutionIncrement();
 
-    /**
-     * Attempt to increment the supplied resolution by one step.
-     * If the result is valid (see validResolution()) it its returned,
-     * otherwise the original resolution is returned
-     * 
-     * @param resolution 
-     * @return incremented resolution if valid, else original resolution
-     */
+  /**
+   * Return list of ordered Track objects for this encoder.Track information is computed on-demand.
+   *
+   * @param id Inside diameter
+   * @param od Outside diameter
+   * @param resolution Resolution of encoder
+   * @param index include index track
+   * @param clockwise true if encoder is designed to rotate clockwise
+   * @return list of tracks
+   */
+  abstract public List<EncoderTrack> getTracks(double id, double od, int resolution, boolean index,
+      boolean clockwise);
+
+  /**
+   * Determine if provided resolution is valid for encoder type
+   *
+   * @param resolution
+   * @return true if resolution is valid, false otherwise
+   */
+  abstract public boolean validResolution(int resolution);
+
+  /**
+   * Attempt to increment the supplied resolution by one step. If the result is valid (see
+   * validResolution()) it its returned, otherwise the original resolution is returned
+   *
+   * @param resolution
+   * @return incremented resolution if valid, else original resolution
+   */
 //    abstract public Integer incrementResolution(int resolution);
-    
-    /**
-     * Attempt to decrement the supplied resolution by one step.
-     * If the result is valid (see validResolution()) it its returned,
-     * otherwise the original resolution is returned
-     * 
-     * @return decremented resolution if valid, else original resolution
-     * @param resolution 
-     */
+  /**
+   * Attempt to decrement the supplied resolution by one step. If the result is valid (see
+   * validResolution()) it its returned, otherwise the original resolution is returned
+   *
+   * @return decremented resolution if valid, else original resolution
+   * @param resolution
+   */
 //    abstract public Integer decrementResolution(int resolution);
-    
 }
