@@ -55,6 +55,7 @@ public class GrayEncoder extends BinaryEncoder {
                 start = 0;
             }
 
+            // TODO: Gray: implement direction in generating track info
             tracks.add(new EncoderTrack(od, id, start, angle, res));
             od -= tw;
             id -= tw;            

@@ -46,6 +46,8 @@ public class QuadratureEncoder extends BasicEncoder {
             tc = 2;
         }
         tw = (od - id)/tc;
+
+        // TODO: Quadrature: implement direction in generating track info        
         
         // outer track
         tracks.add(new EncoderTrack(od, od-tw, 0, angle, r));

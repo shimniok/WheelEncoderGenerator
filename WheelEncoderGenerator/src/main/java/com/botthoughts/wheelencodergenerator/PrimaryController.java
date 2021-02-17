@@ -159,7 +159,7 @@ public class PrimaryController implements Initializable {
     public void newFile() {
       currentFile = null;
       filename.set("untitled"+extension);
-      // TODO: reset or create new EncoderProperties object
+      // TODO: newFile(): reset or create new EncoderProperties object
     }
 
     @FXML
@@ -217,10 +217,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     public void export() {
-    }
-
-    @FXML
-    public void onOpenDialog(ActionEvent event) throws IOException {
+      // TODO file export
     }
 
     private Double parseDouble(String s) {
@@ -250,13 +247,13 @@ public class PrimaryController implements Initializable {
 
         typeUI.getItems().setAll(ep.getTypeOptions());
         typeUI.valueProperty().bindBidirectional(ep.getType());
-
+        System.out.println("PrimaryController: type="+ep.getType());
+        
         resolutionUI.setValueFactory(new ResolutionValueFactory(
                 ep.getEncoder(), ep.getResolution().get()));
         resolutionUI.getValueFactory().valueProperty().bindBidirectional(
                 ep.getResolution());
         resolutionUI.getEditor().setTextFormatter(new IntegerTextFormatter(8).get());
-        // TODO: change valuevactory whenever type changes
         ep.getType().addListener((observable, oldvalue, newvalue) -> {
             ResolutionValueFactory vf = 
                     (ResolutionValueFactory) resolutionUI.getValueFactory();
@@ -301,9 +298,6 @@ public class PrimaryController implements Initializable {
         alertDialog.titleProperty().bind(alertTitle);
 
         encoderPreview.render();
-       
-        // TODO file new
-        // TODO file export
     }
 
 //    private Parent loadFXML(String print) {

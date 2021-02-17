@@ -18,9 +18,11 @@ package com.botthoughts.wheelencodergenerator;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.SortedMap;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -54,25 +56,13 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
   /**
    * A hash map relating encoder type to EncoderModels
    */
-  protected static Map<String, EncoderModel> encoderMap = Map.ofEntries(
-      new AbstractMap.SimpleEntry<String, EncoderModel>("Quadrature", new QuadratureEncoder()),
-      new AbstractMap.SimpleEntry<String, EncoderModel>("Simple", new BasicEncoder()),
-      new AbstractMap.SimpleEntry<String, EncoderModel>("Binary", new BinaryEncoder()),
-      new AbstractMap.SimpleEntry<String, EncoderModel>("Gray", new GrayEncoder())
-  );
+  protected static LinkedHashMap<String, EncoderModel> encoderMap = new LinkedHashMap();
 
   /**
    * List of options for Units
    */
   protected static List<String> unitOptions = Arrays.asList(
       EncoderProperties.MM, EncoderProperties.INCH);
-
-  /**
-   * A list of strings representing available encoder types
-   */
-  protected static List<String> typeOptions = Arrays.asList(
-      "Quadrature", "Simple", "Binary", "Gray"
-  );
 
   private List<ChangeListener> changeListeners;
   private List<InvalidationListener> invalidationListeners;
@@ -83,8 +73,7 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
   /**
    * Make new encoder properties object; Singleton pattern
    */
-  private EncoderProperties() {
-  }
+  private EncoderProperties() {}
 
   /**
    * Returns Singleton instance of EncoderProperites with lazy instantiation and
@@ -124,6 +113,10 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
       INSTANCE.indexTrack.addListener(INSTANCE);
 
       // Prime candidate for invalidation listener??
+      INSTANCE.encoderMap.put("Quadrature", new QuadratureEncoder());
+      INSTANCE.encoderMap.put("Simple", new BasicEncoder());
+      INSTANCE.encoderMap.put("Binary", new BinaryEncoder());
+      INSTANCE.encoderMap.put("Gray", new GrayEncoder());
       INSTANCE.type = new SimpleStringProperty(INSTANCE.getTypeOptions().get(0));
       INSTANCE.type.addListener(INSTANCE);
     }

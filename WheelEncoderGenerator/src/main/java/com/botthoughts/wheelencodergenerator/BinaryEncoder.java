@@ -49,6 +49,8 @@ public class BinaryEncoder extends BasicEncoder {
 
         double trackWidth = (od - id)/resolution;
 
+        // TODO: Binary: implement direction in generating track info
+        
         id = od - trackWidth;
         for (int b = resolution; b > 0; b--) {
             int res = 1 << b;
