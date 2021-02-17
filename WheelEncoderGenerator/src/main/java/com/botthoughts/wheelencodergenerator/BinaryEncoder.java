@@ -24,8 +24,6 @@ import java.util.List;
  */
 public class BinaryEncoder extends BasicEncoder {
 
-    protected List<EncoderTrack> tracks; // list of tracks
-    
     /**
      * Check validity of resolution, which for this type is # bits.
      * @param resolution
