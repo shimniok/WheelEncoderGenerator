@@ -164,24 +164,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     public void print(Event e) {
-
         print(encoderUI);
-        
-//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("print.fxml"));
-//        Parent parent;
-//        Scene scene;
-//        Stage stage;
-//
-//        System.out.println("print()");
-//
-//            parent = fxmlLoader.load();
-//            PrintController pc = fxmlLoader.getController();
-//            stage = new Stage();
-//            scene = new Scene(parent);
-//            stage.initModality(Modality.APPLICATION_MODAL);
-//            stage.setScene(scene);
-//            stage.showAndWait();
-
     }
     
     @FXML
@@ -302,7 +285,6 @@ public class PrimaryController implements Initializable {
 
         indexUI.selectedProperty().bindBidirectional(ep.getIndexTrack());
 
-        // TODO - direction
         // directionUI
         cwUI.selectedProperty().bindBidirectional(ep.getDirection());
         cwUI.selectedProperty().addListener((observable, oldvalue, newvalue) -> {
