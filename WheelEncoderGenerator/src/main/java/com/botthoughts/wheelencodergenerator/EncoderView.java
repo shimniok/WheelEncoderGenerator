@@ -131,7 +131,6 @@ public final class EncoderView {
     // Draw the stripes for the track
     gc.setFill(foregroundColor);
     for (int s = 0; s < t.stripeCount; s += 2) {
-      // TODO: implement CW and CCW rendering
       gc.fillArc(x1, y1, od, od,
           t.startAngle + s * t.stripeAngle, 
           t.stripeAngle, ArcType.ROUND);
