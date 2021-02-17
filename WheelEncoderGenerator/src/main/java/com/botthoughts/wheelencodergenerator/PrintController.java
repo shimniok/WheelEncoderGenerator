@@ -86,7 +86,6 @@ public class PrintController implements Initializable {
         System.out.println("doPrint()");
         job = PrinterJob.createPrinterJob();
         
-        
 //                    Printer printer = job.getPrinter();
 //            PageLayout pageLayout = printer.createPageLayout(
 //                    Paper.A4, 
@@ -111,10 +110,8 @@ public class PrintController implements Initializable {
 //                System.out.println("Error printing");
 //            }
 //        } else {
-//            System.out.println("Error setting up job"); // TODO: error handling
+//              showAlert("Printing Problem", "Status: "+job.getJobStatus().toString());
 //        }
-        
-        // TODO: close dialog on success
     }
     
     public void doCancel() {

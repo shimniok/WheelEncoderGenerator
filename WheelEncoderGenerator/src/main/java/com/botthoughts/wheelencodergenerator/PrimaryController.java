@@ -38,6 +38,8 @@ import javafx.print.PrinterJob;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
@@ -62,6 +64,9 @@ public class PrimaryController implements Initializable {
     private static final ExtensionFilter extensionFilter = 
         new ExtensionFilter("Wheel Encoder Generator v2", "*"+extension);    
     private SimpleStringProperty filename;
+    private SimpleStringProperty alertTitle;
+    private SimpleStringProperty alertText;
+    private Alert alertDialog;
     
 //    private Color bg; // background
 //    private Color fg; // foreground
@@ -92,7 +97,13 @@ public class PrimaryController implements Initializable {
     ToggleButton indexUI;
     @FXML
     AnchorPane canvasContainer;
-
+    
+    private void showAlert(String title, String text) {
+      alertText.set(text);
+      alertTitle.set(title);
+      alertDialog.showAndWait();
+    }
+    
     public void saveFile(File f) {
       if (f != null) {
         try {
@@ -104,8 +115,7 @@ public class PrimaryController implements Initializable {
           currentFile = f; // only do this if save succeeds!
           filename.set(f.getName());
         } catch (IOException ex) {
-          System.out.println("IOException" + ex);
-          ex.printStackTrace(); // TODO: error handling
+          showAlert("File Save Error", "Error saving "+f.getName()+"\n"+ex.getMessage());
         }
       }
     }
@@ -140,18 +150,16 @@ public class PrimaryController implements Initializable {
         EncoderProperties.getInstance().fromProperties(p);
         currentFile = f;
         filename.set(f.getName());
-      } catch (FileNotFoundException ex) {
-        System.out.println("FileNotFoundException" + ex);
-        ex.printStackTrace(); // TODO: error handling
       } catch (IOException ex) {
-        System.out.println("IOException" + ex);
-        ex.printStackTrace(); // TODO: error handling
+        showAlert("File Open Error", "Error opening " + f.getName() + "\n" + ex.getMessage());
       }
     }
 
     @FXML
     public void newFile() {
       currentFile = null;
+      filename.set("untitled"+extension);
+      // TODO: reset or create new EncoderProperties object
     }
 
     @FXML
@@ -166,7 +174,6 @@ public class PrimaryController implements Initializable {
 //
 //        System.out.println("print()");
 //
-//        try {
 //            parent = fxmlLoader.load();
 //            PrintController pc = fxmlLoader.getController();
 //            stage = new Stage();
@@ -174,10 +181,6 @@ public class PrimaryController implements Initializable {
 //            stage.initModality(Modality.APPLICATION_MODAL);
 //            stage.setScene(scene);
 //            stage.showAndWait();
-//        } catch (IOException ex) {
-//            System.out.println("IOException in print(): "+ex);
-//            //ex.printStackTrace(); // TODO: error handling
-//        }
 
     }
     
@@ -221,6 +224,8 @@ public class PrimaryController implements Initializable {
             boolean success = job.printPage(pane);
             if (success) {
                 job.endJob();
+            } else {
+              showAlert("Printing Problem", "Status: "+job.getJobStatus().toString());
             }
 
         }
@@ -249,19 +254,19 @@ public class PrimaryController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         EncoderProperties ep = EncoderProperties.getInstance();
 
+        // App title set to filename
         filename = new SimpleStringProperty();
-        filename.set("untitled"+extension);
         App.stage.titleProperty().bindBidirectional(filename);
+        newFile();
 
+        // Update encoder preview anytime there's a change
         encoderPreview = new EncoderView(encoderUI);
         ep.addListener((observable, oldvalue, newvalue) -> {
             encoderPreview.render();
         });
 
-        // TODO - convert type to property on eProperties
         typeUI.getItems().setAll(ep.getTypeOptions());
         typeUI.valueProperty().bindBidirectional(ep.getType());
-//        typeUI.getSelectionModel().select(0);
 
         resolutionUI.setValueFactory(new ResolutionValueFactory(
                 ep.getEncoder(), ep.getResolution().get()));
@@ -305,10 +310,16 @@ public class PrimaryController implements Initializable {
             ep.getDirection().set(cwUI.selectedProperty().get());
             ccwUI.selectedProperty().set(oldvalue); // make sure the other toggle toggles
         });
+        
+        alertTitle = new SimpleStringProperty("");
+        alertText = new SimpleStringProperty("");
+        
+        alertDialog = new Alert(Alert.AlertType.ERROR);
+        alertDialog.contentTextProperty().bind(alertText);
+        alertDialog.titleProperty().bind(alertTitle);
 
         encoderPreview.render();
        
-        // TODO file save
         // TODO file new
         // TODO file export
     }
