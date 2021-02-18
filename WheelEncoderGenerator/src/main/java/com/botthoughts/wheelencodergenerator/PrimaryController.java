@@ -17,7 +17,6 @@ package com.botthoughts.wheelencodergenerator;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import static java.lang.Double.NaN;
@@ -26,7 +25,6 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -39,7 +37,6 @@ import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
@@ -255,8 +252,7 @@ public class PrimaryController implements Initializable {
                 ep.getResolution());
         resolutionUI.getEditor().setTextFormatter(new IntegerTextFormatter(8).get());
         ep.getType().addListener((observable, oldvalue, newvalue) -> {
-            ResolutionValueFactory vf = 
-                    (ResolutionValueFactory) resolutionUI.getValueFactory();
+            ResolutionValueFactory vf = (ResolutionValueFactory) resolutionUI.getValueFactory();
             vf.setEncoder(ep.getEncoder());
         });
         
@@ -281,14 +277,23 @@ public class PrimaryController implements Initializable {
         invertedUI.selectedProperty().bindBidirectional(ep.getInverted());
 
         indexUI.selectedProperty().bindBidirectional(ep.getIndexTrack());
-
-        // directionUI
-        cwUI.selectedProperty().bindBidirectional(ep.getDirection());
-        cwUI.selectedProperty().addListener((observable, oldvalue, newvalue) -> {
-            System.out.println("cwUI, newvalue: " + newvalue);
-            ep.getDirection().set(cwUI.selectedProperty().get());
-            ccwUI.selectedProperty().set(oldvalue); // make sure the other toggle toggles
+        indexUI.disableProperty().bind(ep.getIndexable().not());
+        indexUI.selectedProperty().addListener((obs, ov, nv) -> {
+          if (nv) {
+            indexUI.setText("Yes");
+          } else {
+            indexUI.setText("No");
+          }
         });
+        
+        // directionUI, two buttons, only one selected at once.
+        cwUI.selectedProperty().bindBidirectional(ep.getDirection());
+        cwUI.selectedProperty().addListener((obs, ov, nv) -> {
+            ep.getDirection().set(nv);
+            ccwUI.selectedProperty().set(ov); // make sure the other toggle toggles
+        });
+        cwUI.disableProperty().bind(ep.getDirectional().not());
+        ccwUI.disableProperty().bind(ep.getDirectional().not());
         
         alertTitle = new SimpleStringProperty("");
         alertText = new SimpleStringProperty("");
@@ -300,8 +305,4 @@ public class PrimaryController implements Initializable {
         encoderPreview.render();
     }
 
-//    private Parent loadFXML(String print) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
 }

@@ -49,6 +49,8 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
   protected SimpleBooleanProperty inverted;
   protected SimpleBooleanProperty indexTrack;
   protected SimpleBooleanProperty clockwise; // see this.CLOCKWISE
+  protected SimpleBooleanProperty indexable; // true if index track possible
+  protected SimpleBooleanProperty directional; // true if encoder is directional
 
   /**
    * A hash map relating encoder type to EncoderModels
@@ -116,6 +118,29 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
       INSTANCE.encoderMap.put("Gray", new GrayEncoder());
       INSTANCE.type = new SimpleStringProperty(INSTANCE.getTypeOptions().get(0));
       INSTANCE.type.addListener(INSTANCE);
+      
+      INSTANCE.indexable = new SimpleBooleanProperty(true);
+      INSTANCE.directional = new SimpleBooleanProperty(true);
+      
+      // Listener to set indexable and directional properties based on encoder type
+      INSTANCE.type.addListener((obs, ov, nv) -> {
+        switch (nv) {
+          case "Quadrature":
+            INSTANCE.indexable.set(true);
+            INSTANCE.directional.set(true);
+            break;
+          case "Simple":
+            INSTANCE.indexable.set(true);
+            INSTANCE.directional.set(false);
+            break;
+          case "Binary":
+          case "Gray":
+            INSTANCE.indexable.set(false);
+            INSTANCE.directional.set(true);
+            break;
+        }
+      });
+      
     }
     return INSTANCE;
   }
@@ -225,6 +250,14 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
     return this.clockwise;
   }
 
+  public SimpleBooleanProperty getIndexable() {
+    return this.indexable;
+  }
+
+  public SimpleBooleanProperty getDirectional() {
+    return this.directional;
+  }
+  
   /**
    * Get the encoder associated with these properties
    *
