@@ -24,29 +24,30 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
 
-    EncoderModel e;
+    private EncoderProperties ep;
     
-    public ResolutionValueFactory(EncoderModel e, Integer initial) {
+    public ResolutionValueFactory(EncoderProperties ep) {
         super();
-        this.e = e;
+        this.ep = ep;
         setConverter(new IntegerStringConverter());
-        this.valueProperty().addListener((observable, oldvalue, newvalue) -> {
-            if (!this.e.validResolution(newvalue)) {
-            }
-        });
-        this.setValue(initial);
+//        this.valueProperty().addListener((observable, oldvalue, newvalue) -> {
+//            if (!this.e.validResolution(newvalue)) {
+//              // TODO: find a way to fix the resolution if it's invalid
+//            }
+//        });
+        this.setValue(ep.getResolution().get());
     }
 
-    public void setEncoder(EncoderModel e) {
-        this.e = e;
-    }
+//    public void setEncoder(EncoderProperties ep) {
+//        this.ep = ep;
+//    }
     
     private int bump(int steps, int increment) {
         int v;
         
         v = valueProperty().get();
 
-        while (steps-- > 0 && e.validResolution(v + increment)) {
+        while (steps-- > 0 && ep.validResolution(v + increment)) {
             v += increment;
         }    
         
@@ -55,12 +56,12 @@ public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
     
     @Override
     public void decrement(int i) {
-        valueProperty().set(bump(i, -e.getResolutionIncrement()));
+        valueProperty().set(bump(i, -ep.getResolutionIncrement()));
     }
 
     @Override
     public void increment(int i) {
-        valueProperty().set(bump(i, e.getResolutionIncrement()));
+        valueProperty().set(bump(i, ep.getResolutionIncrement()));
     }
     
 }

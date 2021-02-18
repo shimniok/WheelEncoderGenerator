@@ -29,6 +29,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+// TODO: convert dimensions when switching units
+
 /**
  *
  * @author mes
@@ -44,16 +46,16 @@ public final class EncoderProperties implements ObservableValue {
   public static final String TYPE_BINARY = "Binary";
   public static final String TYPE_GRAY = "Gray";
 
-  protected SimpleStringProperty type;
-  protected SimpleStringProperty units; // see this.unitOptions
+  protected SimpleStringProperty type; // see TYPE_*
+  protected SimpleStringProperty units; // see UNITS_MM or UNITS_INCH
   protected SimpleDoubleProperty outerDiameter;
   protected SimpleDoubleProperty innerDiameter;
   protected SimpleDoubleProperty centerDiameter;
   protected SimpleIntegerProperty resolution;
-  protected SimpleBooleanProperty inverted;
-  protected SimpleBooleanProperty indexTrack;
-  protected SimpleBooleanProperty clockwise; // see this.CLOCKWISE
+  protected SimpleBooleanProperty inverted; // black on white vs white on black
+  protected SimpleBooleanProperty indexed; // true if has index track
   protected SimpleBooleanProperty indexable; // true if index track possible
+  protected SimpleBooleanProperty direction; // DIRECTION_CLOCKWISE / DIRECTION_COUNTERCLOCKWISE
   protected SimpleBooleanProperty directional; // true if encoder is directional
   protected EncoderModel encoder;
   
@@ -81,39 +83,38 @@ public final class EncoderProperties implements ObservableValue {
     this.changeListeners = new ArrayList();
     this.invalidationListeners = new ArrayList();
 
-    this.outerDiameter = new SimpleDoubleProperty(100);
-    this.outerDiameter.addListener(changed);
-
-    this.innerDiameter = new SimpleDoubleProperty(10);
-    this.innerDiameter.addListener(changed);
-
-    this.centerDiameter = new SimpleDoubleProperty(5);
-    this.centerDiameter.addListener(changed);
-
-    this.inverted = new SimpleBooleanProperty(false);
-    this.inverted.addListener(changed);
-
-    this.units = new SimpleStringProperty(unitOptions.get(0));
+    this.units = new SimpleStringProperty();
     this.units.addListener(changed);
 
-    this.resolution = new SimpleIntegerProperty(10);
+    this.outerDiameter = new SimpleDoubleProperty();
+    this.outerDiameter.addListener(changed);
+
+    this.innerDiameter = new SimpleDoubleProperty();
+    this.innerDiameter.addListener(changed);
+
+    this.centerDiameter = new SimpleDoubleProperty();
+    this.centerDiameter.addListener(changed);
+
+    this.resolution = new SimpleIntegerProperty();
     this.resolution.addListener(changed);
 
-    this.clockwise = new SimpleBooleanProperty(DIRECTION_CLOCKWISE);
-    this.clockwise.addListener(changed);
+    this.inverted = new SimpleBooleanProperty();
+    this.inverted.addListener(changed);
 
-    this.indexTrack = new SimpleBooleanProperty(false);
-    this.indexTrack.addListener(changed);
+    this.indexed = new SimpleBooleanProperty();
+    this.indexed.addListener(changed);
+    this.indexable = new SimpleBooleanProperty();
 
-    this.indexable = new SimpleBooleanProperty(true);
-    this.directional = new SimpleBooleanProperty(true);
+    this.direction = new SimpleBooleanProperty();
+    this.direction.addListener(changed);
+    this.directional = new SimpleBooleanProperty();
 
-    this.encoderMap.put("Quadrature", new QuadratureEncoder());
-    this.encoderMap.put("Simple", new BasicEncoder());
-    this.encoderMap.put("Binary", new BinaryEncoder());
-    this.encoderMap.put("Gray", new GrayEncoder());
+    this.encoderMap.put(TYPE_QUADRATURE, new QuadratureEncoder());
+    this.encoderMap.put(TYPE_SIMPLE, new BasicEncoder());
+    this.encoderMap.put(TYPE_BINARY, new BinaryEncoder());
+    this.encoderMap.put(TYPE_GRAY, new GrayEncoder());
 
-    this.type = new SimpleStringProperty(this.getTypeOptions().get(0));
+    this.type = new SimpleStringProperty();
     this.type.addListener(changed);
 
     // Listener to set indexable and directional properties based on encoder type
@@ -134,6 +135,23 @@ public final class EncoderProperties implements ObservableValue {
           break;
       }
     });
+    
+    this.initialize();
+  }
+  
+  /**
+   * Initialize all the properties
+   */
+  public void initialize() {
+    this.type.set(this.getTypeOptions().get(0));
+    this.outerDiameter.set(100);
+    this.innerDiameter.set(50);
+    this.centerDiameter.set(5);
+    this.units.set(unitOptions.get(0));
+    this.resolution.set(8);
+    this.inverted.set(false);
+    this.indexed.set(false);
+    this.direction.set(DIRECTION_CLOCKWISE);
   }
 
   public List<String> getTypeOptions() {
@@ -150,6 +168,10 @@ public final class EncoderProperties implements ObservableValue {
     return getEncoder().validResolution(resolution);
   }
 
+  int getResolutionIncrement() {
+    return getEncoder().getResolutionIncrement();
+  }
+  
   /**
    * Get the type of encoder, represented as a string; see getTypeOptions()
    *
@@ -227,8 +249,8 @@ public final class EncoderProperties implements ObservableValue {
    *
    * @return true if index track enabled, false otherwise
    */
-  public SimpleBooleanProperty getIndexTrack() {
-    return this.indexTrack;
+  public SimpleBooleanProperty getIndexed() {
+    return this.indexed;
   }
 
   /**
@@ -238,7 +260,7 @@ public final class EncoderProperties implements ObservableValue {
    */
   public BooleanProperty getDirection() {
     // check validity
-    return this.clockwise;
+    return this.direction;
   }
 
   public SimpleBooleanProperty getIndexable() {
@@ -255,13 +277,17 @@ public final class EncoderProperties implements ObservableValue {
    * @return the encoder associated with these properties
    */
   public EncoderModel getEncoder() {
-    return (EncoderModel) this.encoderMap.get(this.type.get());
+    return (EncoderModel) this.encoderMap.get(this.getType().get());
   }
 
+  
   public List<EncoderTrack> getTracks() {
-    return getEncoder().getTracks(this.getInnerDiameter().get(),
-        this.getOuterDiameter().get(), this.getResolution().get(),
-        this.getIndexTrack().get(), this.getDirection().get());
+    return getEncoder().getTracks(
+        this.getInnerDiameter().get(),
+        this.getOuterDiameter().get(), 
+        this.getResolution().get(),
+        this.getIndexed().get(), this.getDirection().get()
+    );
   }
 
   /**
@@ -289,7 +315,7 @@ public final class EncoderProperties implements ObservableValue {
     p.setProperty("encoder.outerDiameter", Double.toString(this.getOuterDiameter().get()));
     p.setProperty("encoder.innerDiameter", Double.toString(this.getInnerDiameter().get()));
     p.setProperty("encoder.centerDiameter", Double.toString(this.getCenterDiameter().get()));
-    p.setProperty("encoder.indexTrack", Boolean.toString(this.getIndexTrack().get()));
+    p.setProperty("encoder.indexed", Boolean.toString(this.getIndexed().get()));
     p.setProperty("encoder.inverted", Boolean.toString(this.getInverted().get()));
     p.setProperty("encoder.clockwise", Boolean.toString(this.getDirection().get()));
     p.setProperty("encoder.units", this.getUnits().get());
@@ -308,7 +334,7 @@ public final class EncoderProperties implements ObservableValue {
     this.getOuterDiameter().set(Double.parseDouble(p.getProperty("encoder.outerDiameter")));
     this.getInnerDiameter().set(Double.parseDouble(p.getProperty("encoder.innerDiameter")));
     this.getCenterDiameter().set(Double.parseDouble(p.getProperty("encoder.centerDiameter")));
-    this.getIndexTrack().set(Boolean.parseBoolean(p.getProperty("encoder.indexTrack")));
+    this.getIndexed().set(Boolean.parseBoolean(p.getProperty("encoder.indexed")));
     this.getInverted().set(Boolean.parseBoolean(p.getProperty("encoder.inverted")));
     this.getDirection().set(Boolean.parseBoolean(p.getProperty("encoder.clockwise")));
     this.getUnits().set(p.getProperty("encoder.units"));
@@ -338,5 +364,4 @@ public final class EncoderProperties implements ObservableValue {
   public void removeListener(InvalidationListener il) {
     invalidationListeners.remove(il);
   }
-
 }
