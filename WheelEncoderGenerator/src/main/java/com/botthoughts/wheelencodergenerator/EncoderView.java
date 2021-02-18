@@ -34,6 +34,7 @@ public final class EncoderView {
   private Color foregroundColor; // foreground
   private double scale;
   private boolean fit; // fit render to canvas?
+  private EncoderProperties ep;
 
   /**
    * Create a new object to render encoder
@@ -41,10 +42,11 @@ public final class EncoderView {
    * @param c canvas on which to render
    * @param scale scaling factor for drawing; 0 means fit to canvas
    */
-  EncoderView(Canvas c, double scale) {
+  EncoderView(Canvas c, double scale, EncoderProperties ep) {
     this.canvas = c;
     this.setScale(scale);
     this.gc = c.getGraphicsContext2D();
+    this.ep = ep;
   }
 
   /**
@@ -52,8 +54,8 @@ public final class EncoderView {
    *
    * @param c canvas on which to render
    */
-  EncoderView(Canvas c) {
-    this(c, FIT_TO_CANVAS);
+  EncoderView(Canvas c, EncoderProperties ep) {
+    this(c, FIT_TO_CANVAS, ep);
   }
 
   /**
@@ -95,7 +97,7 @@ public final class EncoderView {
 
   private void adjustScaleToFit() {
     double padding = 2; // need 1px padding
-    double od = EncoderProperties.getInstance().getOuterDiameter().get();
+    double od = ep.getOuterDiameter().get();
     double width;
     double height;
 
@@ -148,7 +150,6 @@ public final class EncoderView {
   }
 
   public void render() {
-    EncoderProperties ep = EncoderProperties.getInstance();
     EncoderModel enc = ep.getEncoder();
 
     System.out.println("render()");

@@ -33,12 +33,16 @@ import javafx.beans.value.ObservableValue;
  *
  * @author mes
  */
-public final class EncoderProperties implements ObservableValue, ChangeListener {
+public final class EncoderProperties implements ObservableValue {
 
-  public static String MM = "mm";
-  public static String INCH = "inch";
-  public static Boolean CLOCKWISE = true;
-  public static Boolean COUNTERCLOCKWISE = false;
+  public static final String UNITS_MM = "mm";
+  public static final String UNITS_INCH = "inch";
+  public static final Boolean DIRECTION_CLOCKWISE = true;
+  public static final Boolean DIRECTION_COUNTERCLOCKWISE = false;
+  public static final String TYPE_QUADRATURE = "Quadrature";
+  public static final String TYPE_SIMPLE = "Simple";
+  public static final String TYPE_BINARY = "Binary";
+  public static final String TYPE_GRAY = "Gray";
 
   protected SimpleStringProperty type;
   protected SimpleStringProperty units; // see this.unitOptions
@@ -51,102 +55,89 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
   protected SimpleBooleanProperty clockwise; // see this.CLOCKWISE
   protected SimpleBooleanProperty indexable; // true if index track possible
   protected SimpleBooleanProperty directional; // true if encoder is directional
-
+  protected EncoderModel encoder;
+  
   /**
    * A hash map relating encoder type to EncoderModels
    */
-  protected static LinkedHashMap<String, EncoderModel> encoderMap = new LinkedHashMap();
+  protected LinkedHashMap<String, EncoderModel> encoderMap = new LinkedHashMap();
 
   /**
    * List of options for Units
    */
-  protected static List<String> unitOptions = Arrays.asList(
-      EncoderProperties.MM, EncoderProperties.INCH);
+  protected static List<String> unitOptions = Arrays.asList(EncoderProperties.UNITS_MM, EncoderProperties.UNITS_INCH);
 
   private List<ChangeListener> changeListeners;
   private List<InvalidationListener> invalidationListeners;
 
-  // Singleton pattern
-  private static EncoderProperties INSTANCE = null;
+  ChangeListener changed = (obs, ov, nv) -> {
+    System.out.println("EncoderProperties changed()");
+    changeListeners.forEach((ChangeListener cl) -> {
+      cl.changed(obs, ov, nv);
+    });
+  };
+  
+  public EncoderProperties() {
+    this.changeListeners = new ArrayList();
+    this.invalidationListeners = new ArrayList();
 
-  /**
-   * Make new encoder properties object; Singleton pattern
-   */
-  private EncoderProperties() {}
+    this.outerDiameter = new SimpleDoubleProperty(100);
+    this.outerDiameter.addListener(changed);
 
-  /**
-   * Returns Singleton instance of EncoderProperites with lazy instantiation and
-   * initialization.
-   *
-   * @return EncoderProperties singleton instance
-   */
-  public static synchronized EncoderProperties getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new EncoderProperties();
+    this.innerDiameter = new SimpleDoubleProperty(10);
+    this.innerDiameter.addListener(changed);
 
-      INSTANCE.changeListeners = new ArrayList();
-      INSTANCE.invalidationListeners = new ArrayList();
+    this.centerDiameter = new SimpleDoubleProperty(5);
+    this.centerDiameter.addListener(changed);
 
-      INSTANCE.outerDiameter = new SimpleDoubleProperty(100);
-      INSTANCE.outerDiameter.addListener(INSTANCE);
+    this.inverted = new SimpleBooleanProperty(false);
+    this.inverted.addListener(changed);
 
-      INSTANCE.innerDiameter = new SimpleDoubleProperty(10);
-      INSTANCE.innerDiameter.addListener(INSTANCE);
+    this.units = new SimpleStringProperty(unitOptions.get(0));
+    this.units.addListener(changed);
 
-      INSTANCE.centerDiameter = new SimpleDoubleProperty(5);
-      INSTANCE.centerDiameter.addListener(INSTANCE);
+    this.resolution = new SimpleIntegerProperty(10);
+    this.resolution.addListener(changed);
 
-      INSTANCE.inverted = new SimpleBooleanProperty(false);
-      INSTANCE.inverted.addListener(INSTANCE);
+    this.clockwise = new SimpleBooleanProperty(DIRECTION_CLOCKWISE);
+    this.clockwise.addListener(changed);
 
-      INSTANCE.units = new SimpleStringProperty(unitOptions.get(0));
-      INSTANCE.units.addListener(INSTANCE);
+    this.indexTrack = new SimpleBooleanProperty(false);
+    this.indexTrack.addListener(changed);
 
-      INSTANCE.resolution = new SimpleIntegerProperty(10);
-      INSTANCE.resolution.addListener(INSTANCE);
+    this.indexable = new SimpleBooleanProperty(true);
+    this.directional = new SimpleBooleanProperty(true);
 
-      INSTANCE.clockwise = new SimpleBooleanProperty(CLOCKWISE);
-      INSTANCE.clockwise.addListener(INSTANCE);
+    this.encoderMap.put("Quadrature", new QuadratureEncoder());
+    this.encoderMap.put("Simple", new BasicEncoder());
+    this.encoderMap.put("Binary", new BinaryEncoder());
+    this.encoderMap.put("Gray", new GrayEncoder());
 
-      INSTANCE.indexTrack = new SimpleBooleanProperty(false);
-      INSTANCE.indexTrack.addListener(INSTANCE);
+    this.type = new SimpleStringProperty(this.getTypeOptions().get(0));
+    this.type.addListener(changed);
 
-      // Prime candidate for invalidation listener??
-      INSTANCE.encoderMap.put("Quadrature", new QuadratureEncoder());
-      INSTANCE.encoderMap.put("Simple", new BasicEncoder());
-      INSTANCE.encoderMap.put("Binary", new BinaryEncoder());
-      INSTANCE.encoderMap.put("Gray", new GrayEncoder());
-      INSTANCE.type = new SimpleStringProperty(INSTANCE.getTypeOptions().get(0));
-      INSTANCE.type.addListener(INSTANCE);
-      
-      INSTANCE.indexable = new SimpleBooleanProperty(true);
-      INSTANCE.directional = new SimpleBooleanProperty(true);
-      
-      // Listener to set indexable and directional properties based on encoder type
-      INSTANCE.type.addListener((obs, ov, nv) -> {
-        switch (nv) {
-          case "Quadrature":
-            INSTANCE.indexable.set(true);
-            INSTANCE.directional.set(true);
-            break;
-          case "Simple":
-            INSTANCE.indexable.set(true);
-            INSTANCE.directional.set(false);
-            break;
-          case "Binary":
-          case "Gray":
-            INSTANCE.indexable.set(false);
-            INSTANCE.directional.set(true);
-            break;
-        }
-      });
-      
-    }
-    return INSTANCE;
+    // Listener to set indexable and directional properties based on encoder type
+    this.type.addListener((obs, ov, nv) -> {
+      switch (nv) {
+        case TYPE_QUADRATURE:
+          this.indexable.set(true);
+          this.directional.set(true);
+          break;
+        case TYPE_SIMPLE:
+          this.indexable.set(true);
+          this.directional.set(false);
+          break;
+        case TYPE_BINARY:
+        case TYPE_GRAY:
+          this.indexable.set(false);
+          this.directional.set(true);
+          break;
+      }
+    });
   }
 
   public List<String> getTypeOptions() {
-    return new ArrayList<>(EncoderProperties.encoderMap.keySet());
+    return new ArrayList<>(this.encoderMap.keySet());
   }
 
   /**
@@ -264,7 +255,7 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
    * @return the encoder associated with these properties
    */
   public EncoderModel getEncoder() {
-    return (EncoderModel) EncoderProperties.encoderMap.get(this.type.get());
+    return (EncoderModel) this.encoderMap.get(this.type.get());
   }
 
   public List<EncoderTrack> getTracks() {
@@ -346,14 +337,6 @@ public final class EncoderProperties implements ObservableValue, ChangeListener 
   @Override
   public void removeListener(InvalidationListener il) {
     invalidationListeners.remove(il);
-  }
-
-  @Override
-  public void changed(ObservableValue obsV, Object oldV, Object newV) {
-    System.out.println("EncoderProperties changed()");
-    changeListeners.forEach((ChangeListener cl) -> {
-      cl.changed(obsV, oldV, newV);
-    });
   }
 
 }

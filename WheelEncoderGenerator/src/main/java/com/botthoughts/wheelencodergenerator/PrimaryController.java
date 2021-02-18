@@ -64,7 +64,8 @@ public class PrimaryController implements Initializable {
     private SimpleStringProperty alertTitle;
     private SimpleStringProperty alertText;
     private Alert alertDialog;
-    
+    private EncoderProperties ep;
+
 //    private Color bg; // background
 //    private Color fg; // foreground
 
@@ -104,7 +105,6 @@ public class PrimaryController implements Initializable {
     public void saveFile(File f) {
       if (f != null) {
         try {
-          EncoderProperties ep = EncoderProperties.getInstance();
           FileOutputStream out = new FileOutputStream(f);
           Properties p = ep.toProperties();
           p.store(out, "Wheel Encoder Generator");
@@ -144,7 +144,6 @@ public class PrimaryController implements Initializable {
         in = new FileInputStream(f);
         Properties p = new Properties();
         p.load(in);
-        EncoderProperties.getInstance().fromProperties(p);
         currentFile = f;
         filename.set(f.getName());
       } catch (IOException ex) {
@@ -167,7 +166,6 @@ public class PrimaryController implements Initializable {
     @FXML
     public void print(Node node) {
         PrinterJob job = PrinterJob.createPrinterJob();
-        EncoderProperties ep = EncoderProperties.getInstance();
         
         if (job != null && job.showPrintDialog(App.stage)) {
             Printer printer = job.getPrinter();
@@ -193,10 +191,10 @@ public class PrimaryController implements Initializable {
             gc.setImageSmoothing(false);
             
             scale = dpi;
-            if (ep.getUnits().get().equals(EncoderProperties.MM))
+            if (ep.getUnits().get().equals(EncoderProperties.UNITS_MM))
                 scale /= 25.4;
             
-            EncoderView ev = new EncoderView(c, scale);
+            EncoderView ev = new EncoderView(c, scale, ep);
             ev.render();
 
             job.getJobSettings().setPrintQuality(PrintQuality.HIGH);
@@ -229,7 +227,7 @@ public class PrimaryController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        EncoderProperties ep = EncoderProperties.getInstance();
+        ep = new EncoderProperties();
 
         // App title set to filename
         filename = new SimpleStringProperty();
@@ -237,7 +235,7 @@ public class PrimaryController implements Initializable {
         newFile();
 
         // Update encoder preview anytime there's a change
-        encoderPreview = new EncoderView(encoderUI);
+        encoderPreview = new EncoderView(encoderUI, ep);
         ep.addListener((observable, oldvalue, newvalue) -> {
             encoderPreview.render();
         });
