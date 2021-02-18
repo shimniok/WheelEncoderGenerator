@@ -45,18 +45,27 @@ public class GrayEncoder extends BinaryEncoder {
 
     id = od - tw;
     for (int b = resolution - 1; b >= 0; b--) {
-      if (b > 0) {
+      if (b == 0) {
+        /**
+         * for the final, innermost track, we still have 2 stripes, black and white, covering
+         * the same angle of 180°, but rotated ±90 degrees from the previous track (-90 for
+         * clockwise, +90 for counter-clockwise)
+         */
+        if (clockwise) {
+          start = 180;
+        } else {
+          start = 0;
+        }
+      } else {
+        /**
+         * for all the other tracks, the number of black and white stripes is 2^b with the first
+         * stripe centered on 0 degrees
+         */
         res = 1 << b;
         angle = 360.0 / res;
         start = angle / 2;
-      } else {
-        // for the final track, we keep the previous
-        // resolution and angle, and simply start it
-        // 90 degrees offset from the previous track
-        start = 0;
       }
 
-      // TODO: Gray: implement direction in generating track info
       tracks.add(new EncoderTrack(od, id, start, angle, res));
       od -= tw;
       id -= tw;

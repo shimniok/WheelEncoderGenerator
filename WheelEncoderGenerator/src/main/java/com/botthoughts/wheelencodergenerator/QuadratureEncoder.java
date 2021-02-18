@@ -52,7 +52,6 @@ public class QuadratureEncoder extends BasicEncoder {
 
     if (clockwise) angle = -angle;
     
-    // TODO: Quadrature: implement direction in generating track info        
     // outer track
     tracks.add(new EncoderTrack(od, od - tw, angle / 2, angle, r));
 
