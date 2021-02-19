@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * BasicEncoder implements the EncoderModel interface and represents a non-directional encoder
+ * with a single track to detect motion, and an optional index track for an initial position.
  * @author mes
  */
 public class BasicEncoder implements EncoderModel {
@@ -75,7 +76,12 @@ public class BasicEncoder implements EncoderModel {
     return RESOLUTION_MIN <= resolution && resolution <= RESOLUTION_MAX;
   }
 
-  
+  /**
+   * If resolution is not valid, set it to the nearest valid value
+   * @param resolution is the encoder resolution
+   * @return resolution, if valid, or the nearest valid value  @Override
+   */
+  @Override
   public int fixResolution(int resolution) {
     int r = resolution;
     if (r < this.getMinResolution()) {
@@ -87,19 +93,28 @@ public class BasicEncoder implements EncoderModel {
     return r;
   }
 
-
+  /**
+   * Get minimum resolution for this type of encoder
+   * @return minimum resolution
+   */
   @Override
   public int getMinResolution() {
     return RESOLUTION_MIN;
   }
 
-  
+  /**
+   * Get maximum resolution for this type of encoder
+   * @return maximum resolution
+   */
   @Override
   public int getMaxResolution() {
     return RESOLUTION_MAX;
   }
 
-  
+  /**
+   * Return amount by which resolution is incremented/decremented
+   * @return increment amount
+   */
   @Override
   public int getResolutionIncrement() {
     return INCREMENT;

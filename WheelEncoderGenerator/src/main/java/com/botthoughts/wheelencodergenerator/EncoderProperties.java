@@ -32,7 +32,7 @@ import javafx.beans.value.ObservableValue;
 // TODO: convert dimensions when switching units
 
 /**
- *
+ * ViewModel object containing properties describing an encoder
  * @author mes
  */
 public final class EncoderProperties implements ObservableValue {
@@ -72,13 +72,21 @@ public final class EncoderProperties implements ObservableValue {
   private List<ChangeListener> changeListeners;
   private List<InvalidationListener> invalidationListeners;
 
-  ChangeListener changed = (obs, ov, nv) -> {
+  /**
+   * Generic ChangeListener lambda used to notify all ChangeListener objects; used to notify of
+   * changes to any of the properties of this object.
+   */
+  private ChangeListener changed = (obs, ov, nv) -> {
     System.out.println("EncoderProperties changed()");
     changeListeners.forEach((ChangeListener cl) -> {
       cl.changed(obs, ov, nv);
     });
   };
   
+  /**
+   * Create new EncoderProperties object which must later be initialized with call to 
+   * initialize().
+   */
   public EncoderProperties() {
     this.changeListeners = new ArrayList();
     this.invalidationListeners = new ArrayList();
@@ -140,7 +148,8 @@ public final class EncoderProperties implements ObservableValue {
   }
   
   /**
-   * Initialize all the properties
+   * Initialize all the properties to their defaults; use with "new" operation, rather than
+   * generating a new object which would break all bindings.
    */
   public void initialize() {
     this.type.set(this.getTypeOptions().get(0));
@@ -159,7 +168,7 @@ public final class EncoderProperties implements ObservableValue {
   }
 
   /**
-   * Determine if specified resolution is valid for this encoder
+   * Determine if specified resolution is valid for this encoder.
    *
    * @param resolution
    * @return true if valid, false otherwise
@@ -167,14 +176,27 @@ public final class EncoderProperties implements ObservableValue {
   final public boolean validResolution(int resolution) {
     return getEncoder().validResolution(resolution);
   }
+  
+  /**
+   * If resolution is not valid, set it to the nearest valid value
+   * @param resolution is the encoder resolution
+   * @return resolution, if valid, or the nearest valid value
+   */
+  final public int fixResolution(int resolution) {
+    return getEncoder().fixResolution(resolution);
+  }
 
+  /**
+   * Return the amount by which the resolution is incremented (or decremented); for use with
+   * SpinnerValueFactory.
+   * @return amount to increment (or decrement) resolution
+   */
   int getResolutionIncrement() {
     return getEncoder().getResolutionIncrement();
   }
   
   /**
    * Get the type of encoder, represented as a string; see getTypeOptions()
-   *
    * @return type of encoder
    */
   final public SimpleStringProperty getType() {
@@ -183,7 +205,6 @@ public final class EncoderProperties implements ObservableValue {
 
   /**
    * Return list of options for valid unit setting
-   *
    * @return list of options
    */
   final public List<String> getUnitOptions() {
@@ -192,7 +213,6 @@ public final class EncoderProperties implements ObservableValue {
 
   /**
    * Gets the outer diameter of the encoder disc
-   *
    * @return outer diameter
    */
   final public SimpleDoubleProperty getOuterDiameter() {
@@ -201,7 +221,6 @@ public final class EncoderProperties implements ObservableValue {
 
   /**
    * Gets the inner diameter of the encoder disc
-   *
    * @return inner diameter
    */
   final public SimpleDoubleProperty getInnerDiameter() {
@@ -210,7 +229,6 @@ public final class EncoderProperties implements ObservableValue {
 
   /**
    * Gets the center diameter of the encoder disc
-   *
    * @return center diameter
    */
   final public SimpleDoubleProperty getCenterDiameter() {
@@ -219,7 +237,6 @@ public final class EncoderProperties implements ObservableValue {
 
   /**
    * Gets the units being used; see getUnitOptions()
-   *
    * @return units
    */
   final public SimpleStringProperty getUnits() {
@@ -228,7 +245,6 @@ public final class EncoderProperties implements ObservableValue {
 
   /**
    * Gets the resolution of the encoder
-   *
    * @return resolution
    */
   final public SimpleIntegerProperty getResolution() {
@@ -237,7 +253,6 @@ public final class EncoderProperties implements ObservableValue {
 
   /**
    * Return whether encoder pattern is inverted or not.
-   *
    * @return true if inverted, false if not
    */
   final public SimpleBooleanProperty getInverted() {
@@ -246,7 +261,6 @@ public final class EncoderProperties implements ObservableValue {
 
   /**
    * Return whether an index track is enabled.
-   *
    * @return true if index track enabled, false otherwise
    */
   public SimpleBooleanProperty getIndexed() {
@@ -255,32 +269,43 @@ public final class EncoderProperties implements ObservableValue {
 
   /**
    * Get direction of rotation of the encoder.
-   *
    * @return CLOCKWISE (true), or COUNTERCLOCKWISE(false)
    */
   public BooleanProperty getDirection() {
     // check validity
     return this.direction;
   }
-
+  
+  /**
+   * Get indexable property; some encoders don't need/can't have index tracks
+   * @return true if encoder is indexable, false otherwise
+   */
   public SimpleBooleanProperty getIndexable() {
     return this.indexable;
   }
 
+  /**
+   * Get directional property; basic encoders aren't directional; used to determine
+   * if directional widget should be enabled/visible.
+   * @return true if directional, false otherwise
+   */
   public SimpleBooleanProperty getDirectional() {
     return this.directional;
   }
   
   /**
    * Get the encoder associated with these properties
-   *
    * @return the encoder associated with these properties
    */
   public EncoderModel getEncoder() {
     return (EncoderModel) this.encoderMap.get(this.getType().get());
   }
 
-  
+  /**
+   * Get the list of EncoderTrack for this encoder, each specifying the information needed
+   * to render the encoder.
+   * @return list of EncoderTrack objects
+   */
   public List<EncoderTrack> getTracks() {
     return getEncoder().getTracks(
         this.getInnerDiameter().get(),
@@ -291,8 +316,8 @@ public final class EncoderProperties implements ObservableValue {
   }
 
   /**
-   * Determine if model is valid
-   *
+   * Determine if model is valid; use with error checking and notification, and to prevent
+   * rendering of encoder while editing values in the UI.
    * @return true if valid, false if not
    */
   public boolean isValid() {
@@ -301,8 +326,7 @@ public final class EncoderProperties implements ObservableValue {
   }
 
   /**
-   * Return a Properties object representing this object.
-   *
+   * Return a Properties object representing this object; used for file save
    * @return Properties object
    */
   public Properties toProperties() {
@@ -324,8 +348,7 @@ public final class EncoderProperties implements ObservableValue {
   }
 
   /**
-   * Set this object's properties based on Properties object
-   *
+   * Set this object's properties based on Properties object; used for file load
    * @param p properties object from which to set this object's properties
    */
   public void fromProperties(Properties p) {
@@ -340,28 +363,50 @@ public final class EncoderProperties implements ObservableValue {
     this.getUnits().set(p.getProperty("encoder.units"));
   }
 
+  /**
+   * Ad a ChangeListener to be notified if any changes are made to the encoder's properties
+   * @param cl is a ChangeListener callback object to be notified of changes
+   */
   @Override
   public void addListener(ChangeListener cl) {
     changeListeners.add(cl);
   }
 
+  /**
+   * Remove the specific ChangeListener object from the list of objects to be notified of changes
+   * @param cl is the ChangeListener to remove
+   */
   @Override
   public void removeListener(ChangeListener cl) {
     changeListeners.remove(cl);
   }
 
+  /**
+   * Unsupported; there's not really a "value" for the encoder, per se.
+   * @return 
+   */
   @Override
   public Object getValue() {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  /**
+   * Not yet implemented; use addListener(ChangeListener cl)
+   * @param il 
+   */
   @Override
   public void addListener(InvalidationListener il) {
-    invalidationListeners.add(il);
+    //invalidationListeners.add(il);
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  /**
+   * Not yet implemented; use removeListener(ChangeListener cl)
+   * @param il 
+   */
   @Override
   public void removeListener(InvalidationListener il) {
-    invalidationListeners.remove(il);
+    //invalidationListeners.remove(il);
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

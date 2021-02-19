@@ -25,8 +25,12 @@ import javafx.scene.control.TextFormatter;
 public class DoubleTextFormatter {
     
     private UnaryOperator<TextFormatter.Change> filter;
-    private Double defaultValue;
+    private Double defaultValue; // TODO: remove unused defaultValue
 
+    /**
+     * Create a new DoubleTextFormatter object
+     * @param defaultValue is the default value for the TextFormatter
+     */
     public DoubleTextFormatter(Double defaultValue) {
         this.defaultValue = defaultValue;
         this.filter = (change) -> {
@@ -66,8 +70,14 @@ public class DoubleTextFormatter {
         };
     }
 
+    /**
+     * Return a new DoubleTextFormatter as a TextFormatter object, factory style.
+     * @return new TextFormatter
+     */
     public TextFormatter get() {
         return new TextFormatter(filter);
     }
 
+    // TODO: find a way to format text representation to N.N for mm and N.NNN for inch
+    
 }

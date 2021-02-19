@@ -67,19 +67,10 @@ public interface EncoderModel {
   abstract public boolean validResolution(int resolution);
 
   /**
-   * Attempt to increment the supplied resolution by one step. If the result is valid (see
-   * validResolution()) it its returned, otherwise the original resolution is returned
-   *
-   * @param resolution
-   * @return incremented resolution if valid, else original resolution
+   * If resolution is not valid, set it to the nearest valid value.
+   * @param resolution is the encoder resolution
+   * @return resolution, if valid, or the nearest valid value
    */
-//    abstract public Integer incrementResolution(int resolution);
-  /**
-   * Attempt to decrement the supplied resolution by one step. If the result is valid (see
-   * validResolution()) it its returned, otherwise the original resolution is returned
-   *
-   * @return decremented resolution if valid, else original resolution
-   * @param resolution
-   */
-//    abstract public Integer decrementResolution(int resolution);
+  abstract public int fixResolution(int resolution);
+
 }
