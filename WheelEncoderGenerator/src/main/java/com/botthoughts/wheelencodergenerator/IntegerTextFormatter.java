@@ -23,44 +23,42 @@ import javafx.scene.control.TextFormatter;
  * @author mes
  */
 public class IntegerTextFormatter {
+
+  private UnaryOperator<TextFormatter.Change> filter;
+
+  public IntegerTextFormatter() {
+    this.filter = (change) -> {
+      String doubleRegex = "[0-9]*";
+      String newText = change.getControlNewText();
+      int start = change.getRangeStart();
+      int end = change.getRangeEnd();
+      int caret = change.getCaretPosition();
+
+      if (change.isAdded()) {
+        String addedText = change.getText();
+
+        if (!newText.matches(doubleRegex)) {
+          change.setText("");
+          change.setRange(start, start);
+          change.setCaretPosition(caret - addedText.length());
+          change.setAnchor(caret - addedText.length());
+        }
+
+      } else if (change.isDeleted()) {
+        if (!newText.matches(doubleRegex)) {
+          change.setRange(start, start);
+        }
+      } else if (change.isReplaced()) {
+        // This never seems to get called in normal operation ??
+        System.out.println("replaced");
+      }
     
-    private UnaryOperator<TextFormatter.Change> filter;
-    private Integer defaultValue;
+      return change;
+    };
+  }
 
-    public IntegerTextFormatter(Integer defaultValue) {
-        this.defaultValue = defaultValue;
-        this.filter = (change) -> {
-            String doubleRegex = "[0-9]*";
-            String newText = change.getControlNewText();
-            int start = change.getRangeStart();
-            int end = change.getRangeEnd();
-            int caret = change.getCaretPosition();
-
-            if (change.isAdded()) {
-                String addedText = change.getText();
-
-                if (!newText.matches(doubleRegex)) {
-                    change.setText("");
-                    change.setRange(start, start);
-                    change.setCaretPosition(caret - addedText.length());
-                    change.setAnchor(caret - addedText.length());
-                }
-
-            } else if (change.isDeleted()) {
-                if (!newText.matches(doubleRegex)) {
-                    change.setRange(start, start);
-                }
-            } else if (change.isReplaced()) {
-                // This never seems to get called in normal operation ??
-                System.out.println("replaced");
-            }
-
-            return change;
-        };
-    }
-
-    public TextFormatter get() {
-        return new TextFormatter(filter);
-    }
-
+  public TextFormatter get() {
+    return new TextFormatter(filter);
+  }
+  
 }
