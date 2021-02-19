@@ -171,7 +171,7 @@ public final class EncoderView {
       this.adjustScaleToFit();
     }
 
-    gc.setImageSmoothing(false);
+    //gc.setImageSmoothing(false);
     gc.getCanvas().setEffect(null);
 
     double centerX = ep.getOuterDiameter().get() * scale / 2.0;

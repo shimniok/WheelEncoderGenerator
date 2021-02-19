@@ -189,7 +189,7 @@ public class PrimaryController implements Initializable {
       pane.setVisible(true);
 
       GraphicsContext gc = c.getGraphicsContext2D();
-      gc.setImageSmoothing(false);
+      //gc.setImageSmoothing(false);
 
       scale = dpi;
       if (ep.getUnits().get().equals(EncoderProperties.UNITS_MM)) {
