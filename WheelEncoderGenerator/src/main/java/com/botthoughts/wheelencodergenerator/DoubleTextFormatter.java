@@ -15,6 +15,8 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import java.util.Formatter;
+import java.util.Locale;
 import java.util.function.UnaryOperator;
 import javafx.scene.control.TextFormatter;
 
@@ -23,61 +25,57 @@ import javafx.scene.control.TextFormatter;
  * @author mes
  */
 public class DoubleTextFormatter {
-    
-    private UnaryOperator<TextFormatter.Change> filter;
-    private Double defaultValue; // TODO: remove unused defaultValue
 
-    /**
-     * Create a new DoubleTextFormatter object
-     * @param defaultValue is the default value for the TextFormatter
-     */
-    public DoubleTextFormatter(Double defaultValue) {
-        this.defaultValue = defaultValue;
-        this.filter = (change) -> {
-            String doubleRegex = "([0-9]*\\.?[0-9]*)";
-            String newText = change.getControlNewText();
-            int start = change.getRangeStart();
-            int end = change.getRangeEnd();
-            int caret = change.getCaretPosition();
+  private UnaryOperator<TextFormatter.Change> filter;
 
-            if (change.isAdded()) {
-                String addedText = change.getText();
+  /**
+   * Create a new DoubleTextFormatter object
+   */
+  public DoubleTextFormatter() {
+    this.filter = (change) -> {
+      String doubleRegex = "([0-9]*\\.?[0-9]*)";
+      String newText = change.getControlNewText();
+      int start = change.getRangeStart();
+      int end = change.getRangeEnd();
+      int caret = change.getCaretPosition();
 
-                if (!newText.matches(doubleRegex)) {
-                    change.setText("");
-                    change.setRange(start, start);
-                    change.setCaretPosition(caret - addedText.length());
-                    change.setAnchor(caret - addedText.length());
-                }
+      if (change.isAdded()) {
+        String addedText = change.getText();
 
-                // Special case to allow .N without breaking parsing)
-                if (change.getControlNewText().equals(".")) {
-                    change.setText("0.");
-                    change.setCaretPosition(caret + 1);
-                    change.setAnchor(caret + 1);
-                }
-                
-            } else if (change.isDeleted()) {
-                if (!newText.matches(doubleRegex)) {
-                    change.setRange(start, start);
-                }
-            } else if (change.isReplaced()) {
-                // This never seems to get called in normal operation ??
-                System.out.println("replaced");
-            }
+        if (!newText.matches(doubleRegex)) {
+          change.setText("");
+          change.setRange(start, start);
+          change.setCaretPosition(caret - addedText.length());
+          change.setAnchor(caret - addedText.length());
+        }
 
-            return change;
-        };
-    }
+        // Special case to allow .N without breaking parsing)
+        if (change.getControlNewText().equals(".")) {
+          change.setText("0.");
+          change.setCaretPosition(caret + 1);
+          change.setAnchor(caret + 1);
+        }
 
-    /**
-     * Return a new DoubleTextFormatter as a TextFormatter object, factory style.
-     * @return new TextFormatter
-     */
-    public TextFormatter get() {
-        return new TextFormatter(filter);
-    }
+      } else if (change.isDeleted()) {
+        if (!newText.matches(doubleRegex)) {
+          change.setRange(start, start);
+        }
+      } else if (change.isReplaced()) {
+        // This never seems to get called in normal operation ??
+        System.out.println("replaced");
+      }
 
-    // TODO: find a way to format text representation to N.N for mm and N.NNN for inch
-    
+      return change;
+    };
+  }
+
+  /**
+   * Return a new DoubleTextFormatter as a TextFormatter object, factory style.
+   *
+   * @return new TextFormatter
+   */
+  public TextFormatter get() {
+    return new TextFormatter(filter);
+  }
+
 }

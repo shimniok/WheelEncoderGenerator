@@ -40,6 +40,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
@@ -237,26 +238,32 @@ public class PrimaryController implements Initializable {
 
     resolutionUI.setValueFactory(new ResolutionValueFactory(ep));
     resolutionUI.getValueFactory().valueProperty().bindBidirectional(ep.getResolution());
-    resolutionUI.getEditor().setTextFormatter(new IntegerTextFormatter(8).get());
+    resolutionUI.getEditor().setTextFormatter(new IntegerTextFormatter().get());
 //        ep.getType().addListener((observable, oldvalue, newvalue) -> {
 //            ResolutionValueFactory vf = (ResolutionValueFactory) resolutionUI.getValueFactory();
 //            vf.setEncoder(ep.getEncoder());
 //        });
 
+// TODO: implement Double formatting
+//  private final StringBuilder sb;
+//  private final Formatter formatter;
+//  change..setText(String.format("%.1f", Double.parseDouble(newText)));
+
+
     outerUI.textProperty().bindBidirectional(
         (Property) ep.getOuterDiameter(),
         new DoubleStringConverter());
-    outerUI.setTextFormatter(new DoubleTextFormatter(100.0).get());
+    outerUI.setTextFormatter(new DoubleTextFormatter().get());
 
     innerUI.textProperty().bindBidirectional(
         (Property) ep.getInnerDiameter(),
         new DoubleStringConverter());
-    innerUI.setTextFormatter(new DoubleTextFormatter(10.0).get());
+    innerUI.setTextFormatter(new DoubleTextFormatter().get());
 
     centerUI.textProperty().bindBidirectional(
         (Property) ep.getCenterDiameter(),
         new DoubleStringConverter());
-    centerUI.setTextFormatter(new DoubleTextFormatter(5.0).get());
+    centerUI.setTextFormatter(new DoubleTextFormatter().get());
 
     unitsUI.getItems().addAll(ep.getUnitOptions());
     unitsUI.valueProperty().bindBidirectional(ep.getUnits());
