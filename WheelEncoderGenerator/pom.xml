@@ -8,6 +8,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <mainClass>com.botthoughts.wheelencodergenerator.App</mainClass>
+        <moduleName>com.botthoughts.wheelencodergenerator</moduleName>
+        <moduleDir>${project.build.directory}/modules</moduleDir>
     </properties>
     <dependencies>
         <dependency>
@@ -26,11 +29,104 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <release>11</release>
                 </configuration>
             </plugin>
+            <plugin>
+                <!-- copy app jar into modules directory -->
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-target</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <sourceFile>${project.build.directory}/${project.build.finalName}.jar</sourceFile>
+                            <destinationFile>${moduleDir}/${project.build.finalName}.jar</destinationFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> 
+            <plugin>
+                <!-- copy dependencies into modules directory -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${moduleDir}</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> 
+            <plugin>
+                <!-- Build executable image -->
+                <groupId>org.moditect</groupId>
+                <artifactId>moditect-maven-plugin</artifactId>
+                <version>1.0.0.RC1</version>
+                <executions>
+                    <!--
+                    <execution>
+                        <id>add-module-infos-2</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>add-module-info</goal>
+                        </goals>
+                        <configuration>
+                            <jvmVersion>11</jvmVersion>
+                            <module>
+                                <moduleInfo>
+                                    <name>com.mycompany.mavenjavafx</name>
+                                    <opens>
+                                        com.mycompany.mavenjavafx;
+                                    </opens>
+                                </moduleInfo>
+                            </module>
+                        </configuration>
+                    </execution>
+                    -->
+                    <execution>
+                        <id>create-runtime-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>create-runtime-image</goal>
+                        </goals>
+                        <configuration>
+                            <modulePath>
+                                <path>${moduleDir}</path>
+                            </modulePath>
+                            <modules>
+                                <module>${moduleName}</module>
+                                <!--   <module>javafx.graphics</module> -->
+                            </modules> 
+                            <excludedResources>
+                                <!--<pattern>glob:/com.mycompany/**</pattern>-->
+                            </excludedResources>
+                            <!--   <baseJdk>version=11,vendor=openjdk,platform=windows</baseJdk> -->
+                            <launcher>
+                                <name>App</name>
+                                <module>${moduleName}/${mainClass}</module>
+                            </launcher>
+                            <outputDirectory>
+                                ${project.build.directory}/jlink-image
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>    
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
