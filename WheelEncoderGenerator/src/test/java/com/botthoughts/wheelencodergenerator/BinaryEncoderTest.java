@@ -27,9 +27,9 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author mes
  */
-public class BasicEncoderTest {
+public class BinaryEncoderTest {
   
-  public BasicEncoderTest() {
+  public BinaryEncoderTest() {
   }
   
   @BeforeAll
@@ -49,121 +49,84 @@ public class BasicEncoderTest {
   }
 
   /**
-   * Test of getTracks method, of class BasicEncoder.
-   */
-  @Test
-  public void testGetTracks() {
-    System.out.println("getTracks");
-    double id = 0.0;
-    double od = 0.0;
-    int resolution = 0;
-    boolean index = false;
-    boolean clockwise = false;
-    BasicEncoder instance = new BasicEncoder();
-    List<EncoderTrack> tracks = instance.getTracks(id, od, resolution, index, clockwise);
-    assertEquals(tracks.size(), 1);
-    // TODO additional tests
-  }
-
-  /**
-   * Test of validResolution method, of class BasicEncoder.
+   * Test of validResolution method, of class BinaryEncoder.
    */
   @Test
   public void testValidResolution() {
     System.out.println("validResolution");
     int resolution = 0;
-    BasicEncoder instance = new BasicEncoder();
+    BinaryEncoder instance = new BinaryEncoder();
     boolean result;
-    
-    // Test nonsensical values
+
     result = instance.validResolution(-1);
     assertEquals(result, false);
     result = instance.validResolution(0);
     assertEquals(result, false);
-
+    
     result = instance.validResolution(instance.RESOLUTION_MIN-1);
     assertEquals(result, false);
     result = instance.validResolution(instance.RESOLUTION_MIN-2);
     assertEquals(result, false);
-    
+
     result = instance.validResolution(instance.RESOLUTION_MAX+1);
     assertEquals(result, false);
-    result = instance.validResolution(instance.RESOLUTION_MAX+2);
+    result = instance.validResolution(instance.RESOLUTION_MAX+1);
     assertEquals(result, false);
-
+    
     for (int i=instance.RESOLUTION_MIN; i <= instance.RESOLUTION_MAX; i++) {
       result = instance.validResolution(i);
-      assertEquals(result, true);
+      assertEquals(result, true);     
     }
   }
 
   /**
-   * Test of fixResolution method, of class BasicEncoder.
+   * Test of getTracks method, of class BinaryEncoder.
    */
   @Test
-  public void testFixResolution() {
-    System.out.println("fixResolution");
-    int resolution = 0;
-    BasicEncoder instance = new BasicEncoder();
-    int result;
-
-    // Test nonsensical values
-    result = instance.fixResolution(-1);
-    assertEquals(result, instance.RESOLUTION_MIN);
-    result = instance.fixResolution(0);
-    assertEquals(result, instance.RESOLUTION_MIN);
-
-    // Test too-small values
-    result = instance.fixResolution(instance.RESOLUTION_MIN-1);
-    assertEquals(result, instance.RESOLUTION_MIN);
-    result = instance.fixResolution(instance.RESOLUTION_MIN-2);
-    assertEquals(result, instance.RESOLUTION_MIN);
-
-    // Test too-large values
-    result = instance.fixResolution(instance.RESOLUTION_MAX+1);
-    assertEquals(result, instance.RESOLUTION_MAX);
-    result = instance.fixResolution(instance.RESOLUTION_MAX+2);
-    assertEquals(result, instance.RESOLUTION_MAX);
-
-    // Test all valid values
-    for (int i=instance.RESOLUTION_MIN; i <= instance.RESOLUTION_MAX; i++) {
-      result = instance.fixResolution(i);
-      assertEquals(result, i);
-    }
-    
+  public void testGetTracks() {
+    System.out.println("getTracks");
+    double id = 45.0;
+    double od = 22.0;
+    int resolution = 5;
+    boolean index = false;
+    boolean clockwise = false;
+    BinaryEncoder instance = new BinaryEncoder();
+    List<EncoderTrack> result = instance.getTracks(id, od, resolution, index, clockwise);
+    assertEquals(result.size(), resolution);
+    // TODO additional tests
   }
 
   /**
-   * Test of getMinResolution method, of class BasicEncoder.
+   * Test of getMinResolution method, of class BinaryEncoder.
    */
   @Test
   public void testGetMinResolution() {
     System.out.println("getMinResolution");
-    BasicEncoder instance = new BasicEncoder();
+    BinaryEncoder instance = new BinaryEncoder();
     int expResult = instance.RESOLUTION_MIN;
     int result = instance.getMinResolution();
     assertEquals(expResult, result);
   }
 
   /**
-   * Test of getMaxResolution method, of class BasicEncoder.
+   * Test of getMaxResolution method, of class BinaryEncoder.
    */
   @Test
   public void testGetMaxResolution() {
     System.out.println("getMaxResolution");
-    BasicEncoder instance = new BasicEncoder();
+    BinaryEncoder instance = new BinaryEncoder();
     int expResult = instance.RESOLUTION_MAX;
     int result = instance.getMaxResolution();
     assertEquals(expResult, result);
   }
 
   /**
-   * Test of getResolutionIncrement method, of class BasicEncoder.
+   * Test of getResolutionIncrement method, of class BinaryEncoder.
    */
   @Test
   public void testGetResolutionIncrement() {
     System.out.println("getResolutionIncrement");
-    BasicEncoder instance = new BasicEncoder();
+    BinaryEncoder instance = new BinaryEncoder();
     int expResult = instance.INCREMENT;
     int result = instance.getResolutionIncrement();
     assertEquals(expResult, result);

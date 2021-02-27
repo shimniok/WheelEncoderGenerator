@@ -23,6 +23,12 @@ import java.util.List;
  * @author mes
  */
 public class BinaryEncoder extends BasicEncoder {
+  
+  public BinaryEncoder() {
+    this.RESOLUTION_MIN = 1;
+    this.RESOLUTION_MAX = 11;
+    this.INCREMENT = 1;
+  }
 
   /**
    * Check validity of resolution, which for this type is # bits.
@@ -32,7 +38,7 @@ public class BinaryEncoder extends BasicEncoder {
    */
   @Override
   public boolean validResolution(int resolution) {
-    return resolution >= 1; // minimum resolution is 1 bit
+    return resolution >= this.RESOLUTION_MIN && resolution <= this.RESOLUTION_MAX;
   }
 
   /**
@@ -70,17 +76,17 @@ public class BinaryEncoder extends BasicEncoder {
 
   @Override
   public int getMinResolution() {
-    return 1;
+    return this.RESOLUTION_MIN;
   }
 
   @Override
   public int getMaxResolution() {
-    return 12;
+    return this.RESOLUTION_MAX;
   }
 
   @Override
   public int getResolutionIncrement() {
-    return 1;
+    return this.INCREMENT;
   }
 
 }

@@ -26,10 +26,16 @@ import java.util.List;
 public class BasicEncoder implements EncoderModel {
 
   protected List<EncoderTrack> tracks; // list of tracks
-  protected static int RESOLUTION_MIN = 1;
-  protected static int RESOLUTION_MAX = 1024;
-  protected static int INCREMENT = 1;
+  protected int RESOLUTION_MIN;
+  protected int RESOLUTION_MAX;
+  protected int INCREMENT;
 
+  public BasicEncoder() {
+    this.RESOLUTION_MIN = 1;
+    this.RESOLUTION_MAX = 2048;
+    this.INCREMENT = 1;
+  }
+  
   /**
    * Return list of tracks
    *
