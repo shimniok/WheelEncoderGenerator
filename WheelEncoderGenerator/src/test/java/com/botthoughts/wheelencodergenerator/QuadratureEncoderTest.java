@@ -61,7 +61,7 @@ public class QuadratureEncoderTest {
     boolean clockwise = false;
     QuadratureEncoder instance = new QuadratureEncoder();
     List<EncoderTrack> tracks = instance.getTracks(id, od, resolution, index, clockwise);
-    assertEquals(tracks.size(), 3, "track count");
+    assertEquals(3, tracks.size(), "track count");
     EncoderTrack t0 = tracks.get(0);
     EncoderTrack t1 = tracks.get(1);
     assertNotEquals(t0.startAngle, t1.startAngle, "t0, t1 startAngle");
@@ -69,10 +69,10 @@ public class QuadratureEncoderTest {
     assertEquals(t0.stripeAngle, t1.stripeAngle, "t0, t1 stripeAngle");
     assertEquals(t0.outerDiameter, od, "t0 outsideDiameter");
     EncoderTrack t2 = tracks.get(2);
-    assertEquals(t2.startAngle, t1.startAngle, "t1, index, startAngle");
-    assertEquals(t2.stripeCount, 1, "index stripeCount");
-    assertEquals(t2.innerDiameter, id, "index innerDiameter");
-    assertEquals(t0.stripeAngle, 360.0/(2*resolution), "index stripeAngle");
+    assertEquals(t1.startAngle, t2.startAngle, "t1, index, startAngle");
+    assertEquals(1, t2.stripeCount, "index stripeCount");
+    assertEquals(id, t2.innerDiameter, "index innerDiameter");
+    assertEquals(360.0/(2*resolution), t0.stripeAngle, "index stripeAngle");
   }
   
 }
