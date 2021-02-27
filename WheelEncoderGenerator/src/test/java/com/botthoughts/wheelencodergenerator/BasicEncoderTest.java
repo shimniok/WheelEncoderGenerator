@@ -54,15 +54,23 @@ public class BasicEncoderTest {
   @Test
   public void testGetTracks() {
     System.out.println("getTracks");
-    double id = 0.0;
-    double od = 0.0;
-    int resolution = 0;
-    boolean index = false;
+    double id = 11.0;
+    double od = 66.0;
+    int resolution = 64;
+    boolean index = true;
     boolean clockwise = false;
     BasicEncoder instance = new BasicEncoder();
     List<EncoderTrack> tracks = instance.getTracks(id, od, resolution, index, clockwise);
-    assertEquals(tracks.size(), 1);
-    // TODO additional tests
+    assertEquals(2, tracks.size(), "track count");
+    EncoderTrack t0 = tracks.get(0);
+    EncoderTrack t1 = tracks.get(1);
+    assertEquals(resolution*2, t0.stripeCount, "t0 resolution");
+    assertEquals(t1.startAngle, t0.startAngle, "t0 index startAngle");
+    assertEquals(360.0/(2*resolution), t0.stripeAngle, "t0 stripeAngle");
+    assertEquals(od, t0.outerDiameter);
+    assertEquals(1, t1.stripeCount, "index stripeCount");
+    assertEquals(id, t1.innerDiameter, "index innerDiameter");
+    
   }
 
   /**
@@ -71,29 +79,28 @@ public class BasicEncoderTest {
   @Test
   public void testValidResolution() {
     System.out.println("validResolution");
-    int resolution = 0;
     BasicEncoder instance = new BasicEncoder();
     boolean result;
     
     // Test nonsensical values
     result = instance.validResolution(-1);
-    assertEquals(result, false);
+    assertEquals(false, result);
     result = instance.validResolution(0);
-    assertEquals(result, false);
+    assertEquals(false, result);
 
     result = instance.validResolution(instance.RESOLUTION_MIN-1);
-    assertEquals(result, false);
+    assertEquals(false, result);
     result = instance.validResolution(instance.RESOLUTION_MIN-2);
-    assertEquals(result, false);
+    assertEquals(false, result);
     
     result = instance.validResolution(instance.RESOLUTION_MAX+1);
-    assertEquals(result, false);
+    assertEquals(false, result);
     result = instance.validResolution(instance.RESOLUTION_MAX+2);
-    assertEquals(result, false);
+    assertEquals(false, result);
 
     for (int i=instance.RESOLUTION_MIN; i <= instance.RESOLUTION_MAX; i++) {
       result = instance.validResolution(i);
-      assertEquals(result, true);
+      assertEquals(true, result);
     }
   }
 
@@ -103,32 +110,31 @@ public class BasicEncoderTest {
   @Test
   public void testFixResolution() {
     System.out.println("fixResolution");
-    int resolution = 0;
     BasicEncoder instance = new BasicEncoder();
     int result;
 
     // Test nonsensical values
     result = instance.fixResolution(-1);
-    assertEquals(result, instance.RESOLUTION_MIN);
+    assertEquals(instance.RESOLUTION_MIN, result);
     result = instance.fixResolution(0);
-    assertEquals(result, instance.RESOLUTION_MIN);
+    assertEquals(instance.RESOLUTION_MIN, result);
 
     // Test too-small values
     result = instance.fixResolution(instance.RESOLUTION_MIN-1);
-    assertEquals(result, instance.RESOLUTION_MIN);
+    assertEquals(instance.RESOLUTION_MIN, result);
     result = instance.fixResolution(instance.RESOLUTION_MIN-2);
-    assertEquals(result, instance.RESOLUTION_MIN);
+    assertEquals(instance.RESOLUTION_MIN, result);
 
     // Test too-large values
     result = instance.fixResolution(instance.RESOLUTION_MAX+1);
-    assertEquals(result, instance.RESOLUTION_MAX);
+    assertEquals(instance.RESOLUTION_MAX, result);
     result = instance.fixResolution(instance.RESOLUTION_MAX+2);
-    assertEquals(result, instance.RESOLUTION_MAX);
+    assertEquals(instance.RESOLUTION_MAX, result);
 
     // Test all valid values
     for (int i=instance.RESOLUTION_MIN; i <= instance.RESOLUTION_MAX; i++) {
       result = instance.fixResolution(i);
-      assertEquals(result, i);
+      assertEquals(i, result);
     }
     
   }
