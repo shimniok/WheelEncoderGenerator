@@ -13,13 +13,6 @@ The encoder disc settings can be saved and loaded and, of course, the final desi
 
 ## Task List - updated Feb 28, 2021
 
-Stay tuned for MVP release by Mar 1. See branch [0.3](https://github.com/shimniok/WheelEncoderGenerator/tree/0.3) 
-
- * ~~Initial view created~~
- * ~~Model created~~
- * ~~Prototype Controller implemented~~
- * ~~Bind model and view~~
- * ~~Render encoder disc~~
  * ~~Implement printing~~
  * ~~Implement file operations (new/open/save/save as)~~
  * ~~Implement unit tests~~
@@ -28,8 +21,5 @@ Stay tuned for MVP release by Mar 1. See branch [0.3](https://github.com/shimnio
  * Implement Windows packaging
  * Implement MacOS packaging
 
-## Update - Feb 18, 2021
-
-Basic functionality is implemented -- configuring encoder, printing, saving, loading, starting new.
-
 [original application](https://code.google.com/archive/p/wheel-encoder-generator/)
+
