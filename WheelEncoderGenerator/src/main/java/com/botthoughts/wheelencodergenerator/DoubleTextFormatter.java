@@ -15,6 +15,8 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import java.util.Formatter;
+import java.util.Locale;
 import java.util.function.UnaryOperator;
 import javafx.scene.control.TextFormatter;
 
