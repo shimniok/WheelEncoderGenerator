@@ -42,6 +42,5 @@ public class EncoderTrack {
         this.stripeAngle = stripeSweepAngle;
         this.stripeCount = stripeCount;
     }
-    
 
 }

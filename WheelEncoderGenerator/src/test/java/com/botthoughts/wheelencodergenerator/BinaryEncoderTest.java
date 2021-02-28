@@ -29,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class BinaryEncoderTest {
   
+  private static final double TOL = 0.00001;
+  
   public BinaryEncoderTest() {
   }
   
@@ -59,23 +61,23 @@ public class BinaryEncoderTest {
     boolean result;
 
     result = instance.validResolution(-1);
-    assertEquals(result, false);
+    assertEquals(false, result);
     result = instance.validResolution(0);
-    assertEquals(result, false);
+    assertEquals(false, result);
     
     result = instance.validResolution(instance.RESOLUTION_MIN-1);
-    assertEquals(result, false);
+    assertEquals(false, result);
     result = instance.validResolution(instance.RESOLUTION_MIN-2);
-    assertEquals(result, false);
+    assertEquals(false, result);
 
     result = instance.validResolution(instance.RESOLUTION_MAX+1);
-    assertEquals(result, false);
+    assertEquals(false, result);
     result = instance.validResolution(instance.RESOLUTION_MAX+1);
-    assertEquals(result, false);
+    assertEquals(false, result);
     
     for (int i=instance.RESOLUTION_MIN; i <= instance.RESOLUTION_MAX; i++) {
       result = instance.validResolution(i);
-      assertEquals(result, true);     
+    assertEquals(true, result);
     }
   }
 
@@ -85,15 +87,22 @@ public class BinaryEncoderTest {
   @Test
   public void testGetTracks() {
     System.out.println("getTracks");
-    double id = 45.0;
-    double od = 22.0;
+    double id = 22.0;
+    double od = 45.0;
     int resolution = 5;
     boolean index = false;
     boolean clockwise = false;
     BinaryEncoder instance = new BinaryEncoder();
     List<EncoderTrack> result = instance.getTracks(id, od, resolution, index, clockwise);
-    assertEquals(result.size(), resolution);
-    // TODO additional tests
+    assertEquals(resolution, result.size());
+    EncoderTrack t0 = result.get(0);
+    assertEquals(od, t0.outerDiameter, TOL, "outer track outerDiameter");
+    EncoderTrack t1 = result.get(resolution-1);
+    assertEquals(id, t1.innerDiameter, TOL, "inner track innerDiameter");
+    for (int i = 0; i < resolution; i++) {
+      EncoderTrack t = result.get(i);
+      assertEquals(1<<(resolution-i), t.stripeCount, "stripe count");
+    }
   }
 
   /**

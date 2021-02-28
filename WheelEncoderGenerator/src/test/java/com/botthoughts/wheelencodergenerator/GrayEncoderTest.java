@@ -29,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class GrayEncoderTest {
   
+  private static final double TOL = 0.00001;
+
   public GrayEncoderTest() {
   }
   
@@ -54,14 +56,25 @@ public class GrayEncoderTest {
   @Test
   public void testGetTracks() {
     System.out.println("getTracks");
-    double id = 44.0;
-    double od = 22.0;
-    int resolution = 4;
+    double id = 22.0;
+    double od = 44.0;
+    int resolution = 3;
     boolean index = false;
     boolean clockwise = false;
     GrayEncoder instance = new GrayEncoder();
     List<EncoderTrack> result = instance.getTracks(id, od, resolution, index, clockwise);
-    assertEquals(result.size(), resolution);
+    assertEquals(resolution, result.size(), "resolution");
+
+    EncoderTrack t0 = result.get(0);
+    assertEquals(od, t0.outerDiameter, TOL, "outer track (t0) track outerDiameter");
+    assertEquals(1<<(resolution-1), t0.stripeCount, "t0 stripe count");
+
+    EncoderTrack t1 = result.get(resolution-1);
+    assertEquals(1<<(resolution-2), t1.stripeCount, "t1 stripe count");
+
+    EncoderTrack t2 = result.get(resolution-1);
+    assertEquals(id, t2.innerDiameter, TOL, "inner track (t2) innerDiameter");
+    assertEquals(1<<(resolution-2), t2.stripeCount, "t2 stripe count");
   }
   
 }

@@ -29,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class BasicEncoderTest {
   
+  private static final double TOL = 0.00001;
+
   public BasicEncoderTest() {
   }
   
@@ -66,10 +68,10 @@ public class BasicEncoderTest {
     EncoderTrack t1 = tracks.get(1);
     assertEquals(resolution*2, t0.stripeCount, "t0 resolution");
     assertEquals(t1.startAngle, t0.startAngle, "t0 index startAngle");
-    assertEquals(360.0/(2*resolution), t0.stripeAngle, "t0 stripeAngle");
-    assertEquals(od, t0.outerDiameter);
+    assertEquals(360.0/(2*resolution), t0.stripeAngle, TOL, "t0 stripeAngle");
+    assertEquals(od, t0.outerDiameter, TOL);
     assertEquals(1, t1.stripeCount, "index stripeCount");
-    assertEquals(id, t1.innerDiameter, "index innerDiameter");
+    assertEquals(id, t1.innerDiameter, TOL, "index innerDiameter");
     
   }
 
