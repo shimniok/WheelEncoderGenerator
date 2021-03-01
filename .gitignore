@@ -1,3 +1,4 @@
 .idea
 *.weg
 /WheelEncoderGenerator/nbproject/
+/WheelEncoderGenerator/target/
