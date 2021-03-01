@@ -1,9 +1,44 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.bot-thoughts</groupId>
+    <groupId>com.botthoughts</groupId>
     <artifactId>WheelEncoderGenerator</artifactId>
     <version>0.3-beta</version>
+    <profiles>
+        <profile>
+            <id>platform-windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <osTag>windows</osTag>
+            </properties>
+        </profile>
+        <profile>
+            <id>platform-linux</id>
+            <activation>
+                <os>
+                    <family>linux</family>
+                </os>
+            </activation>
+            <properties>
+                <osTag>linux</osTag>
+            </properties>
+        </profile>
+        <profile>
+            <id>platform-mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <properties>
+                <osTag>mac</osTag>
+            </properties>
+        </profile>
+    </profiles>
     <properties>
         <javaVersion>11</javaVersion>
         <javaFxVersion>11</javaFxVersion>
@@ -12,7 +47,9 @@
         <maven.compiler.target>${javaVersion}</maven.compiler.target>
         <mainClass>com.botthoughts.wheelencodergenerator.App</mainClass>
         <moduleName>com.botthoughts.wheelencodergenerator</moduleName>
-        <moduleDir>${project.build.directory}/modules</moduleDir>
+        <moduleDir>${project.build.directory}/${osTag}/modules</moduleDir>
+        <jarName>${project.build.directory}/${project.build.finalName}.jar</jarName>
+        <imageDir>${project.build.directory}/${osTag}/weg</imageDir>
     </properties>
     <dependencies>
         <dependency>
@@ -55,37 +92,37 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>com.coderplus.maven.plugins</groupId>
-                <artifactId>copy-rename-maven-plugin</artifactId>
-                <version>1.0.1</version>
-                <executions>
-                    <execution>
-                        <id>copy-target</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <sourceFile>${project.build.directory}/${project.build.finalName}.jar</sourceFile>
-                            <destinationFile>${moduleDir}/${project.build.finalName}.jar</destinationFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.1.2</version>
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
-                        <phase>prepare-package</phase>
+                        <phase>initialize</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
                             <outputDirectory>${moduleDir}</outputDirectory>
                             <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <delete dir="${imageDir}" includeemptydirs="true"/>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
@@ -102,19 +139,19 @@
                             <goal>create-runtime-image</goal>
                         </goals>
                         <configuration>
+                            <overwriteExistingFiles>true</overwriteExistingFiles>
                             <modulePath>
                                 <path>${moduleDir}</path>
+                                <path>${jarName}/</path>
                             </modulePath>
                             <modules>
                                 <module>${moduleName}</module>
-                            </modules> 
+                            </modules>
                             <launcher>
                                 <name>WEG</name>
                                 <module>${moduleName}/${mainClass}</module>
                             </launcher>
-                            <outputDirectory>
-                                ${project.build.directory}/jlink-image
-                            </outputDirectory>
+                            <outputDirectory>${imageDir}</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
