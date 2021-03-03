@@ -2,3 +2,4 @@
 *.weg
 /WheelEncoderGenerator/nbproject/
 /WheelEncoderGenerator/target/
+/target/
