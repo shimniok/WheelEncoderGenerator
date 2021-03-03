@@ -139,6 +139,9 @@ public class PrimaryController implements Initializable {
     FileChooser fc = new FileChooser();
     fc.getExtensionFilters().add(extensionFilter);
     File f = fc.showOpenDialog(App.stage);
+
+    if (f == null) return;
+
     try {
       FileInputStream in;
       in = new FileInputStream(f);
