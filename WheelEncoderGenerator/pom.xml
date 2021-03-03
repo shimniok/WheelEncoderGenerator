@@ -50,6 +50,7 @@
         <moduleDir>${project.build.directory}/${osTag}/modules</moduleDir>
         <jarName>${project.build.directory}/${project.build.finalName}.jar</jarName>
         <imageDir>${project.build.directory}/${osTag}/weg</imageDir>
+        <archiveDir>${project.build.directory}/${osTag}</archiveDir>
     </properties>
     <dependencies>
         <dependency>
@@ -152,6 +153,25 @@
                                 <module>${moduleName}/${mainClass}</module>
                             </launcher>
                             <outputDirectory>${imageDir}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <appendAssemblyId>true</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>${osTag}.xml</descriptor>
+                            </descriptors>
                         </configuration>
                     </execution>
                 </executions>
