@@ -15,8 +15,8 @@
  * Clockwise or Counter-clockwise rotation (n/a for simple encoder)
 
 ## Directions
- * Download file corresponding to your operating system family
- * Extract archive to folder/directory
+ * Download file corresponding to your operating system familyo
+ * Extract archive to a location of your choosing
  * Open the extracted folder and open the ```bin``` folder/directory
  * Linux/Mac: open/run the file ```WEG```
  * Windows: open/run the file ```WEG.bat```
@@ -25,6 +25,7 @@
  * Image export not yet implemented
  * No menu bar; all functionality available through toolbar, however
  * Few or no tooltips or help available
+ * Inverted button does not toggle between "Yes" and "No" text
  * Issues with input formatting and validation on some fields
  * No indication of saved/changed status
  * No prompt to save changes upon New or Exit
