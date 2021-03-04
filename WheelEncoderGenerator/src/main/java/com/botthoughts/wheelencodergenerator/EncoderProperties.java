@@ -29,7 +29,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-// TODO: convert dimensions when switching units
+// TODO: convert dimensions when switching units Issue #11
 
 /**
  * ViewModel object containing properties describing an encoder

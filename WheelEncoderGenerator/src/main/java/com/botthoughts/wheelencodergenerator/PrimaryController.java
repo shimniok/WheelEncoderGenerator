@@ -217,7 +217,7 @@ public class PrimaryController implements Initializable {
 
   @FXML
   public void export() {
-    // TODO file export
+    // TODO file export Issue #7
   }
 
   private Double parseDouble(String s) {
@@ -247,7 +247,7 @@ public class PrimaryController implements Initializable {
 //            vf.setEncoder(ep.getEncoder());
 //        });
 
-// TODO: implement Double formatting
+// TODO: implement Double formatting Issue #10
 //  private final StringBuilder sb;
 //  private final Formatter formatter;
 //  change..setText(String.format("%.1f", Double.parseDouble(newText)));

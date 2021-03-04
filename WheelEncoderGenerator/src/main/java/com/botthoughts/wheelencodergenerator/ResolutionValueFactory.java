@@ -32,7 +32,7 @@ public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
         setConverter(new IntegerStringConverter());
 //        this.valueProperty().addListener((observable, oldvalue, newvalue) -> {
 //            if (!this.e.validResolution(newvalue)) {
-//              // TODO: find a way to fix the resolution if it's invalid
+//              // TODO: find a way to fix the resolution if it's invalid Issue #12
 //            }
 //        });
         this.setValue(ep.getResolution().get());
