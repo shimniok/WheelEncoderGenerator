@@ -230,6 +230,18 @@ public class PrimaryController implements Initializable {
       return NaN;
     }
   }
+  
+//  @FXML
+//  public void checkForUpdates() {
+//    GitHubTagService service = new GitHubTagService("shimniok", "WheelEncoderGenerator");
+//    try {
+//      String s = service.getLatestTagName();
+//      //System.out.println("Latest version: "+s);
+//    } catch (IOException ex) {
+//      // TODO handle IO exception
+//      System.out.println("checkForUpdates(): IOException " + ex);
+//    }
+//  }
 
   @Override
   public void initialize(URL url, ResourceBundle rb) {
@@ -272,14 +284,21 @@ public class PrimaryController implements Initializable {
     unitsUI.valueProperty().bindBidirectional(ep.getUnits());
 
     invertedUI.selectedProperty().bindBidirectional(ep.getInverted());
-
+    invertedUI.selectedProperty().addListener((obs, ov, nv) -> {
+      if (nv) {
+        invertedUI.setText("Yes"); // if selected, "Yes"
+      } else {
+        invertedUI.setText("No"); // if not selected, "no"
+      }
+    });
+   
     indexUI.selectedProperty().bindBidirectional(ep.getIndexed());
     indexUI.disableProperty().bind(ep.getIndexable().not());
     indexUI.selectedProperty().addListener((obs, ov, nv) -> {
       if (nv) {
-        indexUI.setText("Yes");
+        indexUI.setText("Yes"); // if selected, "Yes"
       } else {
-        indexUI.setText("No");
+        indexUI.setText("No"); // if not selected, "no"
       }
     });
 
