@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -40,7 +41,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
@@ -51,24 +51,18 @@ import javafx.util.converter.DoubleStringConverter;
 
 public class PrimaryController implements Initializable {
 
-//    BasicEncoder basicEncoder;
-//    QuadratureEncoder quadratureEncoder;
-//    BinaryEncoder binaryEncoder;
-//    GrayEncoder grayEncoder;
-//    EncoderModel currentEncoder;
   private EncoderView encoderPreview;
   private File currentFile;
-  private static final String extension = ".we2";
+  private static final String EXT = ".we2";
   private static final ExtensionFilter extensionFilter
-      = new ExtensionFilter("Wheel Encoder Generator v2", "*" + extension);
+      = new ExtensionFilter("Wheel Encoder Generator v2", "*" + EXT);
   private SimpleStringProperty filename;
+  private SimpleBooleanProperty saved;
   private SimpleStringProperty alertTitle;
   private SimpleStringProperty alertText;
   private Alert alertDialog;
   private EncoderProperties ep;
 
-//    private Color bg; // background
-//    private Color fg; // foreground
   @FXML
   Canvas encoderUI;
   @FXML
@@ -102,6 +96,10 @@ public class PrimaryController implements Initializable {
     alertDialog.showAndWait();
   }
 
+  private void showYesNoCancel(String title, String text) {
+    // TODO: yes/no/cancel dialog
+  }
+  
   public void saveFile(File f) {
     if (f != null) {
       try {
@@ -111,6 +109,7 @@ public class PrimaryController implements Initializable {
         System.out.println("file=" + f.getCanonicalPath());
         currentFile = f; // only do this if save succeeds!
         filename.set(f.getName());
+        saved.set(true);
       } catch (IOException ex) {
         showAlert("File Save Error", "Error saving " + f.getName() + "\n" + ex.getMessage());
       }
@@ -140,6 +139,8 @@ public class PrimaryController implements Initializable {
     fc.getExtensionFilters().add(extensionFilter);
     File f = fc.showOpenDialog(App.stage);
 
+    // TODO: prompt if current file not saved yet
+    
     if (f == null) return;
 
     try {
@@ -149,6 +150,7 @@ public class PrimaryController implements Initializable {
       p.load(in);
       currentFile = f;
       filename.set(f.getName());
+      saved.set(true);
     } catch (IOException ex) {
       showAlert("File Open Error", "Error opening " + f.getName() + "\n" + ex.getMessage());
     }
@@ -158,8 +160,9 @@ public class PrimaryController implements Initializable {
   public void newFile() {
     System.out.println("File new");
     currentFile = null;
-    filename.set("untitled" + extension);
+    filename.set("untitled" + EXT);
     ep.initialize();
+    saved.set(false);
   }
 
   @FXML
@@ -247,6 +250,13 @@ public class PrimaryController implements Initializable {
   public void initialize(URL url, ResourceBundle rb) {
     ep = new EncoderProperties();
 
+    saved = new SimpleBooleanProperty(false);
+    
+    App.stage.setOnCloseRequest((event) -> {
+      System.out.println("Stage is closing");
+      // TODO prompt for file save
+    });
+    
     typeUI.getItems().setAll(ep.getTypeOptions());
     typeUI.valueProperty().bindBidirectional(ep.getType());
     System.out.println("PrimaryController: type=" + ep.getType());
