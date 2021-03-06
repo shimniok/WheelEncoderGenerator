@@ -41,7 +41,7 @@
     </profiles>
     <properties>
         <javaVersion>11</javaVersion>
-        <javaFxVersion>11</javaFxVersion>
+        <javaFxVersion>11.0.2</javaFxVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>${javaVersion}</maven.compiler.source>
         <maven.compiler.target>${javaVersion}</maven.compiler.target>
@@ -99,7 +99,7 @@
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
-                        <phase>initialize</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
@@ -143,7 +143,7 @@
                             <overwriteExistingFiles>true</overwriteExistingFiles>
                             <modulePath>
                                 <path>${moduleDir}</path>
-                                <path>${jarName}/</path>
+                                <path>${jarName}</path>
                             </modulePath>
                             <modules>
                                 <module>${moduleName}</module>
@@ -156,7 +156,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>   
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
