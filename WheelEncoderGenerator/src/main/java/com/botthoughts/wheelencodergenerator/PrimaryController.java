@@ -341,7 +341,6 @@ public class PrimaryController implements Initializable {
     unitsUI.valueProperty().bindBidirectional(ep.getUnits());
 
     invertedUI.selectedProperty().bindBidirectional(ep.getInverted());
-    // TODO: use toggle button control instead??
     invertedUI.selectedProperty().addListener((obs, ov, nv) -> {
       if (nv) {
         invertedUI.setText("Yes"); // if selected, "Yes"
@@ -352,7 +351,6 @@ public class PrimaryController implements Initializable {
    
     indexUI.selectedProperty().bindBidirectional(ep.getIndexed());
     indexUI.disableProperty().bind(ep.getIndexable().not());
-    // TODO: use toggle button control instead??
     indexUI.selectedProperty().addListener((obs, ov, nv) -> {
       if (nv) {
         indexUI.setText("Yes"); // if selected, "Yes"
@@ -362,7 +360,6 @@ public class PrimaryController implements Initializable {
     });
 
     // directionUI, two buttons, only one selected at once.
-    // TODO: use toggle button & toggle group control instead??
     cwUI.selectedProperty().bindBidirectional(ep.getDirection());
     cwUI.selectedProperty().addListener((obs, ov, nv) -> {
       ep.getDirection().set(nv);
