@@ -1,7 +1,7 @@
-# WheelEncoderGenerator v0.3-beta
+# WheelEncoderGenerator v0.3.1
 ## Release Notes
 
-*Initial MVP release of WheelEncoderGenerator 0.3 with most of the basic functionality implemented*
+*Minor update of WheelEncoderGenerator 0.3*
 
 ## Features
  * Supports Mac, Windows, Linux with self-contained application
@@ -21,13 +21,16 @@
  * Linux/Mac: open/run the file ```WEG```
  * Windows: open/run the file ```WEG.bat```
 
+## Fixes and Enhancements
+ * Inverted button toggles between "Yes" and "No" text
+ * Prompt to save changes upon Exit
+
 ## Known Issues
- * Image export not yet implemented
- * No menu bar; all functionality available through toolbar, however
- * Few or no tooltips or help available
- * Inverted button does not toggle between "Yes" and "No" text
  * Issues with input formatting and validation on some fields
- * No indication of saved/changed status
- * No prompt to save changes upon New or Exit
+ * Image export not yet implemented
  * No automatic check for updates
+ * Few or no tooltips or help available
+ * No prompt to save changes upon New 
+ * No indication of saved/changed status
  * No "About..." screen
+ * No menu bar; all functionality available through toolbar, however
