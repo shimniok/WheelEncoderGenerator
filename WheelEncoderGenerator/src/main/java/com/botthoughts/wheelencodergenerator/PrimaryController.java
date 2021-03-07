@@ -39,6 +39,7 @@ import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
@@ -90,6 +91,15 @@ public class PrimaryController implements Initializable {
   ToggleButton indexUI;
   @FXML
   AnchorPane canvasContainer;
+  @FXML
+  Button newButton;
+  @FXML
+  Button saveButton;
+  @FXML
+  Button saveAsButton;
+  @FXML
+  Button PrintButton;
+  
  
   private void showErrorDialog(String title, String text) {
     alertDialog.setTitle(title);
@@ -385,9 +395,10 @@ public class PrimaryController implements Initializable {
     saved.addListener((obs, ov, nv) -> {
       this.updateTitle();
     });
+    saveButton.disableProperty().bind(saved);
     
     newFile();
-
+    
     encoderPreview.render();
   }
 
