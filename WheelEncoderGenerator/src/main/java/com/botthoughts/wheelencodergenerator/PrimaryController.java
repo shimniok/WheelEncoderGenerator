@@ -21,6 +21,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import static java.lang.Double.NaN;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import javafx.beans.property.Property;
@@ -38,6 +42,7 @@ import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
@@ -61,6 +66,7 @@ public class PrimaryController implements Initializable {
   private SimpleStringProperty alertTitle;
   private SimpleStringProperty alertText;
   private Alert alertDialog;
+  private Alert confirmDialog;
   private EncoderProperties ep;
 
   @FXML
@@ -90,14 +96,18 @@ public class PrimaryController implements Initializable {
   @FXML
   AnchorPane canvasContainer;
 
-  private void showAlert(String title, String text) {
+  private void showErrorDialog(String title, String text) {
     alertText.set(text);
     alertTitle.set(title);
+    alertDialog.setAlertType(Alert.AlertType.ERROR);
     alertDialog.showAndWait();
   }
 
-  private void showYesNoCancel(String title, String text) {
+  private ButtonType showConfirmDialog(String title, String text) {
     // TODO: yes/no/cancel dialog
+    confirmDialog.setContentText(text);
+    confirmDialog.setTitle(title);
+    return confirmDialog.showAndWait().get();
   }
   
   public void saveFile(File f) {
@@ -111,7 +121,7 @@ public class PrimaryController implements Initializable {
         filename.set(f.getName());
         saved.set(true);
       } catch (IOException ex) {
-        showAlert("File Save Error", "Error saving " + f.getName() + "\n" + ex.getMessage());
+        showErrorDialog("File Save Error", "Error saving " + f.getName() + "\n" + ex.getMessage());
       }
     }
   }
@@ -152,7 +162,7 @@ public class PrimaryController implements Initializable {
       filename.set(f.getName());
       saved.set(true);
     } catch (IOException ex) {
-      showAlert("File Open Error", "Error opening " + f.getName() + "\n" + ex.getMessage());
+      showErrorDialog("File Open Error", "Error opening " + f.getName() + "\n" + ex.getMessage());
     }
   }
 
@@ -211,7 +221,7 @@ public class PrimaryController implements Initializable {
       if (success) {
         job.endJob();
       } else {
-        showAlert("Printing Problem", "Status: " + job.getJobStatus().toString());
+        showErrorDialog("Printing Problem", "Status: " + job.getJobStatus().toString());
       }
 
     }
@@ -254,7 +264,11 @@ public class PrimaryController implements Initializable {
     
     App.stage.setOnCloseRequest((event) -> {
       System.out.println("Stage is closing");
-      // TODO prompt for file save
+      ButtonType t = this.showConfirmDialog("Save?", "Save changes before continuing?");
+      if (t == ButtonType.CANCEL) {
+        event.consume();
+      }
+      
     });
     
     typeUI.getItems().setAll(ep.getTypeOptions());
@@ -328,6 +342,9 @@ public class PrimaryController implements Initializable {
     alertDialog.contentTextProperty().bind(alertText);
     alertDialog.titleProperty().bind(alertTitle);
 
+    confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+    confirmDialog.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+    
     // App title set to filename
     filename = new SimpleStringProperty();
     App.stage.titleProperty().bindBidirectional(filename);
