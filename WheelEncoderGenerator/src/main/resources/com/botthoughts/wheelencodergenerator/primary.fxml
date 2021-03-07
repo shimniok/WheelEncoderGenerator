@@ -12,6 +12,7 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -33,6 +34,9 @@
                      </image>
                   </ImageView>
                </graphic>
+               <tooltip>
+                  <Tooltip text="New encoder" />
+               </tooltip>
             </Button>
             <Button fx:id="openButton" accessibleHelp="Open an encoder properties file" accessibleText="Open" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#openFile" prefHeight="50.0" prefWidth="50.0" text="Open">
                <graphic>
@@ -41,7 +45,10 @@
                         <Image url="@icons/Open.png" />
                      </image>
                   </ImageView>
-               </graphic></Button>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Open encoder file" />
+               </tooltip></Button>
             <Button fx:id="saveButton" accessibleHelp="Save to current encoder properties file" accessibleText="Save" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveFile" prefHeight="50.0" prefWidth="50.0" text="Save">
                <graphic>
                   <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#saveFile" pickOnBounds="true" preserveRatio="true">
@@ -49,7 +56,10 @@
                         <Image url="@icons/Save.png" />
                      </image>
                   </ImageView>
-               </graphic></Button>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Save encoder" />
+               </tooltip></Button>
             <Button fx:id="saveAsButton" accessibleHelp="Save encoder to a different encoder property file" accessibleText="Save As" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveFileAs" prefHeight="50.0" prefWidth="50.0" text="Save As">
                <graphic>
                   <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#saveFileAs" pickOnBounds="true" preserveRatio="true">
@@ -60,7 +70,10 @@
                         <Rectangle2D />
                      </viewport>
                   </ImageView>
-               </graphic></Button>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Save encoder in new file" />
+               </tooltip></Button>
             <Button fx:id="printButton" accessibleHelp="Print encoder to printer" accessibleText="Print" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#print" prefHeight="50.0" prefWidth="50.0" text="Print">
                <graphic>
                   <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
@@ -68,7 +81,10 @@
                         <Image url="@icons/Print.png" />
                      </image>
                   </ImageView>
-               </graphic></Button>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Print encoder" />
+               </tooltip></Button>
         </items>
       </ToolBar>
       <HBox VBox.vgrow="ALWAYS">

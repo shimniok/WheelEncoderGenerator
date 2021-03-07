@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -96,11 +95,7 @@ public class PrimaryController implements Initializable {
   ToggleButton indexUI;
   @FXML
   AnchorPane canvasContainer;
-
-  protected interface ResponseHandler {
-    void handle();
-  }
-  
+ 
   private void showErrorDialog(String title, String text) {
     alertText.set(text); // TODO: just set alertDialog text directly
     alertTitle.set(title); // TODO: just set alertDialog title directly
