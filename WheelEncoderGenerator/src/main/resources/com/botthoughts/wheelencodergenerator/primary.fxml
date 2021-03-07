@@ -26,7 +26,7 @@
    <children>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
-          <Button fx:id="newUI" accessibleHelp="Start a new encoder" accessibleText="New" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#newFile" prefHeight="50.0" prefWidth="50.0" text="New">
+          <Button fx:id="newButton" accessibleHelp="Start a new encoder" accessibleText="New" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#newFile" prefHeight="50.0" prefWidth="50.0" text="New">
                <graphic>
                   <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#newFile" pickOnBounds="true" preserveRatio="true">
                      <image>
