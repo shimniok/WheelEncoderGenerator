@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -96,10 +97,8 @@ public class PrimaryController implements Initializable {
   @FXML
   AnchorPane canvasContainer;
 
-  protected interface ConfirmDialogHandler {
-    void yes();
-    void no();
-    void cancel();
+  protected interface ResponseHandler {
+    void handle();
   }
   
   private void showErrorDialog(String title, String text) {
@@ -112,7 +111,9 @@ public class PrimaryController implements Initializable {
   private Optional<ButtonType> showConfirmDialog(String title, String text) {
     confirmDialog.setContentText(text);
     confirmDialog.setTitle(title);
-    return confirmDialog.showAndWait();
+    // TODO: yes/no/cancel response handler lambdas
+    Optional<ButtonType> res = confirmDialog.showAndWait();
+    return res;
   }
   
   public void saveFile(File f) {
