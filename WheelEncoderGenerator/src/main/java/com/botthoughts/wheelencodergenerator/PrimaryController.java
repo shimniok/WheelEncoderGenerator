@@ -101,7 +101,6 @@ public class PrimaryController implements Initializable {
   private Optional<ButtonType> showConfirmDialog(String title, String text) {
     confirmDialog.setContentText(text);
     confirmDialog.setTitle(title);
-    // TODO: yes/no/cancel response handler lambdas
     Optional<ButtonType> res = confirmDialog.showAndWait();
     return res;
   }
@@ -270,15 +269,13 @@ public class PrimaryController implements Initializable {
     
     App.stage.setOnCloseRequest((event) -> {
       if (!saved.get()) {
-        Optional<ButtonType> result = this.showConfirmDialog("Save?", "Save changes before continuing?");
-        if (result.isPresent()) {
-          if (result.get() == ButtonType.CANCEL) {
-            event.consume();
-          } else if (result.get() == ButtonType.YES) {
-            this.saveFile();
-          }
-          // If NO, do nothing and continue closing
-        }
+        Optional<ButtonType> optional = this.showConfirmDialog("Save?", 
+            "Save changes before continuing?");
+        optional.filter(response -> response == ButtonType.CANCEL)
+            .ifPresent( response -> event.consume() ); // consume close event
+        optional.filter(response -> response == ButtonType.YES)
+            .ifPresent( response -> this.saveFile() );
+          // If ButtonType.NO, do nothing and continue closing
       }
     });
     
