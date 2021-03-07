@@ -145,13 +145,13 @@ public class PrimaryController implements Initializable {
     SimpleBooleanProperty cancel = new SimpleBooleanProperty(false);
     
     if (!saved.get()) {
-      Optional<ButtonType> optional = this.showConfirmDialog("Save?", "Save changes before opening a new file?");
+      Optional<ButtonType> optional = 
+          this.showConfirmDialog("Save?", "Save changes before opening a new file?");
       optional.filter(response -> response == ButtonType.YES)
           .ifPresent(response -> saveFile());
       optional.filter(response -> response == ButtonType.CANCEL)
           .ifPresent(response -> { cancel.set(true); });
     }
-    
     if (cancel.get()) return;
     
     File f = fc.showOpenDialog(App.stage);
@@ -173,7 +173,18 @@ public class PrimaryController implements Initializable {
 
   @FXML
   public void newFile() {
-    System.out.println("File new");
+    SimpleBooleanProperty cancel = new SimpleBooleanProperty(false);
+
+    if (!saved.get()) {
+      Optional<ButtonType> optional = 
+          this.showConfirmDialog("Save?", "Save changes before creating a new encoder?");
+      optional.filter(response -> response == ButtonType.YES)
+          .ifPresent(response -> saveFile());
+      optional.filter(response -> response == ButtonType.CANCEL)
+          .ifPresent(response -> { cancel.set(true); });
+    }
+    if (cancel.get()) return;
+    
     currentFile = null;
     filename.set("untitled" + EXT);
     ep.initialize();
@@ -265,8 +276,6 @@ public class PrimaryController implements Initializable {
   public void initialize(URL url, ResourceBundle rb) {
     ep = new EncoderProperties();
 
-    saved = new SimpleBooleanProperty(false);
-    
     App.stage.setOnCloseRequest((event) -> {
       if (!saved.get()) {
         Optional<ButtonType> optional = this.showConfirmDialog("Save?", 
@@ -316,6 +325,7 @@ public class PrimaryController implements Initializable {
     unitsUI.valueProperty().bindBidirectional(ep.getUnits());
 
     invertedUI.selectedProperty().bindBidirectional(ep.getInverted());
+    // TODO: use toggle button control instead??
     invertedUI.selectedProperty().addListener((obs, ov, nv) -> {
       if (nv) {
         invertedUI.setText("Yes"); // if selected, "Yes"
@@ -326,6 +336,7 @@ public class PrimaryController implements Initializable {
    
     indexUI.selectedProperty().bindBidirectional(ep.getIndexed());
     indexUI.disableProperty().bind(ep.getIndexable().not());
+    // TODO: use toggle button control instead??
     indexUI.selectedProperty().addListener((obs, ov, nv) -> {
       if (nv) {
         indexUI.setText("Yes"); // if selected, "Yes"
@@ -335,6 +346,7 @@ public class PrimaryController implements Initializable {
     });
 
     // directionUI, two buttons, only one selected at once.
+    // TODO: use toggle button & toggle group control instead??
     cwUI.selectedProperty().bindBidirectional(ep.getDirection());
     cwUI.selectedProperty().addListener((obs, ov, nv) -> {
       ep.getDirection().set(nv);
@@ -351,14 +363,16 @@ public class PrimaryController implements Initializable {
     // App title set to filename
     filename = new SimpleStringProperty();
     App.stage.titleProperty().bindBidirectional(filename);
-    newFile();
 
-    // Update encoder preview anytime there's a change
+    // Update encoder preview and saved status on any settings change
     encoderPreview = new EncoderView(encoderUI, ep);
     ep.addListener((observable, oldvalue, newvalue) -> {
       encoderPreview.render();
       saved.set(false);
     });
+
+    saved = new SimpleBooleanProperty(true); // set saved true so newFile() doesn't prompt
+    newFile();
 
     encoderPreview.render();
   }
