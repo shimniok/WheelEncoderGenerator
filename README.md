@@ -1,7 +1,9 @@
 # Wheel Encoder Generator
 *Design and print wheel encoder discs for robotics and more. Cross platform, open source!*
 
-WheelEncoderGenerator is a cross-platform desktop Java app used to design and print wheel encoder discs for use in robotics.
+
+## Introduction
+WheelEncoderGenerator is a cross-platform desktop JavaFX app used to design and print wheel encoder discs for use in robotics.
 
 It supports printing of quadrature, binary, gray-code binary, and basic single-track encoder disc patterns with resolutions 
 from 1 bit (2 positions) to 11 bit (2048 positions).  You can adjust outer diameter of the encoder disc, as well as minimum 
@@ -11,15 +13,25 @@ Finally, you can adjust the encoder for clockwise or counter-clockwise rotation.
 
 The encoder disc settings can be saved and loaded and, of course, the final design can be printed from the application.
 
-## Task List - updated Feb 28, 2021
+## Directions
+ * Download file corresponding to your operating system familyo
+ * Extract archive to a location of your choosing
+ * Open the extracted folder and open the ```bin``` folder/directory
+ * Linux/Mac: open/run the file ```WEG```
+ * Windows: open/run the file ```WEG.bat```
 
- * ~~Implement printing~~
- * ~~Implement file operations (new/open/save/save as)~~
- * ~~Implement unit tests~~
- * Implement image export
- * Implement Linux packaging
- * Implement Windows packaging
- * Implement MacOS packaging
+## Feature List
+ * Supports Mac, Windows, Linux with completely self-contained application
+ * Design wheel coder with adjustable encoder tracks' outer and inner diameters, and axle/shaft diameter
+ * Print encoder design to a printer
+ * Save or Open configuration files or create new encoder.
+ * Four encoder types: basic, quadrature, binary, and gray-coded binary
+ * Index track available on quadrature and simple encoders (n/a for binary or gray encoders)
+ * Adjust resolution up to 2048 positions (11-bit)
+ * Invert color scheme (black on white vs white on black)
+ * Clockwise or Counter-clockwise rotation (n/a for simple encoder)
 
-[original application](https://code.google.com/archive/p/wheel-encoder-generator/)
+## Original Application
+
+The orinal Java Swing application repository can be found [here](https://code.google.com/archive/p/wheel-encoder-generator/).
 
