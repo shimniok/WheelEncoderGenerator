@@ -96,18 +96,23 @@ public class PrimaryController implements Initializable {
   @FXML
   AnchorPane canvasContainer;
 
+  protected interface ConfirmDialogHandler {
+    void yes();
+    void no();
+    void cancel();
+  }
+  
   private void showErrorDialog(String title, String text) {
-    alertText.set(text);
-    alertTitle.set(title);
+    alertText.set(text); // TODO: just set alertDialog text directly
+    alertTitle.set(title); // TODO: just set alertDialog title directly
     alertDialog.setAlertType(Alert.AlertType.ERROR);
     alertDialog.showAndWait();
   }
 
-  private ButtonType showConfirmDialog(String title, String text) {
-    // TODO: yes/no/cancel dialog
+  private Optional<ButtonType> showConfirmDialog(String title, String text) {
     confirmDialog.setContentText(text);
     confirmDialog.setTitle(title);
-    return confirmDialog.showAndWait().get();
+    return confirmDialog.showAndWait();
   }
   
   public void saveFile(File f) {
@@ -147,10 +152,11 @@ public class PrimaryController implements Initializable {
   public void openFile() {
     FileChooser fc = new FileChooser();
     fc.getExtensionFilters().add(extensionFilter);
-    File f = fc.showOpenDialog(App.stage);
 
     // TODO: prompt if current file not saved yet
-    
+
+    File f = fc.showOpenDialog(App.stage);
+
     if (f == null) return;
 
     try {
@@ -263,12 +269,17 @@ public class PrimaryController implements Initializable {
     saved = new SimpleBooleanProperty(false);
     
     App.stage.setOnCloseRequest((event) -> {
-      System.out.println("Stage is closing");
-      ButtonType t = this.showConfirmDialog("Save?", "Save changes before continuing?");
-      if (t == ButtonType.CANCEL) {
-        event.consume();
+      if (!saved.get()) {
+        Optional<ButtonType> result = this.showConfirmDialog("Save?", "Save changes before continuing?");
+        if (result.isPresent()) {
+          if (result.get() == ButtonType.CANCEL) {
+            event.consume();
+          } else if (result.get() == ButtonType.YES) {
+            this.saveFile();
+          }
+          // If NO, do nothing and continue closing
+        }
       }
-      
     });
     
     typeUI.getItems().setAll(ep.getTypeOptions());
