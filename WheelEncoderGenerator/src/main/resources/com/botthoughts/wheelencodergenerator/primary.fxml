@@ -120,16 +120,34 @@
                            <children>
                               <Label text="Outer Diameter" textAlignment="RIGHT" GridPane.rowIndex="2" />
                               <Label text="Inner Diameter" GridPane.rowIndex="3" />
-                              <TextField fx:id="outerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <TextField fx:id="innerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                              <TextField fx:id="centerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <TextField fx:id="outerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                 <tooltip>
+                                    <Tooltip text="Outer diameter of encoder" />
+                                 </tooltip></TextField>
+                              <TextField fx:id="innerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                 <tooltip>
+                                    <Tooltip text="Inside diameter of inner track" />
+                                 </tooltip></TextField>
+                              <TextField fx:id="centerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                 <tooltip>
+                                    <Tooltip text="Axle/shaft hole diameter" />
+                                 </tooltip></TextField>
                               <Label text="Center Diameter" GridPane.rowIndex="4" />
-                              <ComboBox fx:id="unitsUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                              <ComboBox fx:id="unitsUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                 <tooltip>
+                                    <Tooltip text="Select units of measurement" />
+                                 </tooltip></ComboBox>
                               <Label text="Units" GridPane.rowIndex="5" />
                               <Label text="Inverted" GridPane.rowIndex="6" />
-                              <ToggleButton fx:id="invertedUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="No" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                              <ToggleButton fx:id="invertedUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="No" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                                 <tooltip>
+                                    <Tooltip text="Switch black and white" />
+                                 </tooltip></ToggleButton>
                               <Label text="Resolution" GridPane.rowIndex="1" />
-                              <ToggleButton fx:id="indexUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="No" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                              <ToggleButton fx:id="indexUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="No" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                                 <tooltip>
+                                    <Tooltip text="Add/remove index track" />
+                                 </tooltip></ToggleButton>
                               <Label text="Index Track" GridPane.rowIndex="8" />
                               <GridPane GridPane.columnIndex="1" GridPane.rowIndex="7">
                                  <columnConstraints>
@@ -144,14 +162,26 @@
                                        <toggleGroup>
                                           <ToggleGroup fx:id="directionUI" />
                                        </toggleGroup>
+                                       <tooltip>
+                                          <Tooltip text="Select clockwise rotation" />
+                                       </tooltip>
                                     </ToggleButton>
-                                    <ToggleButton fx:id="ccwUI" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="70.0" mnemonicParsing="false" text="CCW" toggleGroup="$directionUI" GridPane.columnIndex="1" />
+                                    <ToggleButton fx:id="ccwUI" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="70.0" mnemonicParsing="false" text="CCW" toggleGroup="$directionUI" GridPane.columnIndex="1">
+                                       <tooltip>
+                                          <Tooltip text="Select counter-clockwise rotation" />
+                                       </tooltip></ToggleButton>
                                  </children>
                               </GridPane>
                               <Label text="Direction" GridPane.rowIndex="7" />
-                              <ComboBox fx:id="typeUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
+                              <ComboBox fx:id="typeUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                                 <tooltip>
+                                    <Tooltip text="Select encoder type" />
+                                 </tooltip></ComboBox>
                               <Label text="Encoder Type" />
-                              <Spinner fx:id="resolutionUI" editable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Spinner fx:id="resolutionUI" editable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                 <tooltip>
+                                    <Tooltip text="Set encoder resolution" />
+                                 </tooltip></Spinner>
                            </children>
                         </GridPane>
                      </content>
