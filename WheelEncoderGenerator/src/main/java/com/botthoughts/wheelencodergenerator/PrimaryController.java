@@ -120,6 +120,12 @@ public class PrimaryController implements Initializable {
       }
     }
   }
+  
+  public void updateTitle() {
+    String title = "WheelEncoderGenerator - " + this.filename.get();
+    if (!saved.get()) title += "*";
+    App.stage.setTitle(title);
+  }
 
   @FXML
   public void saveFile() {
@@ -360,10 +366,6 @@ public class PrimaryController implements Initializable {
     confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
     confirmDialog.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
     
-    // App title set to filename
-    filename = new SimpleStringProperty();
-    App.stage.titleProperty().bindBidirectional(filename);
-
     // Update encoder preview and saved status on any settings change
     encoderPreview = new EncoderView(encoderUI, ep);
     ep.addListener((observable, oldvalue, newvalue) -> {
@@ -371,7 +373,19 @@ public class PrimaryController implements Initializable {
       saved.set(false);
     });
 
-    saved = new SimpleBooleanProperty(true); // set saved true so newFile() doesn't prompt
+    filename = new SimpleStringProperty();
+    // Update App title on filename change
+    filename.addListener((obs, ov, nv) -> {
+      this.updateTitle();
+    });
+
+    // set saved true so newFile() doesn't prompt
+    saved = new SimpleBooleanProperty(true); 
+    // Update App title on saved change
+    saved.addListener((obs, ov, nv) -> {
+      this.updateTitle();
+    });
+    
     newFile();
 
     encoderPreview.render();
