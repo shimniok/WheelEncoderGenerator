@@ -21,9 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import static java.lang.Double.NaN;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -63,8 +60,6 @@ public class PrimaryController implements Initializable {
       = new ExtensionFilter("Wheel Encoder Generator v2", "*" + EXT);
   private SimpleStringProperty filename;
   private SimpleBooleanProperty saved;
-  private SimpleStringProperty alertTitle;
-  private SimpleStringProperty alertText;
   private Alert alertDialog;
   private Alert confirmDialog;
   private EncoderProperties ep;
@@ -97,8 +92,8 @@ public class PrimaryController implements Initializable {
   AnchorPane canvasContainer;
  
   private void showErrorDialog(String title, String text) {
-    alertText.set(text); // TODO: just set alertDialog text directly
-    alertTitle.set(title); // TODO: just set alertDialog title directly
+    alertDialog.setTitle(title);
+    alertDialog.setContentText(text);
     alertDialog.setAlertType(Alert.AlertType.ERROR);
     alertDialog.showAndWait();
   }
@@ -148,9 +143,18 @@ public class PrimaryController implements Initializable {
   public void openFile() {
     FileChooser fc = new FileChooser();
     fc.getExtensionFilters().add(extensionFilter);
-
-    // TODO: prompt if current file not saved yet
-
+    SimpleBooleanProperty cancel = new SimpleBooleanProperty(false);
+    
+    if (!saved.get()) {
+      Optional<ButtonType> optional = this.showConfirmDialog("Save?", "Save changes before opening a new file?");
+      optional.filter(response -> response == ButtonType.YES)
+          .ifPresent(response -> saveFile());
+      optional.filter(response -> response == ButtonType.CANCEL)
+          .ifPresent(response -> { cancel.set(true); });
+    }
+    
+    if (cancel.get()) return;
+    
     File f = fc.showOpenDialog(App.stage);
 
     if (f == null) return;
@@ -342,12 +346,7 @@ public class PrimaryController implements Initializable {
     cwUI.disableProperty().bind(ep.getDirectional().not());
     ccwUI.disableProperty().bind(ep.getDirectional().not());
 
-    alertTitle = new SimpleStringProperty("");
-    alertText = new SimpleStringProperty("");
-
     alertDialog = new Alert(Alert.AlertType.ERROR);
-    alertDialog.contentTextProperty().bind(alertText);
-    alertDialog.titleProperty().bind(alertTitle);
 
     confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
     confirmDialog.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
@@ -361,6 +360,7 @@ public class PrimaryController implements Initializable {
     encoderPreview = new EncoderView(encoderUI, ep);
     ep.addListener((observable, oldvalue, newvalue) -> {
       encoderPreview.render();
+      saved.set(false);
     });
 
     encoderPreview.render();
