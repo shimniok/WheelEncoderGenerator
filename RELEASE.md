@@ -24,12 +24,13 @@
 ## Fixes and Enhancements
  * Inverted button toggles between "Yes" and "No" text
  * Prompt to save changes upon Exit
+ * Added tooltips
 
 ## Known Issues
  * Issues with input formatting and validation on some fields
  * Image export not yet implemented
  * No automatic check for updates
- * Few or no tooltips or help available
+ * No help available
  * No prompt to save changes upon New 
  * No indication of saved/changed status
  * No "About..." screen
