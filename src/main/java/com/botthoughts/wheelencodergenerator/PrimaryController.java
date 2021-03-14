@@ -51,6 +51,9 @@ import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.converter.DoubleStringConverter;
+import com.botthoughts.util.GitTagService;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
 
 public class PrimaryController implements Initializable {
 
@@ -283,7 +286,6 @@ public class PrimaryController implements Initializable {
 //      String s = service.getLatestTagName();
 //      //System.out.println("Latest version: "+s);
 //    } catch (IOException ex) {
-//      // TODO handle IO exception
 //      System.out.println("checkForUpdates(): IOException " + ex);
 //    }
 //  }
@@ -292,6 +294,17 @@ public class PrimaryController implements Initializable {
   public void initialize(URL url, ResourceBundle rb) {
     ep = new EncoderProperties();
 
+    GitTagService gts;
+    try {
+      gts = new GitTagService("shimniok", "WheelEncoderGenerator");
+      ArrayList<String> names = gts.getNames();
+      System.out.println(names);
+    } catch (MalformedURLException ex) {
+      ex.printStackTrace();
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    }
+   
     App.stage.setOnCloseRequest((event) -> {
       if (!saved.get()) {
         Optional<ButtonType> optional = this.showConfirmDialog("Save?", 

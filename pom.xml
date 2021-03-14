@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.botthoughts</groupId>
     <artifactId>WheelEncoderGenerator</artifactId>
-    <version>0.3-beta</version>
+    <version>0.3.1</version>
     <profiles>
         <profile>
             <id>platform-windows</id>
@@ -64,6 +64,12 @@
             <version>${javaFxVersion}</version>
         </dependency>
         <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20201115</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.6.0</version>
@@ -106,6 +112,7 @@
                         <configuration>
                             <outputDirectory>${moduleDir}</outputDirectory>
                             <includeScope>runtime</includeScope>
+                            <excludeArtifactIds>json</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -134,6 +141,30 @@
                 <version>1.0.0.RC1</version>
                 <executions>
                     <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>add-module-info</goal>
+                        </goals>
+                        <configuration>
+                            <overwriteExistingFiles>true</overwriteExistingFiles>
+                            <outputDirectory>${moduleDir}</outputDirectory>
+                            <modules>
+                                <module>
+                                    <artifact>
+                                        <groupId>org.json</groupId>
+                                        <artifactId>json</artifactId>
+                                        <version>20201115</version>
+                                    </artifact>
+                                    <moduleInfoSource>
+                                        module org.json {
+                                        exports org.json;
+                                        }
+                                    </moduleInfoSource>
+                                </module>
+                            </modules>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>create-runtime-image</id>
                         <phase>package</phase>
                         <goals>
@@ -147,9 +178,11 @@
                             </modulePath>
                             <modules>
                                 <module>${moduleName}</module>
+                                <!-- Need to explicitly specify EC module for some reason -->
+                                <module>jdk.crypto.ec</module>
                             </modules>
                             <launcher>
-                                <name>WEG</name>
+                                <name>weg</name>
                                 <module>${moduleName}/${mainClass}</module>
                             </launcher>
                             <outputDirectory>${imageDir}</outputDirectory>
@@ -163,7 +196,7 @@
                 <version>3.3.0</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -188,6 +221,11 @@
                         <!-- Default configuration for running -->
                         <!-- Usage: mvn clean javafx:run -->
                         <id>default-cli</id>
+                        <configuration>
+                            <options>
+                                <option>-Djavax.net.debug=ssl,handshake</option>
+                            </options>
+                        </configuration>
                     </execution>
                     <execution>
                         <!-- Configuration for manual attach debugging -->
