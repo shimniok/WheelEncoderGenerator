@@ -51,19 +51,21 @@ import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.converter.DoubleStringConverter;
-import javafx.application.HostServices;
 import com.botthoughts.util.GitTagService;
-import java.awt.Desktop;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.scene.control.Label;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DataFormat;
 import javafx.scene.layout.GridPane;
+import javafx.util.Duration;
 
 public class PrimaryController implements Initializable {
 
@@ -122,10 +124,16 @@ public class PrimaryController implements Initializable {
     Clipboard clipboard = Clipboard.getSystemClipboard();
     ClipboardContent content = new ClipboardContent();
     String url = gitUrlUI.getText();
-    content.putString(url);
     gitUrlUI.setText("Copied to clipboard!");
+    content.putString(url);
     clipboard.setContent(content);
-    // TODO: replace copied message after N seconds
+
+    Timeline timeline = new Timeline();
+    timeline.autoReverseProperty().set(false);
+    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(3000),
+            new KeyValue(gitUrlUI.textProperty(), url)
+    ));
+    timeline.play();
   }
   
   private void checkForUpdates() {
