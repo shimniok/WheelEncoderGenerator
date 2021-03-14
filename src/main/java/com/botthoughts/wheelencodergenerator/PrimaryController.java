@@ -52,6 +52,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.converter.DoubleStringConverter;
 import com.botthoughts.util.GitTagService;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 
@@ -103,12 +104,49 @@ public class PrimaryController implements Initializable {
   @FXML
   Button PrintButton;
   
- 
-  private void showErrorDialog(String title, String text) {
+  private void checkForUpdates() {
+    // CHECK FOR UPDATE
+    // Get latest tag from Github
+    GitTagService gts;
+    String latest = "";
+    try {
+      gts = new GitTagService("shimniok", "WheelEncoderGenerator");
+      ArrayList<String> names = gts.getNames();
+      System.out.println(names.get(0));
+    } catch (MalformedURLException ex) {
+      System.out.println("PrimaryControler.initialize(): MalformedURLException: "+ex);
+    } catch (IOException ex) {
+      System.out.println("PrimaryControler.initialize(): IOException: "+ex);
+    }
+
+    // Get my own version
+    Properties properties = new Properties();
+    try {
+      InputStream stream = App.class.getResourceAsStream("/version.properties");
+      properties.load(stream);
+      String version = "v" + properties.getProperty("version"); // prefix with 'v'
+      System.out.println(version);
+
+      if (!version.equals(latest)) {
+        System.out.println("An updated Version of the application was found");
+        // TODO: in-app notification of update available
+      }
+    } catch (IOException e) {
+      System.out.println("Problem loading version properties");
+    }
+    
+  }
+  
+  private void showDialog(String title, String text, Alert.AlertType type) {
     alertDialog.setTitle(title);
     alertDialog.setContentText(text);
-    alertDialog.setAlertType(Alert.AlertType.ERROR);
+    alertDialog.setAlertType(type);
     alertDialog.showAndWait();
+  }
+      
+  
+  private void showErrorDialog(String title, String text) {
+    showDialog(title, text, Alert.AlertType.ERROR);
   }
 
   private Optional<ButtonType> showConfirmDialog(String title, String text) {
@@ -294,17 +332,6 @@ public class PrimaryController implements Initializable {
   public void initialize(URL url, ResourceBundle rb) {
     ep = new EncoderProperties();
 
-    GitTagService gts;
-    try {
-      gts = new GitTagService("shimniok", "WheelEncoderGenerator");
-      ArrayList<String> names = gts.getNames();
-      System.out.println(names);
-    } catch (MalformedURLException ex) {
-      ex.printStackTrace();
-    } catch (IOException ex) {
-      ex.printStackTrace();
-    }
-   
     App.stage.setOnCloseRequest((event) -> {
       if (!saved.get()) {
         Optional<ButtonType> optional = this.showConfirmDialog("Save?", 
@@ -410,6 +437,9 @@ public class PrimaryController implements Initializable {
     newFile();
     
     encoderPreview.render();
+
+    checkForUpdates();
+
   }
 
 }

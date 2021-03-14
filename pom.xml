@@ -40,6 +40,7 @@
         </profile>
     </profiles>
     <properties>
+        <version>${project.version}</version>
         <javaVersion>11</javaVersion>
         <javaFxVersion>11.0.2</javaFxVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,6 +52,9 @@
         <jarName>${project.build.directory}/${project.build.finalName}.jar</jarName>
         <imageDir>${project.build.directory}/${osTag}/weg</imageDir>
         <archiveDir>${project.build.directory}/${osTag}</archiveDir>
+        <confDir>${imageDir}/conf</confDir>
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
     </properties>
     <dependencies>
         <dependency>
@@ -89,6 +93,12 @@
         </dependency>
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -112,7 +122,7 @@
                         <configuration>
                             <outputDirectory>${moduleDir}</outputDirectory>
                             <includeScope>runtime</includeScope>
-                            <excludeArtifactIds>json</excludeArtifactIds>
+                            <excludeArtifactIds>json,appinfo</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -123,7 +133,7 @@
                 <version>1.8</version>
                 <executions>
                     <execution>
-                        <phase>prepare-package</phase>
+                        <phase>initialize</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
@@ -190,6 +200,22 @@
                     </execution>
                 </executions>
             </plugin>   
+<!--            <plugin>
+                <groupId>org.codehaus.mojo</groupId> 
+                <artifactId>properties-maven-plugin</artifactId> 
+                <version>1.0.0</version>
+                <executions> 
+                    <execution> 
+                        <phase>package</phase> 
+                        <goals> 
+                            <goal>write-project-properties</goal> 
+                        </goals> 
+                        <configuration> 
+                            <outputFile>${confDir}/app.properties</outputFile> 
+                        </configuration>
+                    </execution> 
+                </executions> 
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -221,11 +247,11 @@
                         <!-- Default configuration for running -->
                         <!-- Usage: mvn clean javafx:run -->
                         <id>default-cli</id>
-                        <configuration>
+<!--                        <configuration>
                             <options>
                                 <option>-Djavax.net.debug=ssl,handshake</option>
                             </options>
-                        </configuration>
+                        </configuration>-->
                     </execution>
                     <execution>
                         <!-- Configuration for manual attach debugging -->
