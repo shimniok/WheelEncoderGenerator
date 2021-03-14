@@ -51,10 +51,18 @@ import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.converter.DoubleStringConverter;
+import javafx.application.HostServices;
 import com.botthoughts.util.GitTagService;
+import java.awt.Desktop;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import javafx.scene.control.Label;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
 import javafx.scene.layout.GridPane;
 
 public class PrimaryController implements Initializable {
@@ -107,7 +115,19 @@ public class PrimaryController implements Initializable {
   @FXML
   GridPane updatePane;
   @FXML
-  Button downloadButton;
+  Label gitUrlUI;
+
+  @FXML
+  public void copyGithubUrlToClipboard() {
+    Clipboard clipboard = Clipboard.getSystemClipboard();
+    ClipboardContent content = new ClipboardContent();
+    String url = gitUrlUI.getText();
+    content.putString(url);
+    gitUrlUI.setText("Copied to clipboard!");
+    clipboard.setContent(content);
+    // TODO: add copy icon
+    // TODO: replace copied message after N seconds
+  }
   
   private void checkForUpdates() {
     // CHECK FOR UPDATE
