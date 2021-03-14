@@ -125,7 +125,6 @@ public class PrimaryController implements Initializable {
     content.putString(url);
     gitUrlUI.setText("Copied to clipboard!");
     clipboard.setContent(content);
-    // TODO: add copy icon
     // TODO: replace copied message after N seconds
   }
   

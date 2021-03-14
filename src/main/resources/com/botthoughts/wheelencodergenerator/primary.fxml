@@ -99,7 +99,7 @@
             </AnchorPane>
             <AnchorPane>
                <children>
-                  <TitledPane collapsible="false" text="Settings" AnchorPane.topAnchor="0.0">
+                  <TitledPane collapsible="false" text="Settings" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                      <content>
                         <GridPane alignment="CENTER" hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="5.0">
                            <columnConstraints>
@@ -195,26 +195,32 @@
                         </GridPane>
                      </content>
                   </TitledPane>
-                  <GridPane fx:id="updatePane" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="10.0">
+                  <GridPane fx:id="updatePane" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0">
                      <columnConstraints>
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" />
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" />
                      </columnConstraints>
                      <rowConstraints>
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <Label text="New version available">
+                        <Label text="New version available" GridPane.columnIndex="1">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin>
                         </Label>
-                        <Label fx:id="gitUrlUI" onMouseClicked="#copyGithubUrlToClipboard" text="https://bit.ly/3lf7FK5" GridPane.rowIndex="1" />
+                        <Label fx:id="gitUrlUI" onMouseClicked="#copyGithubUrlToClipboard" text="https://bit.ly/3lf7FK5" textFill="#616161" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <ImageView fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyGithubUrlToClipboard" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+                           <image>
+                              <Image url="@icons/Copy.png" />
+                           </image>
+                        </ImageView>
                      </children>
                   </GridPane>
                </children>
                <HBox.margin>
-                  <Insets top="10.0" />
+                  <Insets />
                </HBox.margin>
             </AnchorPane>
          </children>
