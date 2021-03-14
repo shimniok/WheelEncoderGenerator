@@ -55,6 +55,7 @@ import com.botthoughts.util.GitTagService;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import javafx.scene.layout.GridPane;
 
 public class PrimaryController implements Initializable {
 
@@ -103,6 +104,10 @@ public class PrimaryController implements Initializable {
   Button saveAsButton;
   @FXML
   Button PrintButton;
+  @FXML
+  GridPane updatePane;
+  @FXML
+  Button downloadButton;
   
   private void checkForUpdates() {
     // CHECK FOR UPDATE
@@ -129,8 +134,11 @@ public class PrimaryController implements Initializable {
 
       if (!version.equals(latest)) {
         System.out.println("An updated Version of the application was found");
-        // TODO: in-app notification of update available
+        updatePane.setVisible(true);
+      } else {
+        updatePane.setVisible(false);
       }
+      
     } catch (IOException e) {
       System.out.println("Problem loading version properties");
     }

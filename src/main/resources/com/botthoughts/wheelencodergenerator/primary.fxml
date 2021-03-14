@@ -97,9 +97,9 @@
                   <Canvas fx:id="encoderUI" height="500.0" width="500.0" />
                </children>
             </AnchorPane>
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" HBox.hgrow="ALWAYS">
+            <AnchorPane>
                <children>
-                  <TitledPane collapsible="false" text="Settings" VBox.vgrow="ALWAYS">
+                  <TitledPane collapsible="false" text="Settings" AnchorPane.topAnchor="0.0">
                      <content>
                         <GridPane alignment="CENTER" hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="5.0">
                            <columnConstraints>
@@ -123,31 +123,37 @@
                               <TextField fx:id="outerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                  <tooltip>
                                     <Tooltip text="Outer diameter of encoder" />
-                                 </tooltip></TextField>
+                                 </tooltip>
+                              </TextField>
                               <TextField fx:id="innerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                  <tooltip>
                                     <Tooltip text="Inside diameter of inner track" />
-                                 </tooltip></TextField>
+                                 </tooltip>
+                              </TextField>
                               <TextField fx:id="centerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                  <tooltip>
                                     <Tooltip text="Axle/shaft hole diameter" />
-                                 </tooltip></TextField>
+                                 </tooltip>
+                              </TextField>
                               <Label text="Center Diameter" GridPane.rowIndex="4" />
                               <ComboBox fx:id="unitsUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="5">
                                  <tooltip>
                                     <Tooltip text="Select units of measurement" />
-                                 </tooltip></ComboBox>
+                                 </tooltip>
+                              </ComboBox>
                               <Label text="Units" GridPane.rowIndex="5" />
                               <Label text="Inverted" GridPane.rowIndex="6" />
                               <ToggleButton fx:id="invertedUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="No" GridPane.columnIndex="1" GridPane.rowIndex="6">
                                  <tooltip>
                                     <Tooltip text="Switch black and white" />
-                                 </tooltip></ToggleButton>
+                                 </tooltip>
+                              </ToggleButton>
                               <Label text="Resolution" GridPane.rowIndex="1" />
                               <ToggleButton fx:id="indexUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="No" GridPane.columnIndex="1" GridPane.rowIndex="8">
                                  <tooltip>
                                     <Tooltip text="Add/remove index track" />
-                                 </tooltip></ToggleButton>
+                                 </tooltip>
+                              </ToggleButton>
                               <Label text="Index Track" GridPane.rowIndex="8" />
                               <GridPane GridPane.columnIndex="1" GridPane.rowIndex="7">
                                  <columnConstraints>
@@ -169,30 +175,49 @@
                                     <ToggleButton fx:id="ccwUI" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="70.0" mnemonicParsing="false" text="CCW" toggleGroup="$directionUI" GridPane.columnIndex="1">
                                        <tooltip>
                                           <Tooltip text="Select counter-clockwise rotation" />
-                                       </tooltip></ToggleButton>
+                                       </tooltip>
+                                    </ToggleButton>
                                  </children>
                               </GridPane>
                               <Label text="Direction" GridPane.rowIndex="7" />
                               <ComboBox fx:id="typeUI" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
                                  <tooltip>
                                     <Tooltip text="Select encoder type" />
-                                 </tooltip></ComboBox>
+                                 </tooltip>
+                              </ComboBox>
                               <Label text="Encoder Type" />
                               <Spinner fx:id="resolutionUI" editable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <tooltip>
                                     <Tooltip text="Set encoder resolution" />
-                                 </tooltip></Spinner>
+                                 </tooltip>
+                              </Spinner>
                            </children>
                         </GridPane>
                      </content>
                   </TitledPane>
+                  <GridPane fx:id="updatePane" layoutX="10.0" layoutY="474.0" visible="false" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Label text="New version available">
+                           <GridPane.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Button fx:id="downloadButton" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Download" GridPane.columnIndex="1" />
+                     </children>
+                  </GridPane>
                </children>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-            </VBox>
+               <HBox.margin>
+                  <Insets top="10.0" />
+               </HBox.margin>
+            </AnchorPane>
          </children>
       </HBox>
-      <Label fx:id="status" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" />
    </children>
 </VBox>

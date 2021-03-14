@@ -42,7 +42,7 @@ public class GitTagService {
   public GitTagService(String username, String repo) throws MalformedURLException {
     this.url = new URL(String.format("https://api.github.com/repos/%s/%s/tags", 
         GitTagService.sanitize(username), GitTagService.sanitize(repo)));
-    System.out.println("url: "+this.url.toString());
+//    System.out.println("url: "+this.url.toString());
   }
   
   /**
@@ -73,9 +73,9 @@ public class GitTagService {
 //      System.out.println(SSLContext.getDefault().getProtocol());
 //      
       String[] protocols = SSLContext.getDefault().getSupportedSSLParameters().getProtocols();
-      for (int i = 0; i < protocols.length; i++) {
-        System.out.println(protocols[i]);
-      }
+//      for (int i = 0; i < protocols.length; i++) {
+//        System.out.println(protocols[i]);
+//      }
 
       if (conn.getResponseCode() != 200) {
         throw new RuntimeException("Failed : HTTP error code : "
@@ -91,9 +91,9 @@ public class GitTagService {
         list.add(jo.getString("name"));
       }
     } catch (javax.net.ssl.SSLHandshakeException ex) {
-      System.out.println("getNames(): " + ex);
+      System.out.println("getNames(): SSLHandshakeException: " + ex);
     } catch (NoSuchAlgorithmException ex) {
-      ex.printStackTrace();
+      System.out.println("getNames(): NoSuchAlgorithmException: " + ex);
     }
 
     return list;
