@@ -1,24 +1,30 @@
 # Wheel Encoder Generator
-*Design and print wheel encoder discs for robotics and more. Cross platform, open source!*
+*Design and print wheel encoder discs for robotics and more. Cross platform, 
+open source!*
 
 
 ## Introduction
-WheelEncoderGenerator is a cross-platform desktop JavaFX app used to design and print wheel encoder discs for use in robotics.
+WheelEncoderGenerator is a cross-platform desktop JavaFX app used to design and
+print wheel encoder discs for use in robotics.
 
-It supports printing of quadrature, binary, gray-code binary, and basic single-track encoder disc patterns with resolutions 
-from 1 bit (2 positions) to 11 bit (2048 positions).  You can adjust outer diameter of the encoder disc, as well as minimum 
-diameter of the innermost track, and the diameter of the axle/shaft hole of the encoder.  An index track with a single 
-stripe can be enabled on quadrature and basic discs. The disc can also be inverted, exchange foreground and background colors.
-Finally, you can adjust the encoder for clockwise or counter-clockwise rotation.
+It supports printing of quadrature, binary, gray-code binary, and basic 
+single-track encoder disc patterns with resolutions from 1 bit (2 positions) to
+11 bit (2048 positions).  You can adjust outer diameter of the encoder disc,
+as well as minimum diameter of the innermost track, and the diameter of the
+axle/shaft hole of the encoder.  An index track with a single stripe can be
+enabled on quadrature and basic discs. The disc can also be inverted, exchange
+foreground and background colors. Finally, you can adjust the encoder for
+clockwise or counter-clockwise rotation.
 
-The encoder disc settings can be saved and loaded and, of course, the final design can be printed from the application.
+The encoder disc settings can be saved and loaded and, of course, the final
+design can be printed from the application.
 
 ## Directions
- * Download file corresponding to your operating system familyo
+ * Download the archive file corresponding to your operating system family
  * Extract archive to a location of your choosing
  * Open the extracted folder and open the ```bin``` folder/directory
- * Linux/Mac: open/run the file ```WEG```
- * Windows: open/run the file ```WEG.bat```
+ * Linux/Mac: open/run the file ```weg```
+ * Windows: open/run the file ```weg.bat```
 
 ## Feature List
  * Supports Mac, Windows, Linux with completely self-contained application
@@ -33,5 +39,6 @@ The encoder disc settings can be saved and loaded and, of course, the final desi
 
 ## Original Application
 
-The orinal Java Swing application repository can be found [here](https://code.google.com/archive/p/wheel-encoder-generator/).
+The original Java Swing application repository can be found
+[here](https://code.google.com/archive/p/wheel-encoder-generator/).
 
