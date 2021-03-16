@@ -68,14 +68,7 @@ public class GitTagService {
       conn.setRequestMethod("GET");
       conn.setRequestProperty("Accept", "application/json");
 
-//      SSLContext.setDefault(SSLContext.getInstance("TLSv1.3"));
-//
-//      System.out.println(SSLContext.getDefault().getProtocol());
-//      
       String[] protocols = SSLContext.getDefault().getSupportedSSLParameters().getProtocols();
-//      for (int i = 0; i < protocols.length; i++) {
-//        System.out.println(protocols[i]);
-//      }
 
       if (conn.getResponseCode() != 200) {
         throw new RuntimeException("Failed : HTTP error code : "
