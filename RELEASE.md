@@ -4,9 +4,9 @@
 
 *Minor update of WheelEncoderGenerator 0.3*
 
-## Fixes and Enhancements
+### Fixes and Enhancements
 
-## Known Issues
+### Known Issues
  * Issues with input formatting and validation on some fields
  * Image export not yet implemented
  * No online help available
@@ -17,14 +17,14 @@
 
 *Minor update of WheelEncoderGenerator 0.3*
 
-## Fixes and Enhancements
+### Fixes and Enhancements
  * Prompt to save changes upon New, Open, Exit
  * Added saved/unsaved status indicator
  * Added tooltips
  * Inverted button toggles between "Yes" and "No" text
  * Implemented check for application updates 
 
-## Known Issues
+### Known Issues
  * Issues with input formatting and validation on some fields
  * Image export not yet implemented
  * No online help available
@@ -35,7 +35,7 @@
 
 *Initial MVP release of WheelEncoderGenerator 0.3 with most of the basic functionality implemented*
 
-## Features
+### Features
  * Supports Mac, Windows, Linux with self-contained application
  * Design wheel coder with adjustable diameters for: outer track, inner track, axle/shaft
  * Print design to a printer
@@ -46,14 +46,14 @@
  * Invert color scheme (black on white vs white on black)
  * Clockwise or Counter-clockwise rotation (n/a for simple encoder)
 
-## Directions
+### Directions
  * Download file corresponding to your operating system familyo
  * Extract archive to a location of your choosing
  * Open the extracted folder and open the ```bin``` folder/directory
  * Linux/Mac: open/run the file ```WEG```
  * Windows: open/run the file ```WEG.bat```
 
-## Known Issues
+### Known Issues
  * Image export not yet implemented
  * No menu bar; all functionality available through toolbar, however
  * Few or no tooltips or help available
