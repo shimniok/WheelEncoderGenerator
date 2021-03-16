@@ -1,5 +1,3 @@
-package com.botthoughts.wheelencodergenerator;
-
 /*
  * Copyright 2021 mes.
  *
@@ -15,13 +13,14 @@ package com.botthoughts.wheelencodergenerator;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.botthoughts.wheelencodergenerator;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 /**
@@ -35,8 +34,16 @@ public class HelpController implements Initializable {
   WebView helpView;
   @FXML
   AnchorPane helpWindow;
+  
+  SimpleStringProperty locationProperty;
 
-  WebEngine webEngine;
+  public HelpController() {
+    this.locationProperty = new SimpleStringProperty();
+  }
+
+  public SimpleStringProperty getLocationProperty() {
+    return locationProperty;
+  }
   
   /**
    * Initializes the controller class.
@@ -44,8 +51,16 @@ public class HelpController implements Initializable {
   @Override
   public void initialize(URL url, ResourceBundle rb) {
     System.out.println("HelpControler: initialize()");
-    //webEngine = helpView.getEngine();
-    //webEngine.load("https://shimniok.github.io/WheelEncoderGenerator/");
-  }  
-  
+    
+    if (helpView == null) {
+      System.out.println("helpView is NULL");
+    } else {
+      if (helpView.getEngine() == null) {
+        System.out.println("engine is NULL");
+      }
+    }
+    
+    helpView.getEngine().load("https://shimniok.github.io/WheelEncoderGenerator/");
+  }
+
 }

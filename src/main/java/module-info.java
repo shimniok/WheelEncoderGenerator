@@ -4,8 +4,8 @@ module com.botthoughts.wheelencodergenerator {
 
   requires javafx.controls;
   requires javafx.fxml;
+  requires javafx.web;
   requires java.desktop;
   requires org.json;
-  requires javafx.web;
   requires java.base;
 }

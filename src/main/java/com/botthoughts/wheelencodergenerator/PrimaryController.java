@@ -122,6 +122,7 @@ public class PrimaryController implements Initializable {
   GridPane updatePane;
   @FXML
   Label gitUrlUI;
+  private Stage helpStage;
 
   @FXML
   public void copyGithubUrlToClipboard() {
@@ -349,16 +350,18 @@ public class PrimaryController implements Initializable {
   public void help() throws IOException {
     Parent root;
     try {
-      root = FXMLLoader.load(getClass().getResource("help.fxml"));
-      Stage stage = new Stage();
-      stage.setTitle("WEG - Online Help");
-      stage.setScene(new Scene(root));
-      stage.show();
+      FXMLLoader loader = new FXMLLoader();
+      root = loader.load(getClass().getResource("help.fxml"));
+      helpStage = new Stage();
+      helpStage.setTitle("WEG - Online Help");
+      helpStage.setScene(new Scene(root));
+      helpStage.show();
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
+  
   private Double parseDouble(String s) {
     if (s == null || s.equals("")) {
       return 0.0;
@@ -380,6 +383,9 @@ public class PrimaryController implements Initializable {
 //      System.out.println("checkForUpdates(): IOException " + ex);
 //    }
 //  }
+  
+  protected void initHelp() {
+  }
 
   @Override
   public void initialize(URL url, ResourceBundle rb) {
@@ -397,6 +403,7 @@ public class PrimaryController implements Initializable {
             .ifPresent( response -> this.saveFile() );
           // If ButtonType.NO, do nothing and continue closing
       }
+      // TODO: also close help window, if applicable
     });
     
     typeUI.getItems().setAll(ep.getTypeOptions());
