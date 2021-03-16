@@ -1,5 +1,19 @@
-# WheelEncoderGenerator v0.3.1
-## Release Notes
+# WheelEncoderGenerator
+
+## v0.3.2 Release Notes
+
+*Minor update of WheelEncoderGenerator 0.3*
+
+## Fixes and Enhancements
+
+## Known Issues
+ * Issues with input formatting and validation on some fields
+ * Image export not yet implemented
+ * No online help available
+ * No "About..." screen
+ * No menu bar; all functionality available through toolbar, however
+
+## v0.3.1 Release Notes
 
 *Minor update of WheelEncoderGenerator 0.3*
 
@@ -16,3 +30,7 @@
  * No online help available
  * No "About..." screen
  * No menu bar; all functionality available through toolbar, however
+
+## v0.3-Beta Release Notes
+
+
