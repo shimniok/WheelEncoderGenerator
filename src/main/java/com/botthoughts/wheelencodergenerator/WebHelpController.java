@@ -27,23 +27,17 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebView;
 
 /**
- * FXML Controller class
+ * FXML Controller class for Web-based Help
  *
  * @author mes
  */
-public class HelpController implements Initializable {
+public class WebHelpController implements Initializable {
 
   @FXML
   WebView helpView;
   @FXML
   AnchorPane helpWindow;
   
-  SimpleStringProperty locationProperty;
-
-  public HelpController() {
-    this.locationProperty = new SimpleStringProperty();
-  }
-
   /**
    * Initializes the controller class.
    * @param url

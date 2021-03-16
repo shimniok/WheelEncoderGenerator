@@ -80,7 +80,7 @@ public class PrimaryController implements Initializable {
   private Alert alertDialog;
   private Alert confirmDialog;
   private EncoderProperties ep;
-  private HelpController helpController;
+  private WebHelpController helpController;
 
   @FXML
   Canvas encoderUI;
