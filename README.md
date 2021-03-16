@@ -26,6 +26,8 @@ design can be printed from the application.
  * Linux/Mac: open/run the file ```weg```
  * Windows: open/run the file ```weg.bat```
 
+Refer to the [User Guide](https://shimniok.github.io/WheelEncoderGenerator/) for more help.
+
 ## Feature List
  * Supports Mac, Windows, Linux with completely self-contained application
  * Design wheel coder with adjustable encoder tracks' outer and inner diameters, and axle/shaft diameter

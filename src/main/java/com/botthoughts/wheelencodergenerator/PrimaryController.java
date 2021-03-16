@@ -55,16 +55,17 @@ import com.botthoughts.util.GitTagService;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class PrimaryController implements Initializable {
@@ -79,6 +80,7 @@ public class PrimaryController implements Initializable {
   private Alert alertDialog;
   private Alert confirmDialog;
   private EncoderProperties ep;
+  private WebHelpController helpController;
 
   @FXML
   Canvas encoderUI;
@@ -113,11 +115,14 @@ public class PrimaryController implements Initializable {
   @FXML
   Button saveAsButton;
   @FXML
-  Button PrintButton;
+  Button printButton;
+  @FXML
+  Button helpButton;
   @FXML
   GridPane updatePane;
   @FXML
   Label gitUrlUI;
+  private Stage helpStage;
 
   @FXML
   public void copyGithubUrlToClipboard() {
@@ -340,7 +345,23 @@ public class PrimaryController implements Initializable {
   public void export() {
     // TODO file export Issue #7
   }
+  
+  @FXML
+  public void help() throws IOException {
+    Parent root;
+    try {
+      FXMLLoader loader = new FXMLLoader();
+      root = loader.load(getClass().getResource("help.fxml"));
+      helpStage = new Stage();
+      helpStage.setTitle("WEG - Online Help");
+      helpStage.setScene(new Scene(root));
+      helpStage.show();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
+  
   private Double parseDouble(String s) {
     if (s == null || s.equals("")) {
       return 0.0;
@@ -362,11 +383,16 @@ public class PrimaryController implements Initializable {
 //      System.out.println("checkForUpdates(): IOException " + ex);
 //    }
 //  }
+  
+  protected void initHelp() {
+  }
 
   @Override
   public void initialize(URL url, ResourceBundle rb) {
     ep = new EncoderProperties();
 
+    System.out.println("PrimaryController: initialize()");
+    
     App.stage.setOnCloseRequest((event) -> {
       if (!saved.get()) {
         Optional<ButtonType> optional = this.showConfirmDialog("Save?", 
@@ -377,6 +403,7 @@ public class PrimaryController implements Initializable {
             .ifPresent( response -> this.saveFile() );
           // If ButtonType.NO, do nothing and continue closing
       }
+      // TODO: also close help window, if applicable
     });
     
     typeUI.getItems().setAll(ep.getTypeOptions());
@@ -394,7 +421,7 @@ public class PrimaryController implements Initializable {
 // TODO: implement Double formatting Issue #10
 //  private final StringBuilder sb;
 //  private final Formatter formatter;
-//  change..setText(String.format("%.1f", Double.parseDouble(newText)));
+//  change.setText(String.format("%.1f", Double.parseDouble(newText)));
 
 
     outerUI.textProperty().bindBidirectional(

@@ -106,14 +106,6 @@ public final class EncoderView {
     this.scale = Math.min(width / od, height / od);
   }
 
-//  private double getCanvasCenterX() {
-//    return gc.getCanvas().getWidth() / 2.0;
-//  }
-//
-//  private double getCanvasCenterY() {
-//    return gc.getCanvas().getHeight() / 2.0;
-//  }
-
   /**
    * Draws a single track with specified number of stripes at specified start angle. This method
    * can draw encoder tracks for absolute or standard/incremental encoders, or can an index track
