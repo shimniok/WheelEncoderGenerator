@@ -94,5 +94,3 @@ How do you know if your encoder design has changed since last saved or opened? L
 ### Create a new encoder
 
 
-
-
