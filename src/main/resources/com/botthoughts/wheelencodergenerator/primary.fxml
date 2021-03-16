@@ -24,69 +24,93 @@
 
 <VBox fx:id="app" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.botthoughts.wheelencodergenerator.PrimaryController">
    <children>
-      <ToolBar prefHeight="40.0" prefWidth="200.0">
-        <items>
-          <Button fx:id="newButton" accessibleHelp="Start a new encoder" accessibleText="New" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#newFile" prefHeight="50.0" prefWidth="50.0" text="New">
-               <graphic>
-                  <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#newFile" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@icons/New.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-               <tooltip>
-                  <Tooltip text="New encoder" />
-               </tooltip>
-            </Button>
-            <Button fx:id="openButton" accessibleHelp="Open an encoder properties file" accessibleText="Open" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#openFile" prefHeight="50.0" prefWidth="50.0" text="Open">
-               <graphic>
-                  <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#openFile" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@icons/Open.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-               <tooltip>
-                  <Tooltip text="Open encoder file" />
-               </tooltip></Button>
-            <Button fx:id="saveButton" accessibleHelp="Save to current encoder properties file" accessibleText="Save" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveFile" prefHeight="50.0" prefWidth="50.0" text="Save">
-               <graphic>
-                  <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#saveFile" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@icons/Save.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-               <tooltip>
-                  <Tooltip text="Save encoder" />
-               </tooltip></Button>
-            <Button fx:id="saveAsButton" accessibleHelp="Save encoder to a different encoder property file" accessibleText="Save As" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveFileAs" prefHeight="50.0" prefWidth="50.0" text="Save As">
-               <graphic>
-                  <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#saveFileAs" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@icons/SaveAs.png" />
-                     </image>
-                     <viewport>
-                        <Rectangle2D />
-                     </viewport>
-                  </ImageView>
-               </graphic>
-               <tooltip>
-                  <Tooltip text="Save encoder in new file" />
-               </tooltip></Button>
-            <Button fx:id="printButton" accessibleHelp="Print encoder to printer" accessibleText="Print" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#print" prefHeight="50.0" prefWidth="50.0" text="Print">
-               <graphic>
-                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@icons/Print.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-               <tooltip>
-                  <Tooltip text="Print encoder" />
-               </tooltip></Button>
-        </items>
-      </ToolBar>
+      <HBox alignment="CENTER" VBox.vgrow="NEVER">
+         <children>
+            <ToolBar HBox.hgrow="ALWAYS">
+              <items>
+                <Button fx:id="newButton" accessibleHelp="Start a new encoder" accessibleText="New" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#newFile" prefHeight="40.0" prefWidth="40.0" text="New">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#newFile" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/New.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="New encoder" />
+                     </tooltip>
+                  </Button>
+                  <Button fx:id="openButton" accessibleHelp="Open an encoder properties file" accessibleText="Open" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#openFile" prefHeight="40.0" prefWidth="40.0" text="Open">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#openFile" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/Open.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Open encoder file" />
+                     </tooltip>
+                  </Button>
+                  <Button fx:id="saveButton" accessibleHelp="Save to current encoder properties file" accessibleText="Save" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveFile" prefHeight="40.0" prefWidth="40.0" text="Save">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#saveFile" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/Save.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Save encoder" />
+                     </tooltip>
+                  </Button>
+                  <Button fx:id="saveAsButton" accessibleHelp="Save encoder to a different encoder property file" accessibleText="Save As" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveFileAs" prefHeight="40.0" prefWidth="40.0" text="Save As">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#saveFileAs" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/SaveAs.png" />
+                           </image>
+                           <viewport>
+                              <Rectangle2D />
+                           </viewport>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Save encoder in new file" />
+                     </tooltip>
+                  </Button>
+                  <Button fx:id="printButton" accessibleHelp="Print encoder to printer" accessibleText="Print" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#print" prefHeight="40.0" prefWidth="40.0" text="Print">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/Print.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Print encoder" />
+                     </tooltip>
+                  </Button>
+              </items>
+            </ToolBar>
+            <ToolBar HBox.hgrow="NEVER">
+              <items>
+                  <Button fx:id="helpButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#help" prefHeight="40.0" prefWidth="40.0" text="Help" textAlignment="CENTER">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/Help.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Online help" />
+                     </tooltip>
+                  </Button>
+              </items>
+            </ToolBar>
+         </children>
+      </HBox>
       <HBox VBox.vgrow="ALWAYS">
          <children>
             <AnchorPane fx:id="canvasContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="500.0" HBox.hgrow="ALWAYS">

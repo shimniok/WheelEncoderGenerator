@@ -6,4 +6,6 @@ module com.botthoughts.wheelencodergenerator {
   requires javafx.fxml;
   requires java.desktop;
   requires org.json;
+  requires javafx.web;
+  requires java.base;
 }
