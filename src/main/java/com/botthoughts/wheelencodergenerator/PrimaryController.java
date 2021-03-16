@@ -351,8 +351,8 @@ public class PrimaryController implements Initializable {
     try {
       root = FXMLLoader.load(getClass().getResource("help.fxml"));
       Stage stage = new Stage();
-      stage.setTitle("My New Stage Title");
-      stage.setScene(new Scene(root, 450, 450));
+      stage.setTitle("WEG - Online Help");
+      stage.setScene(new Scene(root));
       stage.show();
     } catch (IOException e) {
       e.printStackTrace();
