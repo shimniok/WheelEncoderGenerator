@@ -15,7 +15,10 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -41,26 +44,25 @@ public class HelpController implements Initializable {
     this.locationProperty = new SimpleStringProperty();
   }
 
-  public SimpleStringProperty getLocationProperty() {
-    return locationProperty;
-  }
-  
   /**
    * Initializes the controller class.
+   * @param url
+   * @param rb
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
+    Properties props = new Properties();
+    
     System.out.println("HelpControler: initialize()");
     
-    if (helpView == null) {
-      System.out.println("helpView is NULL");
-    } else {
-      if (helpView.getEngine() == null) {
-        System.out.println("engine is NULL");
-      }
+    try {
+      InputStream stream = getClass().getResourceAsStream("/help.properties");
+      props.load(stream);
+      String helpUrl = props.getProperty("help.url");
+      helpView.getEngine().load(helpUrl);
+    } catch (IOException ex) {
+      System.out.println("HelpController: error reading properties file: "+ex);
     }
-    
-    helpView.getEngine().load("https://shimniok.github.io/WheelEncoderGenerator/");
   }
 
 }
