@@ -1,4 +1,4 @@
-#WheelEncoderGenerator: User Guide
+# User Guide
 
 So, you'd like to design and print your own custom wheel encoders? WheelEncoderGenerator (WEG) can help! Let's get started.
 
@@ -81,16 +81,28 @@ How do you know if your encoder design has changed since last saved or opened? L
 
 ### Time to print your encoder
 
-
+To print out your encoder, click the `Print` button. You'll be presented a platform-specific print dialog. Select your printer and other settings, and click `Print` (or equivalent button).
 
 ### Open a previously saved encoder file
 
+To open a previously saved encoder, click the `Open` button. You'll be asked to save any unsaved changes. See **Unsaved Changes** below.
 
+A file chooser dialog appears. Find the directory / folder where the encoder file is located, select the file, and click `Open`.
 
 ### Save the current encoder into a new file
 
-
+If you'd like to save the current encoder as a new file, click the `Save As` button. A file chooser dialog appears. Find and open the directory you'd like to save the file to, enter the new file name, and click `Save`.
 
 ### Create a new encoder
 
+If you'd like to start over with a new encoder design, click the `New` button. You'll be asked to save any unsaved changes. See **Unsaved Changes** below.
 
+A new encoder with default settings will be display.
+
+### Quitting the application
+
+To quit the application simply close the window. You'll be asked to save any unsaved changes. See **Unsaved Changes** below.
+
+### Unsaved changes?
+
+If your current encoder hasn't been saved you'll be asked if you want to save it or not. Click `Yes` to save it (you will be prompted as if you had clicked `Save As`. See: **Save the current encoder into a new file**, above), `No` to discard changes, and `Cancel` to cancel whatever operation is in progress (either New, Open, or Quit/Exit).
