@@ -5,13 +5,12 @@
 *Minor update of WheelEncoderGenerator 0.3*
 
 ### Fixes and Enhancements
+ * Added help button accessing help website
 
 ### Known Issues
  * Issues with input formatting and validation on some fields
  * Image export not yet implemented
- * No online help available
  * No "About..." screen
- * No menu bar; all functionality available through toolbar, however
 
 ## v0.3.1 Release Notes
 
