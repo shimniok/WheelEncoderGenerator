@@ -82,48 +82,31 @@ public class PrimaryController implements Initializable {
   private EncoderProperties ep;
   private WebHelpController helpController;
 
-  @FXML
-  Canvas encoderUI;
-  @FXML
-  ComboBox typeUI;
-  @FXML
-  Spinner resolutionUI;
-  @FXML
-  TextField outerUI;
-  @FXML
-  TextField innerUI;
-  @FXML
-  TextField centerUI;
-  @FXML
-  ComboBox unitsUI;
-  @FXML
-  ToggleGroup directionUI;
-  @FXML
-  ToggleButton cwUI;
-  @FXML
-  ToggleButton ccwUI;
-  @FXML
-  ToggleButton invertedUI;
-  @FXML
-  ToggleButton indexUI;
-  @FXML
-  AnchorPane canvasContainer;
-  @FXML
-  Button newButton;
-  @FXML
-  Button saveButton;
-  @FXML
-  Button saveAsButton;
-  @FXML
-  Button printButton;
-  @FXML
-  Button helpButton;
-  @FXML
-  GridPane updatePane;
-  @FXML
-  Label gitUrlUI;
+  @FXML Canvas encoderUI;
+  @FXML ComboBox typeUI;
+  @FXML Spinner resolutionUI;
+  @FXML TextField outerUI;
+  @FXML TextField innerUI;
+  @FXML TextField centerUI;
+  @FXML ComboBox unitsUI;
+  @FXML ToggleGroup directionUI;
+  @FXML ToggleButton cwUI;
+  @FXML ToggleButton ccwUI;
+  @FXML ToggleButton invertedUI;
+  @FXML ToggleButton indexUI;
+  @FXML AnchorPane canvasContainer;
+  @FXML Button newButton;
+  @FXML Button saveButton;
+  @FXML Button saveAsButton;
+  @FXML Button printButton;
+  @FXML Button helpButton;
+  @FXML GridPane updatePane;
+  @FXML Label gitUrlUI;
   private Stage helpStage;
 
+  /**
+   * Copies the URL for GitHub Releases into the clipboard.
+   */
   @FXML
   public void copyGithubUrlToClipboard() {
     Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -140,10 +123,15 @@ public class PrimaryController implements Initializable {
     ));
     timeline.play();
   }
-  
+
+  /**
+   * Use GitTagService to read Tags API and compare to current version specified in 
+   * version.properties to determine if application has update available and display update message
+   * with button to copy URL.
+   */
   private void checkForUpdates() {
-    // CHECK FOR UPDATE
-    // Get latest tag from Github
+
+    // Get the latest tag from the application's GitHub repo.
     GitTagService gts;
     String latest = "";
     try {
@@ -156,7 +144,7 @@ public class PrimaryController implements Initializable {
       System.out.println("PrimaryControler.initialize(): IOException: "+ex);
     }
 
-    // Get my own version
+    // Get version of this app from version.properties
     Properties properties = new Properties();
     try {
       InputStream stream = App.class.getResourceAsStream("/version.properties");
@@ -164,19 +152,26 @@ public class PrimaryController implements Initializable {
       String version = "v" + properties.getProperty("version"); // prefix with 'v'
       System.out.println(version);
 
+      // If the latest tag isn't equal to the current version, then either an update is available
+      // (unless you're the developer working on a *newer* version.
       if (!version.equals(latest)) {
-        System.out.println("An updated Version of the application was found");
-        updatePane.setVisible(true);
+        updatePane.setVisible(true); // Show the update message
       } else {
-        updatePane.setVisible(false);
+        updatePane.setVisible(false); // Hide the update message
       }
-      
     } catch (IOException e) {
+      // We don't *really* need to bug the user about this do we?
       System.out.println("Problem loading version properties");
     }
     
   }
   
+  /**
+   * Show a dialog.
+   * @param title is the title for the title bar
+   * @param text is the text to display in the dialog
+   * @param type is the alert type to use (see Alert.AlertType
+   */
   private void showDialog(String title, String text, Alert.AlertType type) {
     alertDialog.setTitle(title);
     alertDialog.setContentText(text);
@@ -184,11 +179,21 @@ public class PrimaryController implements Initializable {
     alertDialog.showAndWait();
   }
       
-  
+  /**
+   * Show an error dialog.
+   * @param title is the title for the title bar
+   * @param text is the text to display in the dialog
+   */
   private void showErrorDialog(String title, String text) {
     showDialog(title, text, Alert.AlertType.ERROR);
   }
 
+  /**
+   * Show a confirmation dialog
+   * @param title is the title for the title bar
+   * @param text is the text to display in the dialog
+   * @return result as an Optional<ButtonType>
+   */
   private Optional<ButtonType> showConfirmDialog(String title, String text) {
     confirmDialog.setContentText(text);
     confirmDialog.setTitle(title);
@@ -196,6 +201,10 @@ public class PrimaryController implements Initializable {
     return res;
   }
   
+  /**
+   * Save the current encoder to the specified file.
+   * @param f is the File to which the encoder will be saved.
+   */
   public void saveFile(File f) {
     if (f != null) {
       try {
@@ -206,18 +215,25 @@ public class PrimaryController implements Initializable {
         currentFile = f; // only do this if save succeeds!
         filename.set(f.getName());
         saved.set(true);
-      } catch (IOException ex) {
+      } catch (IOException ex) { // TODO should really handle errors externally so we can e.g. cancel new/open/quit operation
         showErrorDialog("File Save Error", "Error saving " + f.getName() + "\n" + ex.getMessage());
       }
     }
   }
   
+  /**
+   * Update the application title bar based on the current filename and saved state.
+   */
   public void updateTitle() {
     String title = "WheelEncoderGenerator - " + this.filename.get();
     if (!saved.get()) title += "*";
     App.stage.setTitle(title);
   }
 
+  /**
+   * Handler for File Save calls saveFile() if the file has been saved previously and calls 
+   * saveFileAs() if the file has never been saved before.
+   */
   @FXML
   public void saveFile() {
     if (currentFile == null) {
@@ -226,7 +242,10 @@ public class PrimaryController implements Initializable {
       saveFile(currentFile);
     }
   }
-
+  
+  /**
+   * Save file into new file/location selected by user from dialog.
+   */
   @FXML
   public void saveFileAs() {
     FileChooser fc = new FileChooser();
@@ -234,7 +253,11 @@ public class PrimaryController implements Initializable {
     fc.getExtensionFilters().add(extensionFilter);
     saveFile(fc.showSaveDialog(App.stage));
   }
-
+  
+  /**
+   * Opens file selected by user from file open dialog. Prompts user to save current encoder if it
+   * has not been saved yet.
+   */
   @FXML
   public void openFile() {
     FileChooser fc = new FileChooser();
@@ -268,6 +291,10 @@ public class PrimaryController implements Initializable {
     }
   }
 
+  /**
+   * Erase current encoder and reset to default. Prompts user to save current encoder if it has
+   * not been saved yet.
+   */
   @FXML
   public void newFile() {
     SimpleBooleanProperty cancel = new SimpleBooleanProperty(false);
@@ -288,11 +315,19 @@ public class PrimaryController implements Initializable {
     saved.set(false);
   }
 
+  /**
+   * Handles print event by calling method to print encoder node.
+   * @param e 
+   */
   @FXML
   public void print(Event e) {
     print(encoderUI);
   }
 
+  /**
+   * Prints the specified encoder node.
+   * @param node is the node containing the encoder to be printed.
+   */
   @FXML
   public void print(Node node) {
     PrinterJob job = PrinterJob.createPrinterJob();
@@ -341,13 +376,19 @@ public class PrimaryController implements Initializable {
 
   }
 
+  /**
+   * Export encoder as image. Not yet implemented.
+   */
   @FXML
   public void export() {
     // TODO file export Issue #7
   }
   
+  /**
+   * Open Help window to display online help.
+   */
   @FXML
-  public void help() throws IOException {
+  public void help() {
     Parent root;
     try {
       FXMLLoader loader = new FXMLLoader();
@@ -357,11 +398,15 @@ public class PrimaryController implements Initializable {
       helpStage.setScene(new Scene(root));
       helpStage.show();
     } catch (IOException e) {
-      e.printStackTrace();
+      this.showErrorDialog("Error", "Error loading help window\n"+e);
     }
   }
 
-  
+  /**
+   * Parses a double from a string and returns the number (or NaN).
+   * @param s is the string to parse. A null or "" results in 0.0. 
+   * @return the Double resulting from parsing the string; NaN if format is erroneous.
+   */
   private Double parseDouble(String s) {
     if (s == null || s.equals("")) {
       return 0.0;
@@ -373,20 +418,11 @@ public class PrimaryController implements Initializable {
     }
   }
   
-//  @FXML
-//  public void checkForUpdates() {
-//    GitHubTagService service = new GitHubTagService("shimniok", "WheelEncoderGenerator");
-//    try {
-//      String s = service.getLatestTagName();
-//      //System.out.println("Latest version: "+s);
-//    } catch (IOException ex) {
-//      System.out.println("checkForUpdates(): IOException " + ex);
-//    }
-//  }
-  
-  protected void initHelp() {
-  }
-
+  /**
+   * Initialize the PrimaryController
+   * @param url
+   * @param rb 
+   */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
     ep = new EncoderProperties();
@@ -501,7 +537,6 @@ public class PrimaryController implements Initializable {
     encoderPreview.render();
 
     checkForUpdates();
-
   }
 
 }
