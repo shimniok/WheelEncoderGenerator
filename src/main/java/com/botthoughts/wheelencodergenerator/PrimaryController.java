@@ -50,7 +50,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.util.converter.DoubleStringConverter;
 import com.botthoughts.util.GitTagService;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -58,6 +57,7 @@ import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -77,6 +77,7 @@ public class PrimaryController implements Initializable {
       = new ExtensionFilter("Wheel Encoder Generator v2", "*" + EXT);
   private SimpleStringProperty filename;
   private SimpleBooleanProperty saved;
+  private final SimpleIntegerProperty decimals = new SimpleIntegerProperty();
   private Alert alertDialog;
   private Alert confirmDialog;
   private EncoderProperties ep;
@@ -419,6 +420,14 @@ public class PrimaryController implements Initializable {
   }
   
   /**
+   * Temporary for handling events
+   */
+  @FXML
+  public void eventHandler(Event e) {
+    System.out.println("Event: "+e.getEventType().getName());
+  }
+  
+  /**
    * Initialize the PrimaryController
    * @param url
    * @param rb 
@@ -454,29 +463,33 @@ public class PrimaryController implements Initializable {
 //            vf.setEncoder(ep.getEncoder());
 //        });
 
-// TODO: implement Double formatting Issue #10
-//  private final StringBuilder sb;
-//  private final Formatter formatter;
-//  change.setText(String.format("%.1f", Double.parseDouble(newText)));
-
-
-    outerUI.textProperty().bindBidirectional(
-        (Property) ep.getOuterDiameter(),
-        new DoubleStringConverter());
-    outerUI.setTextFormatter(new DoubleTextFormatter().get());
-
-    innerUI.textProperty().bindBidirectional(
-        (Property) ep.getInnerDiameter(),
-        new DoubleStringConverter());
-    innerUI.setTextFormatter(new DoubleTextFormatter().get());
-
-    centerUI.textProperty().bindBidirectional(
-        (Property) ep.getCenterDiameter(),
-        new DoubleStringConverter());
-    centerUI.setTextFormatter(new DoubleTextFormatter().get());
+    DoubleFormatter outerFmt = new DoubleFormatter(2);
+    outerUI.textProperty().bindBidirectional((Property) ep.getOuterDiameter(), 
+        outerFmt.getConverter());
+    outerUI.setTextFormatter(outerFmt);
+    outerFmt.decimalsProperty().bind(decimals);
+    
+    DoubleFormatter innerFmt = new DoubleFormatter(2);
+    innerUI.textProperty().bindBidirectional((Property) ep.getInnerDiameter(), 
+        innerFmt.getConverter());
+    innerUI.setTextFormatter(innerFmt);
+    innerFmt.decimalsProperty().bind(decimals);
+    
+    DoubleFormatter centerFmt = new DoubleFormatter(2);
+    centerUI.textProperty().bindBidirectional((Property) ep.getCenterDiameter(), 
+        centerFmt.getConverter());
+    centerUI.setTextFormatter(centerFmt);
+    centerFmt.decimalsProperty().bind(decimals);
 
     unitsUI.getItems().addAll(ep.getUnitOptions());
     unitsUI.valueProperty().bindBidirectional(ep.getUnits());
+    unitsUI.valueProperty().addListener((obs, ov, nv) -> {
+      if (nv.equals(EncoderProperties.UNITS_MM)) {
+        decimals.set(1);
+      } else if (nv.equals(EncoderProperties.UNITS_INCH)) {
+        decimals.set(2);
+      }
+    });
 
     invertedUI.selectedProperty().bindBidirectional(ep.getInverted());
     invertedUI.selectedProperty().addListener((obs, ov, nv) -> {
