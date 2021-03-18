@@ -488,9 +488,18 @@ public class PrimaryController implements Initializable {
     unitsUI.valueProperty().addListener((obs, ov, nv) -> {
       if (nv.equals(EncoderProperties.UNITS_MM)) {
         decimals.set(1);
+        // Automatically convert current value
+        ep.getOuterDiameter().set(UnitConverter.toMillimeter(ep.getOuterDiameter().get()));
+        ep.getInnerDiameter().set(UnitConverter.toMillimeter(ep.getInnerDiameter().get()));
+        ep.getCenterDiameter().set(UnitConverter.toMillimeter(ep.getCenterDiameter().get()));        
       } else if (nv.equals(EncoderProperties.UNITS_INCH)) {
-        decimals.set(2);
+        decimals.set(3);
+        // Automatically convert current value
+        ep.getOuterDiameter().set(UnitConverter.toInch(ep.getOuterDiameter().get()));
+        ep.getInnerDiameter().set(UnitConverter.toInch(ep.getInnerDiameter().get()));
+        ep.getCenterDiameter().set(UnitConverter.toInch(ep.getCenterDiameter().get()));        
       }
+      // Force conversion to new format
       outerUI.textProperty().set(outerUI.textProperty().get());
       innerUI.textProperty().set(innerUI.textProperty().get());
       centerUI.textProperty().set(centerUI.textProperty().get());
