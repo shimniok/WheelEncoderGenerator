@@ -35,6 +35,13 @@ public class DoubleConverter extends DoubleStringConverter {
   }
 
   /**
+   * Default constructor, sets number of decimal places to a default value.
+   */
+  DoubleConverter() {
+    this(2);
+  }
+
+  /**
    * Converts the Double to String with the number of decimal places given by decimals property.
    * @param d double to convert to string
    * @return formatted String (e.g. 123.456, 123.45, etc.)

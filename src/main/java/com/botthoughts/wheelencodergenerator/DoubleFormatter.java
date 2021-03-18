@@ -36,7 +36,6 @@ public class DoubleFormatter extends TextFormatter {
     super(converter, v, filter);
     this.converter = converter;
     this.filter = filter;
-    this.converter.decimalsProperty().set(2);
   }
 
   /**
@@ -45,15 +44,23 @@ public class DoubleFormatter extends TextFormatter {
    * @param v is the default value
    */
   public DoubleFormatter(int decimals, Double v) {
-    this(new DoubleConverter(decimals), v, new DoubleStringFilter());
+    this(new DoubleConverter(), v, new DoubleStringFilter());
+    this.converter.decimalsProperty().set(decimals);
   }
   
   /**
-   * Alternative constructor where decimal format is specified
+   * Alternative constructor where decimal format is specified and default value is 0
    * @param decimals is the number of decimal places to use for formatting
    */
   public DoubleFormatter(int decimals) {
     this(decimals, 0.0);
+  }
+  
+  /**
+   * Default constructor where default decimal format of 2 is used and default value is 0
+   */
+  public DoubleFormatter() {
+    this(2, 0.0);
   }
   
   /**

@@ -463,23 +463,25 @@ public class PrimaryController implements Initializable {
 //            vf.setEncoder(ep.getEncoder());
 //        });
 
-    DoubleFormatter outerFmt = new DoubleFormatter(2);
+    decimals.set(1); // set to 1 since Units set to MM by default; would be nice to bind/automate
+
+    DoubleFormatter outerFmt = new DoubleFormatter();
+    outerFmt.decimalsProperty().bind(decimals);
     outerUI.textProperty().bindBidirectional((Property) ep.getOuterDiameter(), 
         outerFmt.getConverter());
     outerUI.setTextFormatter(outerFmt);
-    outerFmt.decimalsProperty().bind(decimals);
     
-    DoubleFormatter innerFmt = new DoubleFormatter(2);
+    DoubleFormatter innerFmt = new DoubleFormatter();
+    innerFmt.decimalsProperty().bind(decimals);
     innerUI.textProperty().bindBidirectional((Property) ep.getInnerDiameter(), 
         innerFmt.getConverter());
     innerUI.setTextFormatter(innerFmt);
-    innerFmt.decimalsProperty().bind(decimals);
     
-    DoubleFormatter centerFmt = new DoubleFormatter(2);
+    DoubleFormatter centerFmt = new DoubleFormatter();
+    centerFmt.decimalsProperty().bind(decimals);
     centerUI.textProperty().bindBidirectional((Property) ep.getCenterDiameter(), 
         centerFmt.getConverter());
     centerUI.setTextFormatter(centerFmt);
-    centerFmt.decimalsProperty().bind(decimals);
 
     unitsUI.getItems().addAll(ep.getUnitOptions());
     unitsUI.valueProperty().bindBidirectional(ep.getUnits());
@@ -489,6 +491,9 @@ public class PrimaryController implements Initializable {
       } else if (nv.equals(EncoderProperties.UNITS_INCH)) {
         decimals.set(2);
       }
+      outerUI.textProperty().set(outerUI.textProperty().get());
+      innerUI.textProperty().set(innerUI.textProperty().get());
+      centerUI.textProperty().set(centerUI.textProperty().get());
     });
 
     invertedUI.selectedProperty().bindBidirectional(ep.getInverted());
