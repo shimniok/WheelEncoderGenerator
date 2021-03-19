@@ -2,7 +2,6 @@
 *Design and print wheel encoder discs for robotics and more. Cross platform, 
 open source!*
 
-
 ## Introduction
 WheelEncoderGenerator is a cross-platform desktop JavaFX app used to design and
 print wheel encoder discs for use in robotics.
@@ -19,8 +18,11 @@ clockwise or counter-clockwise rotation.
 The encoder disc settings can be saved and loaded and, of course, the final
 design can be printed from the application.
 
+[Latest Release](https://github.com/shimniok/WheelEncoderGenerator/releases)
+
 ## Directions
- * Download the archive file corresponding to your operating system family
+
+ * Download the archive file from the [Latest Release](https://github.com/shimniok/WheelEncoderGenerator/releases) for your operating system
  * Extract archive to a location of your choosing
  * Open the extracted folder and open the ```bin``` folder/directory
  * Linux/Mac: open/run the file ```weg```
