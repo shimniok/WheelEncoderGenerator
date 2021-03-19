@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.util;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.util.converter.IntegerStringConverter;
@@ -22,21 +22,21 @@ import javafx.util.converter.IntegerStringConverter;
  * Converts between String and Integer, with optional minimum/maximum value fixing
  * @author mes
  */
-public class IntegerConverter extends IntegerStringConverter {
+public class BoundedIntegerConverter extends IntegerStringConverter {
   private SimpleIntegerProperty min;
   private SimpleIntegerProperty max;
   
   /**
    * Default Constructor
    */
-  private IntegerConverter() {} 
+  private BoundedIntegerConverter() {} 
   
   /**
    * Create new IntegerConverter that will keep value bound to minimum..maximum, inclusive
    * @param min minimum bound for the conversion
    * @param max maximum bound for the conversion
    */
-  public IntegerConverter(int min, int max) {
+  public BoundedIntegerConverter(int min, int max) {
     super();
     this.min = new SimpleIntegerProperty(min);
     this.max = new SimpleIntegerProperty(max);

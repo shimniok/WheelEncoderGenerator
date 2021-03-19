@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.util;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.util.converter.DoubleStringConverter;
@@ -22,14 +22,14 @@ import javafx.util.converter.DoubleStringConverter;
  * Convert between String and Double
  * @author mes
  */
-public class DoubleConverter extends DoubleStringConverter {
+public class FixedFormatDoubleConverter extends DoubleStringConverter {
   private SimpleIntegerProperty decimals = new SimpleIntegerProperty();
   
   /**
    * Constructor for DoubleConverter
    * @param decimals is the number of decimal places to use for formatting
    */
-  public DoubleConverter(int decimals) {
+  public FixedFormatDoubleConverter(int decimals) {
     if (decimals < 1) decimals = 1;
     this.decimals.set(decimals);
   }
@@ -37,7 +37,7 @@ public class DoubleConverter extends DoubleStringConverter {
   /**
    * Default constructor, sets number of decimal places to a default value.
    */
-  DoubleConverter() {
+  FixedFormatDoubleConverter() {
     this(2);
   }
 

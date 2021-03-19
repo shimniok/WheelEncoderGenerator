@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.util;
 
 import java.util.function.UnaryOperator;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -23,7 +23,7 @@ import javafx.scene.control.TextFormatter;
  * String filter for encoder resolution text entry (via text field/editor)
  * @author mes
  */
-public class ResolutionStringFilter implements UnaryOperator<TextFormatter.Change> {
+public class BoundedIntegerTextFilter implements UnaryOperator<TextFormatter.Change> {
   SimpleIntegerProperty min;
   SimpleIntegerProperty max;
 
@@ -34,7 +34,7 @@ public class ResolutionStringFilter implements UnaryOperator<TextFormatter.Chang
    * @param min minimum value property
    * @param max maximum value property
    */
-  public ResolutionStringFilter(SimpleIntegerProperty min, SimpleIntegerProperty max) {
+  public BoundedIntegerTextFilter(SimpleIntegerProperty min, SimpleIntegerProperty max) {
     this.min = min;
     this.max = max;
   }

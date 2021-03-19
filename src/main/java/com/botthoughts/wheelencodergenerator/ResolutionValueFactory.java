@@ -29,8 +29,8 @@ public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
 
   private final SimpleIntegerProperty min;
   private final SimpleIntegerProperty max;
-  private SimpleObjectProperty<UnaryOperator<Integer>> up;
-  private SimpleObjectProperty<UnaryOperator<Integer>> down;
+  private final SimpleObjectProperty<UnaryOperator<Integer>> up;
+  private final SimpleObjectProperty<UnaryOperator<Integer>> down;
 
   /**
    * Constructor for ResolutionValueFactory which provides properties for min, max, increment,

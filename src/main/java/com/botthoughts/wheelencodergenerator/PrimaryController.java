@@ -15,6 +15,9 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import com.botthoughts.util.WebHelpController;
+import com.botthoughts.util.BoundedIntegerTextFilter;
+import com.botthoughts.util.DoubleFormatter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -491,7 +494,7 @@ public class PrimaryController implements Initializable {
             ep.minResolutionProperty(), ep.maxResolutionProperty(),
             ep.resolutionIncrementProperty(), ep.resolutionDecrementProperty()));
     resolutionUI.getValueFactory().valueProperty().bindBidirectional(ep.resolutionProperty());
-    TextFormatter<Integer> tf = new TextFormatter(new ResolutionStringFilter(ep.minResolutionProperty(), 
+    TextFormatter<Integer> tf = new TextFormatter(new BoundedIntegerTextFilter(ep.minResolutionProperty(), 
         ep.maxResolutionProperty()));
     resolutionUI.getEditor().setTextFormatter(tf);
 

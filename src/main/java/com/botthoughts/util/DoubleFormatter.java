@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.util;
 
+import com.botthoughts.util.FixedFormatDoubleConverter;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.TextFormatter;
 
 /**
- * TextFormatter for Double consisting of a DoubleConverter and DoubleStringFilter
+ * TextFormatter for Double consisting of a FixedFormatDoubleConverter and UnsignedDoubleTextFilter
  * @author mes
  */
 public class DoubleFormatter extends TextFormatter {
-  private DoubleConverter converter;
-  private DoubleStringFilter filter;
+  private FixedFormatDoubleConverter converter;
+  private UnsignedDoubleTextFilter filter;
   
   /**
    * Create new DoubleFormatter
@@ -32,7 +33,7 @@ public class DoubleFormatter extends TextFormatter {
    * @param v is the default value
    * @param filter filters input into a text field
    */
-  public DoubleFormatter(DoubleConverter converter, Double v, DoubleStringFilter filter) {
+  public DoubleFormatter(FixedFormatDoubleConverter converter, Double v, UnsignedDoubleTextFilter filter) {
     super(converter, v, filter);
     this.converter = converter;
     this.filter = filter;
@@ -44,7 +45,7 @@ public class DoubleFormatter extends TextFormatter {
    * @param v is the default value
    */
   public DoubleFormatter(int decimals, Double v) {
-    this(new DoubleConverter(), v, new DoubleStringFilter());
+    this(new FixedFormatDoubleConverter(), v, new UnsignedDoubleTextFilter());
     this.converter.decimalsProperty().set(decimals);
   }
   
@@ -83,15 +84,15 @@ public class DoubleFormatter extends TextFormatter {
    * Returns the converter associated with this formatter
    * @return converter
    */
-  public DoubleConverter getConverter() {
+  public FixedFormatDoubleConverter getConverter() {
     return converter;
   }
   
   /**
-   * Returns the filter associated with this formatter as a DoubleStringFilter
+   * Returns the filter associated with this formatter as a UnsignedDoubleTextFilter
    * @return filter
    */
-  public DoubleStringFilter getTextFilter() {
+  public UnsignedDoubleTextFilter getTextFilter() {
     return filter;
   }
 

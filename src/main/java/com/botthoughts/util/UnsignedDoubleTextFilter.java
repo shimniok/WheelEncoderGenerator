@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.util;
 
 import java.util.function.UnaryOperator;
 import javafx.scene.control.TextFormatter;
@@ -22,7 +22,7 @@ import javafx.scene.control.TextFormatter;
  * Filter text input to ensure a valid Double is entered
  * @author mes
  */
-public class DoubleStringFilter implements UnaryOperator<TextFormatter.Change> {
+public class UnsignedDoubleTextFilter implements UnaryOperator<TextFormatter.Change> {
 
   static final String REGEX = "([0-9]*\\.?[0-9]*)";
 
