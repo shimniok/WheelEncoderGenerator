@@ -29,8 +29,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-// TODO: convert dimensions when switching units Issue #11
-
 /**
  * ViewModel object containing properties describing an encoder
  * @author mes
@@ -52,12 +50,14 @@ public final class EncoderProperties implements ObservableValue {
   protected SimpleDoubleProperty innerDiameter;
   protected SimpleDoubleProperty centerDiameter;
   protected SimpleIntegerProperty resolution;
+  protected SimpleIntegerProperty resolutionMin;
+  protected SimpleIntegerProperty resolutionMax;
   protected SimpleBooleanProperty inverted; // black on white vs white on black
   protected SimpleBooleanProperty indexed; // true if has index track
   protected SimpleBooleanProperty indexable; // true if index track possible
   protected SimpleBooleanProperty direction; // DIRECTION_CLOCKWISE / DIRECTION_COUNTERCLOCKWISE
   protected SimpleBooleanProperty directional; // true if encoder is directional
-  protected EncoderModel encoder;
+//  protected EncoderModel encoder;
   
   /**
    * A hash map relating encoder type to EncoderModels
@@ -106,6 +106,9 @@ public final class EncoderProperties implements ObservableValue {
     this.resolution = new SimpleIntegerProperty();
     this.resolution.addListener(changed);
 
+    this.resolutionMin = new SimpleIntegerProperty();
+    this.resolutionMax = new SimpleIntegerProperty();
+    
     this.inverted = new SimpleBooleanProperty();
     this.inverted.addListener(changed);
 
@@ -142,6 +145,11 @@ public final class EncoderProperties implements ObservableValue {
           this.directional.set(true);
           break;
       }
+      this.resolutionMin.set(getEncoder().getMinResolution());
+      this.resolutionMax.set(getEncoder().getMaxResolution());
+
+      // TODO: type switching is hanging the entire Windowing system when resolution > max (going from simple to binary, for example) . :/
+      
     });
     
     this.initialize();
@@ -177,15 +185,31 @@ public final class EncoderProperties implements ObservableValue {
     return getEncoder().validResolution(resolution);
   }
   
+//  /**
+//   * If resolution is not valid, set it to the nearest valid value
+//   * @param resolution is the encoder resolution
+//   * @return resolution, if valid, or the nearest valid value
+//   */
+//  final public int fixResolution(int resolution) {
+//    return getEncoder().fixResolution(resolution);
+//  }
+
   /**
-   * If resolution is not valid, set it to the nearest valid value
-   * @param resolution is the encoder resolution
-   * @return resolution, if valid, or the nearest valid value
+   * Return minimum resolution property for the current encoder
+   * @return min resolution
    */
-  final public int fixResolution(int resolution) {
-    return getEncoder().fixResolution(resolution);
+  public SimpleIntegerProperty getResolutionMin() {
+    return resolutionMin;
   }
 
+  /**
+   * Return maximum resolution property for the current encoder
+   * @return max resolution property
+   */
+  public SimpleIntegerProperty getResolutionMax() {
+    return resolutionMax;
+  }
+  
   /**
    * Return the amount by which the resolution is incremented (or decremented); for use with
    * SpinnerValueFactory.

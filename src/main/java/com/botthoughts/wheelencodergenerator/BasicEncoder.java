@@ -32,7 +32,7 @@ public class BasicEncoder implements EncoderModel {
 
   public BasicEncoder() {
     this.RESOLUTION_MIN = 1;
-    this.RESOLUTION_MAX = 2048;
+    this.RESOLUTION_MAX = 512;
     this.INCREMENT = 1;
   }
   

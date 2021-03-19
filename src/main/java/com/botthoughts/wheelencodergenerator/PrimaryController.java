@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import static java.lang.Double.NaN;
 import java.net.URL;
 import java.util.Optional;
 import java.util.Properties;
@@ -62,11 +61,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.util.converter.IntegerStringConverter;
 
 public class PrimaryController implements Initializable {
 
@@ -404,22 +406,6 @@ public class PrimaryController implements Initializable {
   }
 
   /**
-   * Parses a double from a string and returns the number (or NaN).
-   * @param s is the string to parse. A null or "" results in 0.0. 
-   * @return the Double resulting from parsing the string; NaN if format is erroneous.
-   */
-  private Double parseDouble(String s) {
-    if (s == null || s.equals("")) {
-      return 0.0;
-    }
-    try {
-      return Double.parseDouble(s);
-    } catch (NumberFormatException nfe) {
-      return NaN;
-    }
-  }
-  
-  /**
    * Temporary for handling events
    */
   @FXML
@@ -455,22 +441,25 @@ public class PrimaryController implements Initializable {
     typeUI.valueProperty().bindBidirectional(ep.getType());
     System.out.println("PrimaryController: type=" + ep.getType());
 
-    resolutionUI.setValueFactory(new ResolutionValueFactory(ep));
+    // TODO: bind min/max properties between ep and RVF
+    IntegerStringConverter rc = new IntegerStringConverter();
+    resolutionUI.setValueFactory(
+        new ResolutionValueFactory(rc, ep.getResolutionMin(), ep.getResolutionMax()));
     resolutionUI.getValueFactory().valueProperty().bindBidirectional(ep.getResolution());
-    resolutionUI.getEditor().setTextFormatter(new IntegerTextFormatter().get());
-//        ep.getType().addListener((observable, oldvalue, newvalue) -> {
-//            ResolutionValueFactory vf = (ResolutionValueFactory) resolutionUI.getValueFactory();
-//            vf.setEncoder(ep.getEncoder());
-//        });
+    ResolutionStringFilter rsf = 
+        new ResolutionStringFilter(ep.getResolutionMin(), ep.getResolutionMax());
+    resolutionUI.getEditor().setTextFormatter(new TextFormatter<Integer>(rsf));
 
-    decimals.set(1); // set to 1 since Units set to MM by default; would be nice to bind/automate
-
+    // TODO: Indicate invalid diameter values after entry
+    
+    decimals.set(1); // units default to mm, so manually set decimal format 
+    
     DoubleFormatter outerFmt = new DoubleFormatter();
     outerFmt.decimalsProperty().bind(decimals);
     outerUI.textProperty().bindBidirectional((Property) ep.getOuterDiameter(), 
         outerFmt.getConverter());
     outerUI.setTextFormatter(outerFmt);
-    
+   
     DoubleFormatter innerFmt = new DoubleFormatter();
     innerFmt.decimalsProperty().bind(decimals);
     innerUI.textProperty().bindBidirectional((Property) ep.getInnerDiameter(), 
