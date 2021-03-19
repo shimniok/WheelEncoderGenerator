@@ -13,30 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.util;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebView;
 
 /**
- * FXML Controller class for Web-based Help
+ * FXML Controller class to display web-based Help documentation in a separate window. The URL
+ * for the help website is specified by the property help.url in /web.properties file. The
+ * injectables include WebView helpView and AnchorPane helpWindow.
  *
  * @author mes
  */
 public class WebHelpController implements Initializable {
 
-  @FXML
-  WebView helpView;
-  @FXML
-  AnchorPane helpWindow;
+  @FXML WebView helpView;
+  @FXML AnchorPane helpWindow;
   
   /**
    * Initializes the controller class.

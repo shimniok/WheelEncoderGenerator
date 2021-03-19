@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.wheelencodergenerator.model;
 
+import com.botthoughts.wheelencodergenerator.EncoderTrack;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * Functionality required of--and unique to--each encoder type.
- *
  * @author mes
  */
 public interface EncoderModel {
@@ -39,12 +40,19 @@ public interface EncoderModel {
   abstract public int getMaxResolution();
 
   /**
-   * Return the amount by which resolution can increment
+   * Return the UnaryOperator for incrementing resolution
    *
    * @return resolution increment value
    */
-  abstract public int getResolutionIncrement();
-
+  abstract public UnaryOperator<Integer> getResolutionIncrement();
+  
+  /**
+   * Return the UnaryOperator for decrementing resolution
+   *
+   * @return resolution increment value
+   */
+  abstract public UnaryOperator<Integer> getResolutionDecrement();
+  
   /**
    * Return list of ordered Track objects for this encoder.Track information is computed on-demand.
    *
@@ -72,5 +80,17 @@ public interface EncoderModel {
    * @return resolution, if valid, or the nearest valid value
    */
   abstract public int fixResolution(int resolution);
+
+  /**
+   * Indicates whether the encoder is indexable or not.
+   * @return true only if the encoder supports an index track
+   */
+  abstract public boolean isIndexable();
+
+  /**
+   * Returns the directionality of the encoder
+   * @return true if the encoder is directional, false if non-directional.
+   */
+  abstract public boolean isDirectional();
 
 }

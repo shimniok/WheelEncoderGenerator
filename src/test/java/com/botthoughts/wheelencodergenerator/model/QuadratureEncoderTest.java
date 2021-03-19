@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.wheelencodergenerator.model;
 
+import com.botthoughts.wheelencodergenerator.EncoderTrack;
+import com.botthoughts.wheelencodergenerator.model.QuadratureEncoder;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;

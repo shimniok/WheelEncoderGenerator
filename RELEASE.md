@@ -5,13 +5,16 @@
 *Minor update of WheelEncoderGenerator 0.3*
 
 ### Fixes and Enhancements
+ * Added help button accessing online help website
+ * When changing units diameter dimensions are automatically converted to the new units (e.g. 1.000 inch -> 25.4 mm)
+ * Changing units also changes the number of significant digits displayed (#.### for inch, #.# for mm)
+ * Fixed input validation for diameter fields
+ * Fixed input validation and formatting for resolution spinner
+ * Fixed window resize layout bug
 
 ### Known Issues
- * Issues with input formatting and validation on some fields
  * Image export not yet implemented
- * No online help available
  * No "About..." screen
- * No menu bar; all functionality available through toolbar, however
 
 ## v0.3.1 Release Notes
 

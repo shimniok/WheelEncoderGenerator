@@ -13,32 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.wheelencodergenerator.model;
 
+import com.botthoughts.wheelencodergenerator.EncoderTrack;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Binary encoder model is a type of absolute position encoder consisting of n tracks to achieve
+ * 2^n unique positions represented by sequential binary numbers (e.g, 00, 01, 11, 10). This
+ * encoder is directional, and doesn't have a separate index track because it is superfluous for
+ * an absolute encoder.
  * @author mes
  */
 public class BinaryEncoder extends BasicEncoder {
   
+  /**
+   * Create a new binary encoder with a minimum resolution of 1 bit (2 positions) and maximum
+   * resolution of 11 bits (2048 positions)
+   */
   public BinaryEncoder() {
     this.RESOLUTION_MIN = 1;
     this.RESOLUTION_MAX = 11;
     this.INCREMENT = 1;
-  }
-
-  /**
-   * Check validity of resolution, which for this type is # bits.
-   *
-   * @param resolution
-   * @return true if valid resolution.
-   */
-  @Override
-  public boolean validResolution(int resolution) {
-    return resolution >= this.RESOLUTION_MIN && resolution <= this.RESOLUTION_MAX;
+    this.INDEXABLE = false;
+    this.DIRECTIONAL = true;
   }
 
   /**
@@ -72,21 +71,6 @@ public class BinaryEncoder extends BasicEncoder {
     }
 
     return tracks;
-  }
-
-  @Override
-  public int getMinResolution() {
-    return this.RESOLUTION_MIN;
-  }
-
-  @Override
-  public int getMaxResolution() {
-    return this.RESOLUTION_MAX;
-  }
-
-  @Override
-  public int getResolutionIncrement() {
-    return this.INCREMENT;
   }
 
 }

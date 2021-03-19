@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.wheelencodergenerator.model;
 
+import com.botthoughts.wheelencodergenerator.EncoderTrack;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * BasicEncoder implements the EncoderModel interface and represents a non-directional encoder
- * with a single track to detect motion, and an optional index track for an initial position.
+ * with a single track to detect motion and an optional index track for an initial position.
  * @author mes
  */
 public class BasicEncoder implements EncoderModel {
@@ -29,11 +31,19 @@ public class BasicEncoder implements EncoderModel {
   protected int RESOLUTION_MIN;
   protected int RESOLUTION_MAX;
   protected int INCREMENT;
+  protected boolean INDEXABLE;
+  protected boolean DIRECTIONAL;
 
+  /**
+   * Create a new BasicEncoder with min resolution of 1 and max resolution of 512 and a
+   * resolution increment of 1.
+   */
   public BasicEncoder() {
     this.RESOLUTION_MIN = 1;
-    this.RESOLUTION_MAX = 2048;
+    this.RESOLUTION_MAX = 512;
     this.INCREMENT = 1;
+    this.INDEXABLE = true;
+    this.DIRECTIONAL = false;
   }
   
   /**
@@ -118,12 +128,41 @@ public class BasicEncoder implements EncoderModel {
   }
 
   /**
-   * Return amount by which resolution is incremented/decremented
-   * @return increment amount
+   * Return the UnaryOperator for incrementing resolution
+   *
+   * @return resolution increment value
    */
   @Override
-  public int getResolutionIncrement() {
-    return INCREMENT;
+  public UnaryOperator<Integer> getResolutionIncrement() {
+    return (x) -> { return fixResolution(x+1); };
+  }
+
+  /**
+   * Return the UnaryOperator for decrementing resolution
+   *
+   * @return resolution increment value
+   */
+  @Override
+  public UnaryOperator<Integer> getResolutionDecrement() {
+    return (x) -> { return fixResolution(x-1); };
+  }
+
+  /**
+   * Indicates whether the encoder is indexable or not.
+   * @return true only if the encoder supports an index track
+   */
+  @Override
+  public boolean isIndexable() {
+    return this.INDEXABLE;
+  }
+
+  /**
+   * Returns the directionality of the encoder
+   * @return true if the encoder is directional, false if non-directional.
+   */
+  @Override
+  public boolean isDirectional() {
+    return this.DIRECTIONAL;
   }
 
 }

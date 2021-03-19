@@ -15,6 +15,9 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import java.util.function.UnaryOperator;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -24,91 +27,82 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
 
-    private EncoderProperties ep;
-    
-    public ResolutionValueFactory(EncoderProperties ep) {
-        super();
-        this.ep = ep;
-        setConverter(new IntegerStringConverter());
-//        this.valueProperty().addListener((observable, oldvalue, newvalue) -> {
-//            if (!this.e.validResolution(newvalue)) {
-//              // TODO: find a way to fix the resolution if it's invalid Issue #12
-//            }
-//        });
-        this.setValue(ep.getResolution().get());
-    }
+  private final SimpleIntegerProperty min;
+  private final SimpleIntegerProperty max;
+  private final SimpleObjectProperty<UnaryOperator<Integer>> up;
+  private final SimpleObjectProperty<UnaryOperator<Integer>> down;
 
-//    public void setEncoder(EncoderProperties ep) {
-//        this.ep = ep;
-//    }
-    
-    private int bump(int steps, int increment) {
-        int v;
-        
-        v = valueProperty().get();
+  /**
+   * Constructor for ResolutionValueFactory which provides properties for min, max, increment,
+   * and value.
+   * @param converter is the IntegerConverter used to convert between String and Integer
+   * @param min
+   * @param max
+   * @param up
+   * @param down
+   */
+  public ResolutionValueFactory(IntegerStringConverter converter, 
+      SimpleIntegerProperty min, SimpleIntegerProperty max, // TODO: remove min/max, no longer needed
+      SimpleObjectProperty<UnaryOperator<Integer>> up, 
+      SimpleObjectProperty<UnaryOperator<Integer>> down) {
+    super();
+    this.setConverter(converter);
+    this.min = min;
+    this.max = max;
+    this.up = up;
+    this.down = down;
+  }
 
-        while (steps-- > 0 && ep.validResolution(v + increment)) {
-            v += increment;
-        }    
-        
-        return v;
+  /**
+   * Return the property representing the minimum permitted value
+   * @return minimum property
+   */
+  public SimpleIntegerProperty minProperty() {
+    return min;
+  }
+  
+  /**
+   * Return the property representing the maximum permitted value
+   * @return maximum property
+   */
+  public SimpleIntegerProperty maxProperty() {
+    return max;
+  }
+  
+  /**
+   * Decrement the value by specified number of steps using increment property and bounding the
+   * result to the min property.
+   * @param steps 
+   */
+  @Override
+  public void decrement(int steps) {
+    int v = this.valueProperty().get();
+    System.out.println("RVF: dec() BEFORE value="+valueProperty().get()+" min="+min.get()+" max="+max.get());
+    while (steps-- > 0) {
+      if (this.down.get().apply(v) >= min.get()) {
+        this.valueProperty().set(this.down.get().apply(v));
+      }
     }
-    
-    @Override
-    public void decrement(int i) {
-        valueProperty().set(bump(i, -ep.getResolutionIncrement()));
-    }
+    System.out.println("AFTER value="+valueProperty().get());
+  }
 
-    @Override
-    public void increment(int i) {
-        valueProperty().set(bump(i, ep.getResolutionIncrement()));
+  // TODO: sync min/max in documentation
+  
+  /**
+   * Increment the value by specified number of steps using increment property and bounding the
+   * result to the max property.
+   * @param steps 
+   */
+  @Override
+  public void increment(int steps) {
+    int v = this.valueProperty().get();
+    System.out.println("RVF: inc() BEFORE value="+valueProperty().get()+" min="+min.get()+" max="+max.get());
+    while (steps-- > 0) {
+      if (this.up.get().apply(v) <= max.get()) {
+        this.valueProperty().set(this.up.get().apply(v));
+      }
     }
-    
+    System.out.println("AFTER value="+valueProperty().get());
+  }
+
 }
-
-
-//    public SpinnerValueFactory getResolutionValueFactory() {
-//        return new IntegerSpinnerValueFactory(
-//            encoder.getMinResolution(),
-//            encoder.getMaxResolution()
-//        );
-//            
-//            @Override
-//            public void increment(int i) {
-//                while (i-- > 0) {
-//                    valueProperty().set(valueProperty().get() + 1);
-//                }
-//            }
-//            
-//            @Override
-//            public void decrement(int i) {
-//                while (i-- > 0) {
-//                    valueProperty().set(valueProperty().get() - 1);
-//                }
-//            }
-//
-//        };
-//    }    
-
-//    @Override
-//    public void addListener(ChangeListener cl) {
-//        outerDiameter.addListener(cl);
-//        innerDiameter.addListener(cl);
-//        centerDiameter.addListener(cl);
-//        resolution.addListener(cl);
-//        inverted.addListener(cl);
-//        indexTrack.addListener(cl);
-//        direction.addListener(cl);
-//        
-//    }
-//
-//    @Override
-//    public void removeListener(InvalidationListener il) {
-//        outerDiameter.removeListener(il);
-//        innerDiameter.removeListener(il);
-//        centerDiameter.removeListener(il);
-//        resolution.removeListener(il);
-//        inverted.removeListener(il);
-//        indexTrack.removeListener(il);
-//        direction.removeListener(il);
-//    }

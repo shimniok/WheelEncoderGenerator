@@ -15,21 +15,26 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import com.botthoughts.wheelencodergenerator.model.BasicEncoder;
+import com.botthoughts.wheelencodergenerator.model.BinaryEncoder;
+import com.botthoughts.wheelencodergenerator.model.QuadratureEncoder;
+import com.botthoughts.wheelencodergenerator.model.GrayEncoder;
+import com.botthoughts.wheelencodergenerator.model.EncoderModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.UnaryOperator;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-
-// TODO: convert dimensions when switching units Issue #11
 
 /**
  * ViewModel object containing properties describing an encoder
@@ -37,85 +42,89 @@ import javafx.beans.value.ObservableValue;
  */
 public final class EncoderProperties implements ObservableValue {
 
-  public static final String UNITS_MM = "mm";
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // "constants"
+  public static final String UNITS_MM = "mm";// TODO: move these to subclass
   public static final String UNITS_INCH = "inch";
-  public static final Boolean DIRECTION_CLOCKWISE = true;
+  
+  public static final Boolean DIRECTION_CLOCKWISE = true; // TODO: move these to subclass
   public static final Boolean DIRECTION_COUNTERCLOCKWISE = false;
-  public static final String TYPE_QUADRATURE = "Quadrature";
+  
+  public static final String TYPE_QUADRATURE = "Quadrature"; // TODO: move these to subclass
   public static final String TYPE_SIMPLE = "Simple";
   public static final String TYPE_BINARY = "Binary";
   public static final String TYPE_GRAY = "Gray";
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // Primary Properties
   protected SimpleStringProperty type; // see TYPE_*
   protected SimpleStringProperty units; // see UNITS_MM or UNITS_INCH
-  protected SimpleDoubleProperty outerDiameter;
-  protected SimpleDoubleProperty innerDiameter;
-  protected SimpleDoubleProperty centerDiameter;
-  protected SimpleIntegerProperty resolution;
+  protected SimpleDoubleProperty outerDiameter; // outer diameter of encoder
+  protected SimpleDoubleProperty innerDiameter; // inner diameter of innermost encoder track
+  protected SimpleDoubleProperty centerDiameter; // axle/shaft diameter
+  protected SimpleIntegerProperty resolution; // encoder resolution
   protected SimpleBooleanProperty inverted; // black on white vs white on black
   protected SimpleBooleanProperty indexed; // true if has index track
-  protected SimpleBooleanProperty indexable; // true if index track possible
   protected SimpleBooleanProperty direction; // DIRECTION_CLOCKWISE / DIRECTION_COUNTERCLOCKWISE
-  protected SimpleBooleanProperty directional; // true if encoder is directional
-  protected EncoderModel encoder;
-  
-  /**
-   * A hash map relating encoder type to EncoderModels
-   */
-  protected LinkedHashMap<String, EncoderModel> encoderMap = new LinkedHashMap();
 
-  /**
-   * List of options for Units
-   */
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // Properties dependent on primary properties
+  protected SimpleObjectProperty<UnaryOperator<Integer>> incrementProperty;
+  protected SimpleObjectProperty<UnaryOperator<Integer>> decrementProperty;
+  protected SimpleIntegerProperty resolutionMin;
+  protected SimpleIntegerProperty resolutionMax;
+  protected SimpleBooleanProperty directional; // true if encoder is directional
+  protected SimpleBooleanProperty indexable; // true if index track possible
+  
+  // Encoder type to EncoderModel mapping
+  protected LinkedHashMap<String, EncoderModel> encoderMap = new LinkedHashMap(); 
+
+  // Options for units
   protected static List<String> unitOptions = Arrays.asList(EncoderProperties.UNITS_MM, EncoderProperties.UNITS_INCH);
 
+  // Observable stuff
   private List<ChangeListener> changeListeners;
-  private List<InvalidationListener> invalidationListeners;
-
-  /**
-   * Generic ChangeListener lambda used to notify all ChangeListener objects; used to notify of
-   * changes to any of the properties of this object.
-   */
+  private final List<InvalidationListener> invalidationListeners; // TODO remove?
   private ChangeListener changed = (obs, ov, nv) -> {
     System.out.println("EncoderProperties changed()");
     changeListeners.forEach((ChangeListener cl) -> {
+      System.out.println("notify "+cl.getClass().getName());
       cl.changed(obs, ov, nv);
     });
   };
   
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // CONSTRUCTORS
+  //
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * Create new EncoderProperties object which must later be initialized with call to 
    * initialize().
    */
   public EncoderProperties() {
+    // Observable
     this.changeListeners = new ArrayList();
     this.invalidationListeners = new ArrayList();
 
+    // Primary properties
     this.units = new SimpleStringProperty();
-    this.units.addListener(changed);
-
     this.outerDiameter = new SimpleDoubleProperty();
-    this.outerDiameter.addListener(changed);
-
     this.innerDiameter = new SimpleDoubleProperty();
-    this.innerDiameter.addListener(changed);
-
     this.centerDiameter = new SimpleDoubleProperty();
-    this.centerDiameter.addListener(changed);
-
     this.resolution = new SimpleIntegerProperty();
-    this.resolution.addListener(changed);
-
     this.inverted = new SimpleBooleanProperty();
-    this.inverted.addListener(changed);
-
     this.indexed = new SimpleBooleanProperty();
-    this.indexed.addListener(changed);
-    this.indexable = new SimpleBooleanProperty();
-
     this.direction = new SimpleBooleanProperty();
-    this.direction.addListener(changed);
+
+    // Dependent properties
+    this.resolutionMin = new SimpleIntegerProperty();
+    this.resolutionMax = new SimpleIntegerProperty();
+    this.indexable = new SimpleBooleanProperty();
     this.directional = new SimpleBooleanProperty();
+    this.incrementProperty = new SimpleObjectProperty();
+    this.decrementProperty = new SimpleObjectProperty();
 
     this.encoderMap.put(TYPE_QUADRATURE, new QuadratureEncoder());
     this.encoderMap.put(TYPE_SIMPLE, new BasicEncoder());
@@ -123,26 +132,50 @@ public final class EncoderProperties implements ObservableValue {
     this.encoderMap.put(TYPE_GRAY, new GrayEncoder());
 
     this.type = new SimpleStringProperty();
-    this.type.addListener(changed);
-
     // Listener to set indexable and directional properties based on encoder type
     this.type.addListener((obs, ov, nv) -> {
-      switch (nv) {
-        case TYPE_QUADRATURE:
-          this.indexable.set(true);
-          this.directional.set(true);
-          break;
-        case TYPE_SIMPLE:
-          this.indexable.set(true);
-          this.directional.set(false);
-          break;
-        case TYPE_BINARY:
-        case TYPE_GRAY:
-          this.indexable.set(false);
-          this.directional.set(true);
-          break;
+      System.out.println("type changed ");
+//      switch (nv) {
+//        case TYPE_QUADRATURE:
+//          this.indexable.set(true);
+//          this.directional.set(true);
+//          break;
+//        case TYPE_SIMPLE:
+//          this.indexable.set(true);
+//          this.directional.set(false);
+//          break;
+//        case TYPE_BINARY:
+//        case TYPE_GRAY:
+//          this.indexable.set(false);
+//          this.directional.set(true);
+//          break;
+//      }
+//      
+      // Ensure dependent properties are updated
+      this.incrementProperty.set(getEncoder().getResolutionIncrement());
+      this.decrementProperty.set(getEncoder().getResolutionDecrement());
+      this.resolutionMin.set(getEncoder().getMinResolution());
+      this.resolutionMax.set(getEncoder().getMaxResolution());
+      this.indexable.set(getEncoder().isIndexable());
+      this.directional.set(getEncoder().isDirectional());
+      
+      // Ensure the current resolution is within limits for this encoder type
+      if (this.resolution.get() > this.resolutionMax.get()) {
+        this.resolution.set(this.resolutionMax.get());
+      } else if (this.resolution.get() < this.resolutionMin.get()) {
+        this.resolution.set(this.resolutionMin.get());
       }
     });
+
+    this.units.addListener(changed);
+    this.outerDiameter.addListener(changed);
+    this.innerDiameter.addListener(changed);
+    this.centerDiameter.addListener(changed);
+    this.resolution.addListener(changed);
+    this.inverted.addListener(changed);
+    this.indexed.addListener(changed);
+    this.direction.addListener(changed);
+    this.type.addListener(changed);
     
     this.initialize();
   }
@@ -163,9 +196,58 @@ public final class EncoderProperties implements ObservableValue {
     this.direction.set(DIRECTION_CLOCKWISE);
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // GETTERS AND SETTERS
+  //
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Return list of options for Type widget
+   * 
+   * @return list of valid Type options as String
+   */
   public List<String> getTypeOptions() {
     return new ArrayList<>(this.encoderMap.keySet());
   }
+
+  /**
+   * Return list of options for valid unit setting
+   *
+   * @return list of options
+   */
+  final public List<String> getUnitOptions() {
+    return unitOptions;
+  }
+
+  /**
+   * Get the encoder associated with these properties
+   * 
+   * @return the encoder associated with these properties
+   */
+  public EncoderModel getEncoder() {
+    return (EncoderModel) this.encoderMap.get(this.typeProperty().get());
+  }
+  
+  /**
+   * Get the list of EncoderTrack for this encoder, each specifying the information needed to render
+   * the encoder.
+   *
+   * @return list of EncoderTrack objects
+   */
+  public List<EncoderTrack> getTracks() {
+    return getEncoder().getTracks(this.innerDiameterProperty().get(),
+        this.outerDiameterProperty().get(),
+        this.resolutionProperty().get(),
+        this.indexedProperty().get(), this.directionProperty().get()
+    );
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // UTILITIES
+  //
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Determine if specified resolution is valid for this encoder.
@@ -178,44 +260,50 @@ public final class EncoderProperties implements ObservableValue {
   }
   
   /**
-   * If resolution is not valid, set it to the nearest valid value
-   * @param resolution is the encoder resolution
-   * @return resolution, if valid, or the nearest valid value
+   * Determine if model is valid; use with error checking and notification, and to prevent
+   * rendering of encoder while editing values in the UI.
+   * @return true if valid, false if not
    */
-  final public int fixResolution(int resolution) {
-    return getEncoder().fixResolution(resolution);
+  public boolean isValid() {
+    return (this.outerDiameterProperty().get() > this.innerDiameterProperty().get())
+        && (this.innerDiameterProperty().get() >= this.centerDiameterProperty().get());
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // PROPERTY GETTERS
+  //
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  /**
+   * Return minimum resolution property for the current encoder
+   * @return min resolution
+   */
+  public SimpleIntegerProperty minResolutionProperty() {
+    return resolutionMin;
   }
 
   /**
-   * Return the amount by which the resolution is incremented (or decremented); for use with
-   * SpinnerValueFactory.
-   * @return amount to increment (or decrement) resolution
+   * Return maximum resolution property for the current encoder
+   * @return max resolution property
    */
-  int getResolutionIncrement() {
-    return getEncoder().getResolutionIncrement();
+  public SimpleIntegerProperty maxResolutionProperty() {
+    return resolutionMax;
   }
   
   /**
    * Get the type of encoder, represented as a string; see getTypeOptions()
    * @return type of encoder
    */
-  final public SimpleStringProperty getType() {
+  final public SimpleStringProperty typeProperty() {
     return type;
-  }
-
-  /**
-   * Return list of options for valid unit setting
-   * @return list of options
-   */
-  final public List<String> getUnitOptions() {
-    return unitOptions;
   }
 
   /**
    * Gets the outer diameter of the encoder disc
    * @return outer diameter
    */
-  final public SimpleDoubleProperty getOuterDiameter() {
+  final public SimpleDoubleProperty outerDiameterProperty() {
     return outerDiameter;
   }
 
@@ -223,7 +311,7 @@ public final class EncoderProperties implements ObservableValue {
    * Gets the inner diameter of the encoder disc
    * @return inner diameter
    */
-  final public SimpleDoubleProperty getInnerDiameter() {
+  final public SimpleDoubleProperty innerDiameterProperty() {
     return innerDiameter;
   }
 
@@ -231,7 +319,7 @@ public final class EncoderProperties implements ObservableValue {
    * Gets the center diameter of the encoder disc
    * @return center diameter
    */
-  final public SimpleDoubleProperty getCenterDiameter() {
+  final public SimpleDoubleProperty centerDiameterProperty() {
     return centerDiameter;
   }
 
@@ -239,7 +327,7 @@ public final class EncoderProperties implements ObservableValue {
    * Gets the units being used; see getUnitOptions()
    * @return units
    */
-  final public SimpleStringProperty getUnits() {
+  final public SimpleStringProperty unitsProperty() {
     return units;
   }
 
@@ -247,7 +335,7 @@ public final class EncoderProperties implements ObservableValue {
    * Gets the resolution of the encoder
    * @return resolution
    */
-  final public SimpleIntegerProperty getResolution() {
+  final public SimpleIntegerProperty resolutionProperty() {
     return this.resolution;
   }
 
@@ -255,7 +343,7 @@ public final class EncoderProperties implements ObservableValue {
    * Return whether encoder pattern is inverted or not.
    * @return true if inverted, false if not
    */
-  final public SimpleBooleanProperty getInverted() {
+  final public SimpleBooleanProperty invertedProperty() {
     return this.inverted;
   }
 
@@ -263,7 +351,7 @@ public final class EncoderProperties implements ObservableValue {
    * Return whether an index track is enabled.
    * @return true if index track enabled, false otherwise
    */
-  public SimpleBooleanProperty getIndexed() {
+  public SimpleBooleanProperty indexedProperty() {
     return this.indexed;
   }
 
@@ -271,7 +359,7 @@ public final class EncoderProperties implements ObservableValue {
    * Get direction of rotation of the encoder.
    * @return CLOCKWISE (true), or COUNTERCLOCKWISE(false)
    */
-  public BooleanProperty getDirection() {
+  public BooleanProperty directionProperty() {
     // check validity
     return this.direction;
   }
@@ -280,7 +368,7 @@ public final class EncoderProperties implements ObservableValue {
    * Get indexable property; some encoders don't need/can't have index tracks
    * @return true if encoder is indexable, false otherwise
    */
-  public SimpleBooleanProperty getIndexable() {
+  public SimpleBooleanProperty indexableProperty() {
     return this.indexable;
   }
 
@@ -289,42 +377,32 @@ public final class EncoderProperties implements ObservableValue {
    * if directional widget should be enabled/visible.
    * @return true if directional, false otherwise
    */
-  public SimpleBooleanProperty getDirectional() {
+  public SimpleBooleanProperty directionalProperty() {
     return this.directional;
   }
+
+  /**
+   * Return the property containing the UnaryOperator for incrementing the resolution
+   * @return UnaryOperator for resolution increment
+   */
+  public SimpleObjectProperty<UnaryOperator<Integer>> resolutionIncrementProperty() {
+    return incrementProperty;
+  }
+
+  /**
+   * Return the property containing the UnaryOperator for decrementing the resolution
+   * @return UnaryOperator for resolution decrement
+   */
+  public SimpleObjectProperty<UnaryOperator<Integer>> resolutionDecrementProperty() {
+    return decrementProperty;
+  }
   
-  /**
-   * Get the encoder associated with these properties
-   * @return the encoder associated with these properties
-   */
-  public EncoderModel getEncoder() {
-    return (EncoderModel) this.encoderMap.get(this.getType().get());
-  }
-
-  /**
-   * Get the list of EncoderTrack for this encoder, each specifying the information needed
-   * to render the encoder.
-   * @return list of EncoderTrack objects
-   */
-  public List<EncoderTrack> getTracks() {
-    return getEncoder().getTracks(
-        this.getInnerDiameter().get(),
-        this.getOuterDiameter().get(), 
-        this.getResolution().get(),
-        this.getIndexed().get(), this.getDirection().get()
-    );
-  }
-
-  /**
-   * Determine if model is valid; use with error checking and notification, and to prevent
-   * rendering of encoder while editing values in the UI.
-   * @return true if valid, false if not
-   */
-  public boolean isValid() {
-    return (this.getOuterDiameter().get() > this.getInnerDiameter().get())
-        && (this.getInnerDiameter().get() >= this.getCenterDiameter().get());
-  }
-
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // CONVERT TO/FROM PROPERTIES
+  //
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  
   /**
    * Return a Properties object representing this object; used for file save
    * @return Properties object
@@ -334,15 +412,15 @@ public final class EncoderProperties implements ObservableValue {
 
     p = new Properties();
 
-    p.setProperty("encoder.type", this.getType().get());
-    p.setProperty("encoder.resolution", Integer.toString(this.getResolution().get()));
-    p.setProperty("encoder.outerDiameter", Double.toString(this.getOuterDiameter().get()));
-    p.setProperty("encoder.innerDiameter", Double.toString(this.getInnerDiameter().get()));
-    p.setProperty("encoder.centerDiameter", Double.toString(this.getCenterDiameter().get()));
-    p.setProperty("encoder.indexed", Boolean.toString(this.getIndexed().get()));
-    p.setProperty("encoder.inverted", Boolean.toString(this.getInverted().get()));
-    p.setProperty("encoder.clockwise", Boolean.toString(this.getDirection().get()));
-    p.setProperty("encoder.units", this.getUnits().get());
+    p.setProperty("encoder.type", this.typeProperty().get());
+    p.setProperty("encoder.resolution", Integer.toString(this.resolutionProperty().get()));
+    p.setProperty("encoder.outerDiameter", Double.toString(this.outerDiameterProperty().get()));
+    p.setProperty("encoder.innerDiameter", Double.toString(this.innerDiameterProperty().get()));
+    p.setProperty("encoder.centerDiameter", Double.toString(this.centerDiameterProperty().get()));
+    p.setProperty("encoder.indexed", Boolean.toString(this.indexedProperty().get()));
+    p.setProperty("encoder.inverted", Boolean.toString(this.invertedProperty().get()));
+    p.setProperty("encoder.clockwise", Boolean.toString(this.directionProperty().get()));
+    p.setProperty("encoder.units", this.unitsProperty().get());
     
     return p;
   }
@@ -352,19 +430,27 @@ public final class EncoderProperties implements ObservableValue {
    * @param p properties object from which to set this object's properties
    */
   public void fromProperties(Properties p) {
-    this.getType().set(p.getProperty("encoder.type"));
-    this.getResolution().set(Integer.parseInt(p.getProperty("encoder.resolution")));
-    this.getOuterDiameter().set(Double.parseDouble(p.getProperty("encoder.outerDiameter")));
-    this.getInnerDiameter().set(Double.parseDouble(p.getProperty("encoder.innerDiameter")));
-    this.getCenterDiameter().set(Double.parseDouble(p.getProperty("encoder.centerDiameter")));
-    this.getIndexed().set(Boolean.parseBoolean(p.getProperty("encoder.indexed")));
-    this.getInverted().set(Boolean.parseBoolean(p.getProperty("encoder.inverted")));
-    this.getDirection().set(Boolean.parseBoolean(p.getProperty("encoder.clockwise")));
-    this.getUnits().set(p.getProperty("encoder.units"));
+    this.typeProperty().set(p.getProperty("encoder.type"));
+    this.resolutionProperty().set(Integer.parseInt(p.getProperty("encoder.resolution")));
+    this.outerDiameterProperty().set(Double.parseDouble(p.getProperty("encoder.outerDiameter")));
+    this.innerDiameterProperty().set(Double.parseDouble(p.getProperty("encoder.innerDiameter")));
+    this.centerDiameterProperty().set(Double.parseDouble(p.getProperty("encoder.centerDiameter")));
+    this.indexedProperty().set(Boolean.parseBoolean(p.getProperty("encoder.indexed")));
+    this.invertedProperty().set(Boolean.parseBoolean(p.getProperty("encoder.inverted")));
+    this.directionProperty().set(Boolean.parseBoolean(p.getProperty("encoder.clockwise")));
+    this.unitsProperty().set(p.getProperty("encoder.units"));
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // OBSERVABLE METHODS
+  //
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  // TODO: inherit this shit from ObjectProperty or something?
+  
   /**
-   * Ad a ChangeListener to be notified if any changes are made to the encoder's properties
+   * Add a ChangeListener to be notified if any changes are made to the encoder's properties
    * @param cl is a ChangeListener callback object to be notified of changes
    */
   @Override

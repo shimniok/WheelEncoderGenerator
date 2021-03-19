@@ -13,17 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.wheelencodergenerator.model;
 
+import com.botthoughts.wheelencodergenerator.EncoderTrack;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Quadrature encoder model consisting of two tracks of stripes, offset to detect direction of
+ * rotation, and an optional index track.
  * @author mes
  */
 public class QuadratureEncoder extends BasicEncoder {
 
+  /**
+   * Create a new quadrature encoder model
+   */
+  public QuadratureEncoder() {
+    super();
+    this.DIRECTIONAL = true;
+  }
+  
   /**
    * Return list of ordered Track objects for this encoder.Track information is computed on-demand
    *
