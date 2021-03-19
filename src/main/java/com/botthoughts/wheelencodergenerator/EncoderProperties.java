@@ -15,6 +15,11 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import com.botthoughts.wheelencodergenerator.model.BasicEncoder;
+import com.botthoughts.wheelencodergenerator.model.BinaryEncoder;
+import com.botthoughts.wheelencodergenerator.model.QuadratureEncoder;
+import com.botthoughts.wheelencodergenerator.model.GrayEncoder;
+import com.botthoughts.wheelencodergenerator.model.EncoderModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;

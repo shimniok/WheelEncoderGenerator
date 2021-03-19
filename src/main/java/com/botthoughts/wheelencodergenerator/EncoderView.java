@@ -15,6 +15,7 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import com.botthoughts.wheelencodergenerator.model.EncoderModel;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
