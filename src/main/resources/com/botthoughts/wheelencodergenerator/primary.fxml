@@ -111,17 +111,21 @@
             </ToolBar>
          </children>
       </HBox>
-      <HBox VBox.vgrow="ALWAYS">
+      <GridPane VBox.vgrow="ALWAYS">
+         <columnConstraints>
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
+            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="1.7976931348623157E308" valignment="CENTER" vgrow="SOMETIMES" />
+         </rowConstraints>
          <children>
-            <AnchorPane fx:id="canvasContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="500.0" HBox.hgrow="ALWAYS">
-               <HBox.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </HBox.margin>
+            <AnchorPane fx:id="canvasContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
                <children>
                   <Canvas fx:id="encoderUI" height="500.0" width="500.0" />
                </children>
             </AnchorPane>
-            <AnchorPane>
+            <AnchorPane GridPane.columnIndex="1">
                <children>
                   <TitledPane collapsible="false" text="Settings" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                      <content>
@@ -243,11 +247,8 @@
                      </children>
                   </GridPane>
                </children>
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
             </AnchorPane>
          </children>
-      </HBox>
+      </GridPane>
    </children>
 </VBox>
