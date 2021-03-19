@@ -97,7 +97,7 @@ public final class EncoderView {
 
   private void adjustScaleToFit() {
     double padding = 2; // need 1px padding
-    double od = ep.getOuterDiameter().get();
+    double od = ep.outerDiameterProperty().get();
     double width;
     double height;
 
@@ -151,7 +151,7 @@ public final class EncoderView {
     }
 
     // Set foreground and background colors
-    if (ep.getInverted().get()) {
+    if (ep.invertedProperty().get()) {
       foregroundColor = Color.WHITE;
       backgroundColor = Color.BLACK;
     } else {
@@ -166,7 +166,7 @@ public final class EncoderView {
     //gc.setImageSmoothing(false);
     gc.getCanvas().setEffect(null);
 
-    double centerX = ep.getOuterDiameter().get() * scale / 2.0;
+    double centerX = ep.outerDiameterProperty().get() * scale / 2.0;
     double centerY = centerX;
     if (enc != null) {
       ep.getTracks().forEach(t -> {
@@ -179,7 +179,7 @@ public final class EncoderView {
 
     // Draw center circle and crosshairs
     gc.setFill(Color.DARKGRAY);
-    double cd = ep.getCenterDiameter().get() * scale;
+    double cd = ep.centerDiameterProperty().get() * scale;
     double x = centerX - cd / 2;
     double y = centerY - cd / 2;
     gc.fillOval(x, y, cd, cd);

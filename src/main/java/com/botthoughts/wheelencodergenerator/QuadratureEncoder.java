@@ -24,6 +24,12 @@ import java.util.List;
  */
 public class QuadratureEncoder extends BasicEncoder {
 
+  // TODO: add comments/documentation
+  public QuadratureEncoder() {
+    super();
+    this.DIRECTIONAL = true;
+  }
+  
   /**
    * Return list of ordered Track objects for this encoder.Track information is computed on-demand
    *

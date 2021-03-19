@@ -16,6 +16,7 @@
 package com.botthoughts.wheelencodergenerator;
 
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * Functionality required of--and unique to--each encoder type.
@@ -39,12 +40,19 @@ public interface EncoderModel {
   abstract public int getMaxResolution();
 
   /**
-   * Return the amount by which resolution can increment
+   * Return the UnaryOperator for incrementing resolution
    *
    * @return resolution increment value
    */
-  abstract public int getResolutionIncrement();
-
+  abstract public UnaryOperator<Integer> getResolutionIncrement();
+  
+  /**
+   * Return the UnaryOperator for decrementing resolution
+   *
+   * @return resolution increment value
+   */
+  abstract public UnaryOperator<Integer> getResolutionDecrement();
+  
   /**
    * Return list of ordered Track objects for this encoder.Track information is computed on-demand.
    *
@@ -72,5 +80,10 @@ public interface EncoderModel {
    * @return resolution, if valid, or the nearest valid value
    */
   abstract public int fixResolution(int resolution);
+
+  // TODO: add comments/documentation
+  abstract public boolean isIndexable();
+
+  abstract public boolean isDirectional();
 
 }

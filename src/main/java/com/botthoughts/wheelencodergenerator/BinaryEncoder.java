@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.wheelencodergenerator; // TODO: move to encoder package
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,21 +24,13 @@ import java.util.List;
  */
 public class BinaryEncoder extends BasicEncoder {
   
+  // TODO: add comments/documentation
   public BinaryEncoder() {
     this.RESOLUTION_MIN = 1;
     this.RESOLUTION_MAX = 11;
     this.INCREMENT = 1;
-  }
-
-  /**
-   * Check validity of resolution, which for this type is # bits.
-   *
-   * @param resolution
-   * @return true if valid resolution.
-   */
-  @Override
-  public boolean validResolution(int resolution) {
-    return resolution >= this.RESOLUTION_MIN && resolution <= this.RESOLUTION_MAX;
+    this.INDEXABLE = false;
+    this.DIRECTIONAL = true;
   }
 
   /**
@@ -72,21 +64,6 @@ public class BinaryEncoder extends BasicEncoder {
     }
 
     return tracks;
-  }
-
-  @Override
-  public int getMinResolution() {
-    return this.RESOLUTION_MIN;
-  }
-
-  @Override
-  public int getMaxResolution() {
-    return this.RESOLUTION_MAX;
-  }
-
-  @Override
-  public int getResolutionIncrement() {
-    return this.INCREMENT;
   }
 
 }

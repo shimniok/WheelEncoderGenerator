@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.wheelencodergenerator; // TODO move to encoder package
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * BasicEncoder implements the EncoderModel interface and represents a non-directional encoder
@@ -29,11 +30,16 @@ public class BasicEncoder implements EncoderModel {
   protected int RESOLUTION_MIN;
   protected int RESOLUTION_MAX;
   protected int INCREMENT;
+  protected boolean INDEXABLE;
+  protected boolean DIRECTIONAL;
 
+  // TODO: add comments/documentation
   public BasicEncoder() {
     this.RESOLUTION_MIN = 1;
     this.RESOLUTION_MAX = 512;
     this.INCREMENT = 1;
+    this.INDEXABLE = true;
+    this.DIRECTIONAL = false;
   }
   
   /**
@@ -118,12 +124,33 @@ public class BasicEncoder implements EncoderModel {
   }
 
   /**
-   * Return amount by which resolution is incremented/decremented
-   * @return increment amount
+   * Return the UnaryOperator for incrementing resolution
+   *
+   * @return resolution increment value
    */
   @Override
-  public int getResolutionIncrement() {
-    return INCREMENT;
+  public UnaryOperator<Integer> getResolutionIncrement() {
+    return (x) -> { return fixResolution(x+1); };
+  }
+
+  /**
+   * Return the UnaryOperator for decrementing resolution
+   *
+   * @return resolution increment value
+   */
+  @Override
+  public UnaryOperator<Integer> getResolutionDecrement() {
+    return (x) -> { return fixResolution(x-1); };
+  }
+
+  @Override
+  public boolean isIndexable() {
+    return this.INDEXABLE;
+  }
+
+  @Override
+  public boolean isDirectional() {
+    return this.DIRECTIONAL;
   }
 
 }

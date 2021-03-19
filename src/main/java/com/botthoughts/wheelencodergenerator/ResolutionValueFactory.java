@@ -15,7 +15,9 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import java.util.function.UnaryOperator;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -25,9 +27,10 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
 
-  private final SimpleIntegerProperty increment;
   private final SimpleIntegerProperty min;
   private final SimpleIntegerProperty max;
+  private SimpleObjectProperty<UnaryOperator<Integer>> up;
+  private SimpleObjectProperty<UnaryOperator<Integer>> down;
 
   /**
    * Constructor for ResolutionValueFactory which provides properties for min, max, increment,
@@ -35,27 +38,19 @@ public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
    * @param converter is the IntegerConverter used to convert between String and Integer
    * @param min
    * @param max
+   * @param up
+   * @param down
    */
   public ResolutionValueFactory(IntegerStringConverter converter, 
-      SimpleIntegerProperty min, SimpleIntegerProperty max) {
+      SimpleIntegerProperty min, SimpleIntegerProperty max, // TODO: remove min/max, no longer needed
+      SimpleObjectProperty<UnaryOperator<Integer>> up, 
+      SimpleObjectProperty<UnaryOperator<Integer>> down) {
     super();
     this.setConverter(converter);
-    
     this.min = min;
-    System.out.println("ResolutionValueFactory: min:"+min.get());
-    
     this.max = max;
-    System.out.println("ResolutionValueFactory: max:"+max.get());
-    
-    increment = new SimpleIntegerProperty(1);
-  }
-
-  /**
-   * Return the property representing the amount by which the value is incremented (or decremented)
-   * @return increment property
-   */
-  public SimpleIntegerProperty incrementProperty() {
-    return increment;
+    this.up = up;
+    this.down = down;
   }
 
   /**
@@ -65,7 +60,6 @@ public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
   public SimpleIntegerProperty minProperty() {
     return min;
   }
-
   
   /**
    * Return the property representing the maximum permitted value
@@ -83,14 +77,12 @@ public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
   @Override
   public void decrement(int steps) {
     int v = this.valueProperty().get();
-    int i = this.increment.get();
     System.out.println("RVF: dec() BEFORE value="+valueProperty().get()+" min="+min.get()+" max="+max.get());
     while (steps-- > 0) {
-      if ((v-i) >= min.get()) {
-        v -= i;
+      if (this.down.get().apply(v) >= min.get()) {
+        this.valueProperty().set(this.down.get().apply(v));
       }
     }
-    this.valueProperty().set(v);  
     System.out.println("AFTER value="+valueProperty().get());
   }
 
@@ -104,14 +96,12 @@ public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
   @Override
   public void increment(int steps) {
     int v = this.valueProperty().get();
-    int i = this.increment.get();
     System.out.println("RVF: inc() BEFORE value="+valueProperty().get()+" min="+min.get()+" max="+max.get());
     while (steps-- > 0) {
-      if ((v+i) <= max.get()) {
-        v += i;
+      if (this.up.get().apply(v) <= max.get()) {
+        this.valueProperty().set(this.up.get().apply(v));
       }
     }
-    this.valueProperty().set(v);
     System.out.println("AFTER value="+valueProperty().get());
   }
 

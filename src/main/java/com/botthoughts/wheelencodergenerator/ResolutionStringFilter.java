@@ -19,6 +19,8 @@ import java.util.function.UnaryOperator;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.TextFormatter;
 
+// TODO: documentation
+
 /**
  *
  * @author mes

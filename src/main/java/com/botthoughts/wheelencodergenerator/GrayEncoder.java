@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.botthoughts.wheelencodergenerator;
+package com.botthoughts.wheelencodergenerator; // TOOD: move to Encoder package
 
 import java.util.ArrayList;
 import java.util.List;
+
+// TODO: add comments/documentation
 
 /**
  *

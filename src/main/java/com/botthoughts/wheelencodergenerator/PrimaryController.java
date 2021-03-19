@@ -57,11 +57,11 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -70,8 +70,13 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
 
+// TODO: Documentation
+
 public class PrimaryController implements Initializable {
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // Private fields
+  
   private EncoderView encoderPreview;
   private File currentFile;
   private static final String EXT = ".we2";
@@ -85,6 +90,9 @@ public class PrimaryController implements Initializable {
   private EncoderProperties ep;
   private WebHelpController helpController;
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // FXML UI Widgets
+  
   @FXML Canvas encoderUI;
   @FXML ComboBox typeUI;
   @FXML Spinner resolutionUI;
@@ -107,26 +115,12 @@ public class PrimaryController implements Initializable {
   @FXML Label gitUrlUI;
   private Stage helpStage;
 
-  /**
-   * Copies the URL for GitHub Releases into the clipboard.
-   */
-  @FXML
-  public void copyGithubUrlToClipboard() {
-    Clipboard clipboard = Clipboard.getSystemClipboard();
-    ClipboardContent content = new ClipboardContent();
-    String url = gitUrlUI.getText();
-    gitUrlUI.setText("Copied to clipboard!");
-    content.putString(url);
-    clipboard.setContent(content);
-
-    Timeline timeline = new Timeline();
-    timeline.autoReverseProperty().set(false);
-    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(3000),
-            new KeyValue(gitUrlUI.textProperty(), url)
-    ));
-    timeline.play();
-  }
-
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // UTILITIES
+  //
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  
   /**
    * Use GitTagService to read Tags API and compare to current version specified in 
    * version.properties to determine if application has update available and display update message
@@ -169,6 +163,12 @@ public class PrimaryController implements Initializable {
     
   }
   
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // DIALOGS
+  //
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  
   /**
    * Show a dialog.
    * @param title is the title for the title bar
@@ -204,6 +204,21 @@ public class PrimaryController implements Initializable {
     return res;
   }
   
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // EVENT HANDLERS
+  //
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  /**
+   * Temporary for handling events
+   */
+  @FXML
+  public void eventHandler(Event e) { // TODO: remove generic event handler
+    System.out.println("Event: "+e.getEventType().getName());
+  }
+  
+
   /**
    * Save the current encoder to the specified file.
    * @param f is the File to which the encoder will be saved.
@@ -224,15 +239,6 @@ public class PrimaryController implements Initializable {
     }
   }
   
-  /**
-   * Update the application title bar based on the current filename and saved state.
-   */
-  public void updateTitle() {
-    String title = "WheelEncoderGenerator - " + this.filename.get();
-    if (!saved.get()) title += "*";
-    App.stage.setTitle(title);
-  }
-
   /**
    * Handler for File Save calls saveFile() if the file has been saved previously and calls 
    * saveFileAs() if the file has never been saved before.
@@ -359,7 +365,7 @@ public class PrimaryController implements Initializable {
       //gc.setImageSmoothing(false);
 
       scale = dpi;
-      if (ep.getUnits().get().equals(EncoderProperties.UNITS_MM)) {
+      if (ep.unitsProperty().get().equals(EncoderProperties.UNITS_MM)) {
         scale /= 25.4;
       }
 
@@ -406,13 +412,50 @@ public class PrimaryController implements Initializable {
   }
 
   /**
-   * Temporary for handling events
+   * Copies the URL for GitHub Releases into the clipboard.
    */
   @FXML
-  public void eventHandler(Event e) {
-    System.out.println("Event: "+e.getEventType().getName());
+  public void copyGithubUrlToClipboard() {
+    Clipboard clipboard = Clipboard.getSystemClipboard();
+    ClipboardContent content = new ClipboardContent();
+    String url = gitUrlUI.getText();
+    gitUrlUI.setText("Copied to clipboard!");
+    content.putString(url);
+    clipboard.setContent(content);
+
+    Timeline timeline = new Timeline();
+    timeline.autoReverseProperty().set(false);
+    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(3000),
+            new KeyValue(gitUrlUI.textProperty(), url)
+    ));
+    timeline.play();
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // LISTENERS
+  //
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   
+  /**
+   * Update the application title bar based on the current filename and saved state.
+   */
+  public void updateTitle() {
+    String title = "WheelEncoderGenerator - " + this.filename.get();
+    if (!saved.get()) title += "*";
+    App.stage.setTitle(title);
+  }
+
+  private ChangeListener<Boolean> toggleListener(String yes, String no, ToggleButton b) {
+    return (obs, ov, nv) -> { b.setText((nv)?yes:no); };
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  // INITIALIZATION
+  //
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * Initialize the PrimaryController
    * @param url
@@ -438,17 +481,17 @@ public class PrimaryController implements Initializable {
     });
     
     typeUI.getItems().setAll(ep.getTypeOptions());
-    typeUI.valueProperty().bindBidirectional(ep.getType());
-    System.out.println("PrimaryController: type=" + ep.getType());
+    typeUI.valueProperty().bindBidirectional(ep.typeProperty());
+//    System.out.println("PrimaryController: type=" + ep.typeProperty());
 
-    // TODO: bind min/max properties between ep and RVF
-    IntegerStringConverter rc = new IntegerStringConverter();
     resolutionUI.setValueFactory(
-        new ResolutionValueFactory(rc, ep.getResolutionMin(), ep.getResolutionMax()));
-    resolutionUI.getValueFactory().valueProperty().bindBidirectional(ep.getResolution());
-    ResolutionStringFilter rsf = 
-        new ResolutionStringFilter(ep.getResolutionMin(), ep.getResolutionMax());
-    resolutionUI.getEditor().setTextFormatter(new TextFormatter<Integer>(rsf));
+        new ResolutionValueFactory(new IntegerStringConverter(), 
+            ep.minResolutionProperty(), ep.maxResolutionProperty(),
+            ep.resolutionIncrementProperty(), ep.resolutionDecrementProperty()));
+    resolutionUI.getValueFactory().valueProperty().bindBidirectional(ep.resolutionProperty());
+    TextFormatter<Integer> tf = new TextFormatter(new ResolutionStringFilter(ep.minResolutionProperty(), 
+        ep.maxResolutionProperty()));
+    resolutionUI.getEditor().setTextFormatter(tf);
 
     // TODO: Indicate invalid diameter values after entry
     
@@ -456,37 +499,37 @@ public class PrimaryController implements Initializable {
     
     DoubleFormatter outerFmt = new DoubleFormatter();
     outerFmt.decimalsProperty().bind(decimals);
-    outerUI.textProperty().bindBidirectional((Property) ep.getOuterDiameter(), 
+    outerUI.textProperty().bindBidirectional((Property) ep.outerDiameterProperty(), 
         outerFmt.getConverter());
     outerUI.setTextFormatter(outerFmt);
    
     DoubleFormatter innerFmt = new DoubleFormatter();
     innerFmt.decimalsProperty().bind(decimals);
-    innerUI.textProperty().bindBidirectional((Property) ep.getInnerDiameter(), 
+    innerUI.textProperty().bindBidirectional((Property) ep.innerDiameterProperty(), 
         innerFmt.getConverter());
     innerUI.setTextFormatter(innerFmt);
     
     DoubleFormatter centerFmt = new DoubleFormatter();
     centerFmt.decimalsProperty().bind(decimals);
-    centerUI.textProperty().bindBidirectional((Property) ep.getCenterDiameter(), 
+    centerUI.textProperty().bindBidirectional((Property) ep.centerDiameterProperty(), 
         centerFmt.getConverter());
     centerUI.setTextFormatter(centerFmt);
 
     unitsUI.getItems().addAll(ep.getUnitOptions());
-    unitsUI.valueProperty().bindBidirectional(ep.getUnits());
+    unitsUI.valueProperty().bindBidirectional(ep.unitsProperty());
     unitsUI.valueProperty().addListener((obs, ov, nv) -> {
       if (nv.equals(EncoderProperties.UNITS_MM)) {
         decimals.set(1);
         // Automatically convert current value
-        ep.getOuterDiameter().set(UnitConverter.toMillimeter(ep.getOuterDiameter().get()));
-        ep.getInnerDiameter().set(UnitConverter.toMillimeter(ep.getInnerDiameter().get()));
-        ep.getCenterDiameter().set(UnitConverter.toMillimeter(ep.getCenterDiameter().get()));        
+        ep.outerDiameterProperty().set(UnitConverter.toMillimeter(ep.outerDiameterProperty().get()));
+        ep.innerDiameterProperty().set(UnitConverter.toMillimeter(ep.innerDiameterProperty().get()));
+        ep.centerDiameterProperty().set(UnitConverter.toMillimeter(ep.centerDiameterProperty().get()));        
       } else if (nv.equals(EncoderProperties.UNITS_INCH)) {
         decimals.set(3);
         // Automatically convert current value
-        ep.getOuterDiameter().set(UnitConverter.toInch(ep.getOuterDiameter().get()));
-        ep.getInnerDiameter().set(UnitConverter.toInch(ep.getInnerDiameter().get()));
-        ep.getCenterDiameter().set(UnitConverter.toInch(ep.getCenterDiameter().get()));        
+        ep.outerDiameterProperty().set(UnitConverter.toInch(ep.outerDiameterProperty().get()));
+        ep.innerDiameterProperty().set(UnitConverter.toInch(ep.innerDiameterProperty().get()));
+        ep.centerDiameterProperty().set(UnitConverter.toInch(ep.centerDiameterProperty().get()));        
       }
       // Force conversion to new format
       outerUI.textProperty().set(outerUI.textProperty().get());
@@ -494,33 +537,21 @@ public class PrimaryController implements Initializable {
       centerUI.textProperty().set(centerUI.textProperty().get());
     });
 
-    invertedUI.selectedProperty().bindBidirectional(ep.getInverted());
-    invertedUI.selectedProperty().addListener((obs, ov, nv) -> {
-      if (nv) {
-        invertedUI.setText("Yes"); // if selected, "Yes"
-      } else {
-        invertedUI.setText("No"); // if not selected, "no"
-      }
-    });
-   
-    indexUI.selectedProperty().bindBidirectional(ep.getIndexed());
-    indexUI.disableProperty().bind(ep.getIndexable().not());
-    indexUI.selectedProperty().addListener((obs, ov, nv) -> {
-      if (nv) {
-        indexUI.setText("Yes"); // if selected, "Yes"
-      } else {
-        indexUI.setText("No"); // if not selected, "no"
-      }
-    });
+    invertedUI.selectedProperty().bindBidirectional(ep.invertedProperty());
+    invertedUI.selectedProperty().addListener(this.toggleListener("Yes", "No", invertedUI));
+
+    indexUI.selectedProperty().bindBidirectional(ep.indexedProperty());
+    indexUI.disableProperty().bind(ep.indexableProperty().not());
+    indexUI.selectedProperty().addListener(this.toggleListener("Yes", "No", indexUI));
 
     // directionUI, two buttons, only one selected at once.
-    cwUI.selectedProperty().bindBidirectional(ep.getDirection());
+    cwUI.selectedProperty().bindBidirectional(ep.directionProperty());
     cwUI.selectedProperty().addListener((obs, ov, nv) -> {
-      ep.getDirection().set(nv);
+      ep.directionProperty().set(nv); // make sure
       ccwUI.selectedProperty().set(ov); // make sure the other toggle toggles
     });
-    cwUI.disableProperty().bind(ep.getDirectional().not());
-    ccwUI.disableProperty().bind(ep.getDirectional().not());
+    cwUI.disableProperty().bind(ep.directionalProperty().not());
+    ccwUI.disableProperty().bind(ep.directionalProperty().not());
 
     alertDialog = new Alert(Alert.AlertType.ERROR);
 
