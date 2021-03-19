@@ -202,7 +202,11 @@ public final class EncoderProperties implements ObservableValue {
   //
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // TODO: Documentation  
+  /**
+   * Return list of options for Type widget
+   * 
+   * @return list of valid Type options as String
+   */
   public List<String> getTypeOptions() {
     return new ArrayList<>(this.encoderMap.keySet());
   }
@@ -218,6 +222,7 @@ public final class EncoderProperties implements ObservableValue {
 
   /**
    * Get the encoder associated with these properties
+   * 
    * @return the encoder associated with these properties
    */
   public EncoderModel getEncoder() {
@@ -263,15 +268,6 @@ public final class EncoderProperties implements ObservableValue {
     return (this.outerDiameterProperty().get() > this.innerDiameterProperty().get())
         && (this.innerDiameterProperty().get() >= this.centerDiameterProperty().get());
   }
-
-//  /**
-//   * If resolution is not valid, set it to the nearest valid value
-//   * @param resolution is the encoder resolution
-//   * @return resolution, if valid, or the nearest valid value
-//   */
-//  final public int fixResolution(int resolution) {
-//    return getEncoder().fixResolution(resolution);
-//  }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   //
@@ -385,23 +381,28 @@ public final class EncoderProperties implements ObservableValue {
     return this.directional;
   }
 
-  // TODO: Comments
-
+  /**
+   * Return the property containing the UnaryOperator for incrementing the resolution
+   * @return UnaryOperator for resolution increment
+   */
   public SimpleObjectProperty<UnaryOperator<Integer>> resolutionIncrementProperty() {
     return incrementProperty;
   }
 
+  /**
+   * Return the property containing the UnaryOperator for decrementing the resolution
+   * @return UnaryOperator for resolution decrement
+   */
   public SimpleObjectProperty<UnaryOperator<Integer>> resolutionDecrementProperty() {
     return decrementProperty;
   }
-
-
   
   /////////////////////////////////////////////////////////////////////////////////////////////////
   //
   // CONVERT TO/FROM PROPERTIES
   //
   /////////////////////////////////////////////////////////////////////////////////////////////////
+  
   /**
    * Return a Properties object representing this object; used for file save
    * @return Properties object
@@ -447,6 +448,7 @@ public final class EncoderProperties implements ObservableValue {
   /////////////////////////////////////////////////////////////////////////////////////////////////
   
   // TODO: inherit this shit from ObjectProperty or something?
+  
   /**
    * Add a ChangeListener to be notified if any changes are made to the encoder's properties
    * @param cl is a ChangeListener callback object to be notified of changes

@@ -20,12 +20,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Binary encoder model is a type of absolute position encoder consisting of n tracks to achieve
+ * 2^n unique positions represented by sequential binary numbers (e.g, 00, 01, 11, 10). This
+ * encoder is directional, and doesn't have a separate index track because it is superfluous for
+ * an absolute encoder.
  * @author mes
  */
 public class BinaryEncoder extends BasicEncoder {
   
-  // TODO: add comments/documentation
+  /**
+   * Create a new binary encoder with a minimum resolution of 1 bit (2 positions) and maximum
+   * resolution of 11 bits (2048 positions)
+   */
   public BinaryEncoder() {
     this.RESOLUTION_MIN = 1;
     this.RESOLUTION_MAX = 11;

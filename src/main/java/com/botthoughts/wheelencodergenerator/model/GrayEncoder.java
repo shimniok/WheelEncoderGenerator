@@ -19,10 +19,10 @@ import com.botthoughts.wheelencodergenerator.EncoderTrack;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: add comments/documentation
-
 /**
- *
+ * Gray-code encoder model is a type of binary encoder (See BinaryEncoder) encoder identical in
+ * every respect except the bit pattern between any two positions differs only by a single bit
+ * (e.g, 00, 01, 11, 10).
  * @author mes
  */
 public class GrayEncoder extends BinaryEncoder {

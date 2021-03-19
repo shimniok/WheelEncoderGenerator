@@ -19,29 +19,48 @@ import java.util.function.UnaryOperator;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.TextFormatter;
 
-// TODO: documentation
-
 /**
- *
+ * String filter for encoder resolution text entry (via text field/editor)
  * @author mes
  */
 public class ResolutionStringFilter implements UnaryOperator<TextFormatter.Change> {
   SimpleIntegerProperty min;
   SimpleIntegerProperty max;
 
+  /**
+   * Create new ResolutionStringFilter with specified min and max properties to accommodate 
+   * dynamically updating the min/max values. NOTE: be sure when changing these values of these
+   * properties to also change the value in the field to fall inside the bounds.
+   * @param min minimum value property
+   * @param max maximum value property
+   */
   public ResolutionStringFilter(SimpleIntegerProperty min, SimpleIntegerProperty max) {
     this.min = min;
     this.max = max;
   }
 
+  /**
+   * Returns minimum value property
+   * @return min value property
+   */
   public SimpleIntegerProperty minProperty() {
     return min;
   }
 
+  /**
+   * Returns maximum value property
+   * @return min value property
+   */
   public SimpleIntegerProperty maxProperty() {
     return max;
   }
   
+  /**
+   * Implements the text filter, rejecting any illegal (non-numeric) characters, as well as any
+   * change that would result in a value outside of the min and max properties
+   * @param change specifies the change being made
+   * @return the change, after filtering of input/changes is complete
+   */
   @Override
   public TextFormatter.Change apply(TextFormatter.Change change) {
     String doubleRegex = "[0-9]*";

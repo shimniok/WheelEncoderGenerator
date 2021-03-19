@@ -20,12 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Quadrature encoder model consisting of two tracks of stripes, offset to detect direction of
+ * rotation, and an optional index track.
  * @author mes
  */
 public class QuadratureEncoder extends BasicEncoder {
 
-  // TODO: add comments/documentation
+  /**
+   * Create a new quadrature encoder model
+   */
   public QuadratureEncoder() {
     super();
     this.DIRECTIONAL = true;

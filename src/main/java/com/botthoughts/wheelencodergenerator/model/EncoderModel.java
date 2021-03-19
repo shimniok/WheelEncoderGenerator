@@ -21,7 +21,6 @@ import java.util.function.UnaryOperator;
 
 /**
  * Functionality required of--and unique to--each encoder type.
- *
  * @author mes
  */
 public interface EncoderModel {
@@ -82,9 +81,16 @@ public interface EncoderModel {
    */
   abstract public int fixResolution(int resolution);
 
-  // TODO: add comments/documentation
+  /**
+   * Indicates whether the encoder is indexable or not.
+   * @return true only if the encoder supports an index track
+   */
   abstract public boolean isIndexable();
 
+  /**
+   * Returns the directionality of the encoder
+   * @return true if the encoder is directional, false if non-directional.
+   */
   abstract public boolean isDirectional();
 
 }

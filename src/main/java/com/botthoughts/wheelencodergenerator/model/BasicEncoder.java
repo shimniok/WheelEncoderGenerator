@@ -22,7 +22,7 @@ import java.util.function.UnaryOperator;
 
 /**
  * BasicEncoder implements the EncoderModel interface and represents a non-directional encoder
- * with a single track to detect motion, and an optional index track for an initial position.
+ * with a single track to detect motion and an optional index track for an initial position.
  * @author mes
  */
 public class BasicEncoder implements EncoderModel {
@@ -34,7 +34,10 @@ public class BasicEncoder implements EncoderModel {
   protected boolean INDEXABLE;
   protected boolean DIRECTIONAL;
 
-  // TODO: add comments/documentation
+  /**
+   * Create a new BasicEncoder with min resolution of 1 and max resolution of 512 and a
+   * resolution increment of 1.
+   */
   public BasicEncoder() {
     this.RESOLUTION_MIN = 1;
     this.RESOLUTION_MAX = 512;
@@ -144,11 +147,19 @@ public class BasicEncoder implements EncoderModel {
     return (x) -> { return fixResolution(x-1); };
   }
 
+  /**
+   * Indicates whether the encoder is indexable or not.
+   * @return true only if the encoder supports an index track
+   */
   @Override
   public boolean isIndexable() {
     return this.INDEXABLE;
   }
 
+  /**
+   * Returns the directionality of the encoder
+   * @return true if the encoder is directional, false if non-directional.
+   */
   @Override
   public boolean isDirectional() {
     return this.DIRECTIONAL;

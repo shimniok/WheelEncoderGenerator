@@ -70,8 +70,10 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
 
-// TODO: Documentation
-
+/**
+ * Primary controller for WheelEncoderGenerator app handles the main window and all related actions.
+ * @author mes
+ */
 public class PrimaryController implements Initializable {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
