@@ -53,6 +53,7 @@ import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import com.botthoughts.util.GitTagService;
+import com.botthoughts.util.AppInfo;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -121,6 +122,7 @@ public class PrimaryController implements Initializable {
   @FXML Label gitUrlUI;
   private Stage helpStage;
   private Stage aboutStage;
+  private AppInfo appInfo;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //
@@ -148,26 +150,12 @@ public class PrimaryController implements Initializable {
       System.out.println("PrimaryControler.initialize(): IOException: "+ex);
     }
 
-    // Get version of this app from version.properties
-    Properties properties = new Properties();
-    try {
-      InputStream stream = App.class.getResourceAsStream("/version.properties");
-      properties.load(stream);
-      String version = "v" + properties.getProperty("version"); // prefix with 'v'
-      System.out.println(version);
+    String version = "v" + appInfo.getVersion(); // Prefix with 'v' to match github tags
+    System.out.println(version);
 
-      // If the latest tag isn't equal to the current version, then either an update is available
-      // (unless you're the developer working on a *newer* version.
-      if (!version.equals(latest)) {
-        updatePane.setVisible(true); // Show the update message
-      } else {
-        updatePane.setVisible(false); // Hide the update message
-      }
-    } catch (IOException e) {
-      // We don't *really* need to bug the user about this do we?
-      System.out.println("Problem loading version properties");
-    }
-    
+    // If the latest tag isn't equal to the current version, then either an update is available
+    // (unless you're the developer working on a *newer* version.
+    updatePane.setVisible(!version.equals(latest)); // Show the update message
   }
   
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -487,6 +475,12 @@ public class PrimaryController implements Initializable {
     ep = new EncoderProperties();
 
     System.out.println("PrimaryController: initialize()");
+    
+    try {
+      appInfo = new AppInfo();
+    } catch (IOException ex) {
+      System.out.println("Error instantiating AppInfo: "+ex);
+    }
     
     App.stage.setOnCloseRequest((event) -> {
       if (!saved.get()) {
