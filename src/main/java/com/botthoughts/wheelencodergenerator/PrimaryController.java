@@ -16,7 +16,6 @@
 package com.botthoughts.wheelencodergenerator;
 
 import com.botthoughts.util.AboutController;
-import com.botthoughts.util.WebHelpController;
 import com.botthoughts.util.BoundedIntegerTextFilter;
 import com.botthoughts.util.DoubleFormatter;
 import java.io.File;
@@ -96,7 +95,6 @@ public class PrimaryController implements Initializable {
   private Alert alertDialog;
   private Alert confirmDialog;
   private EncoderProperties ep;
-  private WebHelpController helpController;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // FXML UI Widgets
@@ -400,19 +398,7 @@ public class PrimaryController implements Initializable {
    */
   @FXML
   public void help() { 
-    Parent root;
-    try {
-      FXMLLoader loader = new FXMLLoader();
-      root = loader.load(getClass().getResource("help.fxml")); // TODO: broken, not loading fxml
-      helpStage = new Stage();
-      helpStage.setTitle("WEG - Online Help");
-      helpStage.setScene(new Scene(root));
-      helpStage.show();
-    } catch (IOException e) {
-//      this.showErrorDialog("Error", "Error loading help window");
-      System.out.println("Error loading help window: "+e.getMessage());
-      e.printStackTrace();
-    }
+    helpStage.show();
   }
 
   /**
@@ -420,21 +406,6 @@ public class PrimaryController implements Initializable {
    */
   @FXML
   public void about() {
-    Parent root;
-    if (aboutStage == null) {
-      aboutStage = new Stage();
-
-      try {
-        FXMLLoader loader = new FXMLLoader();
-        root = loader.load(AboutController.class.getResource("about.fxml"));
-        aboutStage.setScene(new Scene(root));
-        aboutStage.setTitle("About "+AppInfo.get().getAbbr());
-      } catch (IOException e) {
-//        this.showErrorDialog("Error", "Error loading about window\n");
-        System.out.println("IOException: "+e.getMessage());
-        e.printStackTrace();
-      }
-    }
     aboutStage.show();
   }
   
@@ -611,6 +582,33 @@ public class PrimaryController implements Initializable {
     encoderPreview.render();
 
     checkForUpdates();
+    
+    // Initialize Help
+    try {
+      FXMLLoader loader = new FXMLLoader();
+      Parent root = loader.load(getClass().getResource("help.fxml")); // TODO: broken, not loading fxml
+      helpStage = new Stage();
+      helpStage.setTitle("WEG - Online Help");
+      helpStage.setScene(new Scene(root));
+    } catch (IOException e) {
+//      this.showErrorDialog("Error", "Error loading help window");
+      System.out.println("Error loading help window: "+e.getMessage());
+      e.printStackTrace();
+    }
+
+    aboutStage = new Stage();
+
+    try {
+      FXMLLoader loader = new FXMLLoader();
+      Parent root = loader.load(getClass().getResource("about.fxml"));
+      aboutStage.setScene(new Scene(root));
+      aboutStage.setTitle("About " + AppInfo.get().getAbbr());
+    } catch (IOException e) {
+//        this.showErrorDialog("Error", "Error loading about window\n");
+      System.out.println("IOException: " + e.getMessage());
+      e.printStackTrace();
+    }
+    
   }
 
 }
