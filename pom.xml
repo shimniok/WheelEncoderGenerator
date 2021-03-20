@@ -4,6 +4,29 @@
     <groupId>com.botthoughts</groupId>
     <artifactId>WheelEncoderGenerator</artifactId>
     <version>0.3.2</version>
+    <description>Design and print wheel encoder discs for robotics and more.</description>
+    <properties>
+        <app.name>${project.artifactId}</app.name>
+        <app.abbr>WEG</app.abbr>
+        <app.description>${project.description}</app.description>
+        <app.version>${project.version}</app.version>
+        <app.author>Michael Shimniok</app.author>
+        <app.platform>${osTag}</app.platform>
+        <javaVersion>11</javaVersion>
+        <javaFxVersion>11.0.2</javaFxVersion>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>${javaVersion}</maven.compiler.source>
+        <maven.compiler.target>${javaVersion}</maven.compiler.target>
+        <mainClass>com.botthoughts.wheelencodergenerator.App</mainClass>
+        <moduleName>com.botthoughts.wheelencodergenerator</moduleName>
+        <moduleDir>${project.build.directory}/${osTag}/modules</moduleDir>
+        <jarName>${project.build.directory}/${project.build.finalName}.jar</jarName>
+        <imageDir>${project.build.directory}/${osTag}/weg</imageDir>
+        <archiveDir>${project.build.directory}/${osTag}</archiveDir>
+        <confDir>${imageDir}/conf</confDir>
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+    </properties>
     <profiles>
         <profile>
             <id>platform-windows</id>
@@ -39,23 +62,6 @@
             </properties>
         </profile>
     </profiles>
-    <properties>
-        <version>${project.version}</version>
-        <javaVersion>11</javaVersion>
-        <javaFxVersion>11.0.2</javaFxVersion>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>${javaVersion}</maven.compiler.source>
-        <maven.compiler.target>${javaVersion}</maven.compiler.target>
-        <mainClass>com.botthoughts.wheelencodergenerator.App</mainClass>
-        <moduleName>com.botthoughts.wheelencodergenerator</moduleName>
-        <moduleDir>${project.build.directory}/${osTag}/modules</moduleDir>
-        <jarName>${project.build.directory}/${project.build.finalName}.jar</jarName>
-        <imageDir>${project.build.directory}/${osTag}/weg</imageDir>
-        <archiveDir>${project.build.directory}/${osTag}</archiveDir>
-        <confDir>${imageDir}/conf</confDir>
-        <timestamp>${maven.build.timestamp}</timestamp>
-        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -206,22 +212,6 @@
                     </execution>
                 </executions>
             </plugin>   
-<!--            <plugin>
-                <groupId>org.codehaus.mojo</groupId> 
-                <artifactId>properties-maven-plugin</artifactId> 
-                <version>1.0.0</version>
-                <executions> 
-                    <execution> 
-                        <phase>package</phase> 
-                        <goals> 
-                            <goal>write-project-properties</goal> 
-                        </goals> 
-                        <configuration> 
-                            <outputFile>${confDir}/app.properties</outputFile> 
-                        </configuration>
-                    </execution> 
-                </executions> 
-            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>

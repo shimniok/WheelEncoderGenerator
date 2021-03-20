@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 /* 
-    Created on : Jan 9, 2021, 2:02:26 PM
+    Created on : Mar 20, 2021, 12:27:44 PM
     Author     : mes
 */
 
@@ -22,29 +22,3 @@ limitations under the License.
     -fx-hgap: 5;
     -fx-vgap: 5;
 }
-
-/*
-.grid-column {
-    -fx-pref-width: 50%;
-    -fx-min-width: 50%;
-    -fx-max-width: 50%;   
-}
-*/
-
-/*
-.grid-row {
-    -fx-pref-height: 30px;
-    -fx-min-height: 30px;
-    -fx-max-height: 30px;
-}
-*/
-
-/*
-.tab-pane {
-    -fx-tab-max-height: 0;
-    -fx-tab-min-height: 0;
-} 
-.tab-pane .tab-header-area {
-    visibility: hidden;
-}
-*/

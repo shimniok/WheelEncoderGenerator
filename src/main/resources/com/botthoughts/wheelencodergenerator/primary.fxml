@@ -6,6 +6,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
@@ -95,18 +97,25 @@
             </ToolBar>
             <ToolBar HBox.hgrow="NEVER">
               <items>
-                  <Button fx:id="helpButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#help" prefHeight="40.0" prefWidth="40.0" text="Help" textAlignment="CENTER">
+                  <MenuButton fx:id="helpButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="40.0" text="Help">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#help" text="Help" />
+                      <MenuItem mnemonicParsing="false" onAction="#about" text="About" />
+                    </items>
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@icons/Help.png" />
                            </image>
+                           <viewport>
+                              <Rectangle2D />
+                           </viewport>
                         </ImageView>
                      </graphic>
                      <tooltip>
                         <Tooltip text="Online help" />
                      </tooltip>
-                  </Button>
+                  </MenuButton>
               </items>
             </ToolBar>
          </children>

@@ -15,7 +15,7 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
-import com.botthoughts.util.WebHelpController;
+import com.botthoughts.util.AboutController;
 import com.botthoughts.util.BoundedIntegerTextFilter;
 import com.botthoughts.util.DoubleFormatter;
 import java.io.File;
@@ -53,6 +53,7 @@ import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import com.botthoughts.util.GitTagService;
+import com.botthoughts.util.AppInfo;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -93,11 +95,11 @@ public class PrimaryController implements Initializable {
   private Alert alertDialog;
   private Alert confirmDialog;
   private EncoderProperties ep;
-  private WebHelpController helpController;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // FXML UI Widgets
   
+  // Main Window
   @FXML Canvas encoderUI;
   @FXML ComboBox typeUI;
   @FXML Spinner resolutionUI;
@@ -115,10 +117,12 @@ public class PrimaryController implements Initializable {
   @FXML Button saveButton;
   @FXML Button saveAsButton;
   @FXML Button printButton;
-  @FXML Button helpButton;
+  @FXML MenuButton helpButton;
   @FXML GridPane updatePane;
   @FXML Label gitUrlUI;
+  
   private Stage helpStage;
+  private Stage aboutStage;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //
@@ -146,26 +150,18 @@ public class PrimaryController implements Initializable {
       System.out.println("PrimaryControler.initialize(): IOException: "+ex);
     }
 
-    // Get version of this app from version.properties
-    Properties properties = new Properties();
     try {
-      InputStream stream = App.class.getResourceAsStream("/version.properties");
-      properties.load(stream);
-      String version = "v" + properties.getProperty("version"); // prefix with 'v'
-      System.out.println(version);
 
+      String version = "v" + AppInfo.get().getVersion(); // Prefix with 'v' to match github tags
+      System.out.println(version);
       // If the latest tag isn't equal to the current version, then either an update is available
       // (unless you're the developer working on a *newer* version.
-      if (!version.equals(latest)) {
-        updatePane.setVisible(true); // Show the update message
-      } else {
-        updatePane.setVisible(false); // Hide the update message
-      }
+      updatePane.setVisible(!version.equals(latest)); // Show the update message
+
     } catch (IOException e) {
-      // We don't *really* need to bug the user about this do we?
-      System.out.println("Problem loading version properties");
+      System.out.println("AppInfo: "+e);
     }
-    
+
   }
   
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -223,7 +219,6 @@ public class PrimaryController implements Initializable {
     System.out.println("Event: "+e.getEventType().getName());
   }
   
-
   /**
    * Save the current encoder to the specified file.
    * @param f is the File to which the encoder will be saved.
@@ -402,20 +397,18 @@ public class PrimaryController implements Initializable {
    * Open Help window to display online help.
    */
   @FXML
-  public void help() {
-    Parent root;
-    try {
-      FXMLLoader loader = new FXMLLoader();
-      root = loader.load(getClass().getResource("help.fxml"));
-      helpStage = new Stage();
-      helpStage.setTitle("WEG - Online Help");
-      helpStage.setScene(new Scene(root));
-      helpStage.show();
-    } catch (IOException e) {
-      this.showErrorDialog("Error", "Error loading help window\n"+e);
-    }
+  public void help() { 
+    helpStage.show();
   }
 
+  /**
+   * Open About window to display app information.
+   */
+  @FXML
+  public void about() {
+    aboutStage.show();
+  }
+  
   /**
    * Copies the URL for GitHub Releases into the clipboard.
    */
@@ -589,6 +582,33 @@ public class PrimaryController implements Initializable {
     encoderPreview.render();
 
     checkForUpdates();
+    
+    // Initialize Help
+    try {
+      FXMLLoader loader = new FXMLLoader();
+      Parent root = loader.load(getClass().getResource("help.fxml")); // TODO: broken, not loading fxml
+      helpStage = new Stage();
+      helpStage.setTitle("WEG - Online Help");
+      helpStage.setScene(new Scene(root));
+    } catch (IOException e) {
+//      this.showErrorDialog("Error", "Error loading help window");
+      System.out.println("Error loading help window: "+e.getMessage());
+      e.printStackTrace();
+    }
+
+    aboutStage = new Stage();
+
+    try {
+      FXMLLoader loader = new FXMLLoader();
+      Parent root = loader.load(getClass().getResource("about.fxml"));
+      aboutStage.setScene(new Scene(root));
+      aboutStage.setTitle("About " + AppInfo.get().getAbbr());
+    } catch (IOException e) {
+//        this.showErrorDialog("Error", "Error loading about window\n");
+      System.out.println("IOException: " + e.getMessage());
+      e.printStackTrace();
+    }
+    
   }
 
 }
