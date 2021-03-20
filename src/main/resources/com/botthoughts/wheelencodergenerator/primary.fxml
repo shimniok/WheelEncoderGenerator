@@ -157,7 +157,7 @@
                            <children>
                               <Label text="Outer Diameter" textAlignment="RIGHT" GridPane.rowIndex="2" />
                               <Label text="Inner Diameter" GridPane.rowIndex="3" />
-                              <TextField fx:id="outerUI" alignment="CENTER_RIGHT" onAction="#eventHandler" onInputMethodTextChanged="#eventHandler" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                              <TextField fx:id="outerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                  <tooltip>
                                     <Tooltip text="Outer diameter of encoder" />
                                  </tooltip>
@@ -223,7 +223,7 @@
                                  </tooltip>
                               </ComboBox>
                               <Label text="Encoder Type" />
-                              <Spinner fx:id="resolutionUI" editable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onInputMethodTextChanged="#eventHandler" onKeyTyped="#eventHandler" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                              <Spinner fx:id="resolutionUI" editable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <tooltip>
                                     <Tooltip text="Set encoder resolution" />
                                  </tooltip>

@@ -15,7 +15,6 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
-import com.botthoughts.util.AboutController;
 import com.botthoughts.util.BoundedIntegerTextFilter;
 import com.botthoughts.util.DoubleFormatter;
 import java.io.File;
@@ -54,7 +53,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import com.botthoughts.util.GitTagService;
 import com.botthoughts.util.AppInfo;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import javafx.animation.KeyFrame;
@@ -210,14 +208,6 @@ public class PrimaryController implements Initializable {
   // EVENT HANDLERS
   //
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  
-  /**
-   * Temporary for handling events
-   */
-  @FXML
-  public void eventHandler(Event e) { // TODO: remove generic event handler
-    System.out.println("Event: "+e.getEventType().getName());
-  }
   
   /**
    * Save the current encoder to the specified file.
@@ -475,7 +465,7 @@ public class PrimaryController implements Initializable {
             .ifPresent( response -> this.saveFile() );
           // If ButtonType.NO, do nothing and continue closing
       }
-      // TODO: also close help window, if applicable
+      // FIXME: also close all other windows, if applicable
     });
     
     typeUI.getItems().setAll(ep.getTypeOptions());
@@ -542,6 +532,7 @@ public class PrimaryController implements Initializable {
     indexUI.disableProperty().bind(ep.indexableProperty().not());
     indexUI.selectedProperty().addListener(this.toggleListener("Yes", "No", indexUI));
 
+    // FIXME: toggling ccwUI off doesn't toggle cwUI
     // directionUI, two buttons, only one selected at once.
     cwUI.selectedProperty().bindBidirectional(ep.directionProperty());
     cwUI.selectedProperty().addListener((obs, ov, nv) -> {

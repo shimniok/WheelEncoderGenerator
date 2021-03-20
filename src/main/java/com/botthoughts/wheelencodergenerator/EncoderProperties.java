@@ -44,13 +44,13 @@ public final class EncoderProperties implements ObservableValue {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // "constants"
-  public static final String UNITS_MM = "mm";// TODO: move these to subclass
+  
+  // TODO: move these to subclasses
+  public static final String UNITS_MM = "mm";
   public static final String UNITS_INCH = "inch";
-  
-  public static final Boolean DIRECTION_CLOCKWISE = true; // TODO: move these to subclass
+  public static final Boolean DIRECTION_CLOCKWISE = true;
   public static final Boolean DIRECTION_COUNTERCLOCKWISE = false;
-  
-  public static final String TYPE_QUADRATURE = "Quadrature"; // TODO: move these to subclass
+  public static final String TYPE_QUADRATURE = "Quadrature";
   public static final String TYPE_SIMPLE = "Simple";
   public static final String TYPE_BINARY = "Binary";
   public static final String TYPE_GRAY = "Gray";
