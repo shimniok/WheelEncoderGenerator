@@ -586,7 +586,7 @@ public class PrimaryController implements Initializable {
     // Initialize Help
     try {
       FXMLLoader loader = new FXMLLoader();
-      Parent root = loader.load(getClass().getResource("help.fxml")); // TODO: broken, not loading fxml
+      Parent root = loader.load(getClass().getResource("help.fxml"));
       helpStage = new Stage();
       helpStage.setTitle("WEG - Online Help");
       helpStage.setScene(new Scene(root));

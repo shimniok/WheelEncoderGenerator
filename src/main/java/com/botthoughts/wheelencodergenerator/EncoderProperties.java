@@ -84,7 +84,7 @@ public final class EncoderProperties implements ObservableValue {
 
   // Observable stuff
   private List<ChangeListener> changeListeners;
-  private final List<InvalidationListener> invalidationListeners; // TODO remove?
+  private final List<InvalidationListener> invalidationListeners;
   private ChangeListener changed = (obs, ov, nv) -> {
     System.out.println("EncoderProperties changed()");
     changeListeners.forEach((ChangeListener cl) -> {
@@ -135,22 +135,6 @@ public final class EncoderProperties implements ObservableValue {
     // Listener to set indexable and directional properties based on encoder type
     this.type.addListener((obs, ov, nv) -> {
       System.out.println("type changed ");
-//      switch (nv) {
-//        case TYPE_QUADRATURE:
-//          this.indexable.set(true);
-//          this.directional.set(true);
-//          break;
-//        case TYPE_SIMPLE:
-//          this.indexable.set(true);
-//          this.directional.set(false);
-//          break;
-//        case TYPE_BINARY:
-//        case TYPE_GRAY:
-//          this.indexable.set(false);
-//          this.directional.set(true);
-//          break;
-//      }
-//      
       // Ensure dependent properties are updated
       this.incrementProperty.set(getEncoder().getResolutionIncrement());
       this.decrementProperty.set(getEncoder().getResolutionDecrement());
