@@ -4,12 +4,13 @@
     <groupId>com.botthoughts</groupId>
     <artifactId>WheelEncoderGenerator</artifactId>
     <version>0.3.2</version>
+    <description>Design and print wheel encoder discs for robotics and more.</description>
     <properties>
         <app.name>${project.artifactId}</app.name>
         <app.abbr>WEG</app.abbr>
-        <app.description>Design and print wheel encoder discs for robotics and more.</app.description>
+        <app.description>${project.description}</app.description>
         <app.version>${project.version}</app.version>
-        <app.author>${user.name}</app.author>
+        <app.author>Michael Shimniok</app.author>
         <app.platform>${osTag}</app.platform>
         <javaVersion>11</javaVersion>
         <javaFxVersion>11.0.2</javaFxVersion>

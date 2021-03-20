@@ -35,38 +35,52 @@ import java.util.Properties;
  * @author mes
  */
 public class AppInfo {
-  private final String version;
-  private final String author;
-  private final String name;
-  private final String abbr;
-  private final String platform;
-  private final String buildDate;
-  private final String description;
+
+  private static AppInfo me;
+  
+  private static String version;
+  private static String author;
+  private static String name;
+  private static String abbr;
+  private static String platform;
+  private static String buildDate;
+  private static String description;
 
   /**
+   * Private constructor for Singleton.
    * Create a new AppInfo object, loading info from properties file and populating fields.
    * @throws java.io.IOException
    */
-  public AppInfo() throws IOException {
+  private AppInfo() throws IOException {
     Properties properties = new Properties();
     System.out.println("MyInfo:");
 
     InputStream stream = App.class.getResourceAsStream("/app.properties");
     properties.load(stream);
-    this.version = properties.getProperty("version");
+    AppInfo.version = properties.getProperty("version");
+    AppInfo.author = properties.getProperty("author");
+    AppInfo.name = properties.getProperty("name");
+    AppInfo.abbr = properties.getProperty("abbr");
+    AppInfo.platform = properties.getProperty("platform");
+    AppInfo.buildDate = properties.getProperty("build.date");
+    AppInfo.description = properties.getProperty("description");
+
     System.out.println("\tversion="+version);
-    this.author = properties.getProperty("author");
     System.out.println("\tauthor="+author);
-    this.name = properties.getProperty("name");
     System.out.println("\tname="+name);
-    this.abbr = properties.getProperty("abbr");
     System.out.println("\tname="+abbr);
-    this.platform = properties.getProperty("platform");
     System.out.println("\tplatform="+platform);
-    this.buildDate = properties.getProperty("build.date");
     System.out.println("\tbuild date="+buildDate);
-    this.description = properties.getProperty("description");
-    System.out.println("\tdescription="+description);
+  }
+  
+  /**
+   * Return singleton instance
+   * @return AppInfo instance
+   * @throws IOException 
+   */
+  public static AppInfo get() throws IOException {
+    if (me == null) me = new AppInfo();
+    return me;
   }
   
   /**

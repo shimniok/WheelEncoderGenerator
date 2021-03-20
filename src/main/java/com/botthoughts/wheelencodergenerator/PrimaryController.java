@@ -15,6 +15,7 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import com.botthoughts.util.AboutController;
 import com.botthoughts.util.WebHelpController;
 import com.botthoughts.util.BoundedIntegerTextFilter;
 import com.botthoughts.util.DoubleFormatter;
@@ -100,6 +101,7 @@ public class PrimaryController implements Initializable {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // FXML UI Widgets
   
+  // Main Window
   @FXML Canvas encoderUI;
   @FXML ComboBox typeUI;
   @FXML Spinner resolutionUI;
@@ -120,9 +122,9 @@ public class PrimaryController implements Initializable {
   @FXML MenuButton helpButton;
   @FXML GridPane updatePane;
   @FXML Label gitUrlUI;
+  
   private Stage helpStage;
   private Stage aboutStage;
-  private AppInfo appInfo;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //
@@ -150,12 +152,18 @@ public class PrimaryController implements Initializable {
       System.out.println("PrimaryControler.initialize(): IOException: "+ex);
     }
 
-    String version = "v" + appInfo.getVersion(); // Prefix with 'v' to match github tags
-    System.out.println(version);
+    try {
 
-    // If the latest tag isn't equal to the current version, then either an update is available
-    // (unless you're the developer working on a *newer* version.
-    updatePane.setVisible(!version.equals(latest)); // Show the update message
+      String version = "v" + AppInfo.get().getVersion(); // Prefix with 'v' to match github tags
+      System.out.println(version);
+      // If the latest tag isn't equal to the current version, then either an update is available
+      // (unless you're the developer working on a *newer* version.
+      updatePane.setVisible(!version.equals(latest)); // Show the update message
+
+    } catch (IOException e) {
+      System.out.println("AppInfo: "+e);
+    }
+
   }
   
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -391,33 +399,43 @@ public class PrimaryController implements Initializable {
    * Open Help window to display online help.
    */
   @FXML
-  public void help() {
+  public void help() { 
     Parent root;
     try {
       FXMLLoader loader = new FXMLLoader();
-      root = loader.load(getClass().getResource("help.fxml"));
+      root = loader.load(getClass().getResource("help.fxml")); // TODO: broken, not loading fxml
       helpStage = new Stage();
       helpStage.setTitle("WEG - Online Help");
       helpStage.setScene(new Scene(root));
       helpStage.show();
     } catch (IOException e) {
-      this.showErrorDialog("Error", "Error loading help window\n"+e);
+//      this.showErrorDialog("Error", "Error loading help window");
+      System.out.println("Error loading help window: "+e.getMessage());
+      e.printStackTrace();
     }
   }
 
+  /**
+   * Open About window to display app information.
+   */
   @FXML
   public void about() {
     Parent root;
-    try {
-      FXMLLoader loader = new FXMLLoader();
-      root = loader.load(getClass().getResource("about.fxml"));
+    if (aboutStage == null) {
       aboutStage = new Stage();
-      aboutStage.setTitle("About WEG");
-      aboutStage.setScene(new Scene(root));
-      aboutStage.show();
-    } catch (IOException e) {
-      this.showErrorDialog("Error", "Error loading about window\n" + e);
+
+      try {
+        FXMLLoader loader = new FXMLLoader();
+        root = loader.load(AboutController.class.getResource("about.fxml"));
+        aboutStage.setScene(new Scene(root));
+        aboutStage.setTitle("About "+AppInfo.get().getAbbr());
+      } catch (IOException e) {
+//        this.showErrorDialog("Error", "Error loading about window\n");
+        System.out.println("IOException: "+e.getMessage());
+        e.printStackTrace();
+      }
     }
+    aboutStage.show();
   }
   
   /**
@@ -475,12 +493,6 @@ public class PrimaryController implements Initializable {
     ep = new EncoderProperties();
 
     System.out.println("PrimaryController: initialize()");
-    
-    try {
-      appInfo = new AppInfo();
-    } catch (IOException ex) {
-      System.out.println("Error instantiating AppInfo: "+ex);
-    }
     
     App.stage.setOnCloseRequest((event) -> {
       if (!saved.get()) {
