@@ -65,6 +65,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -115,10 +116,11 @@ public class PrimaryController implements Initializable {
   @FXML Button saveButton;
   @FXML Button saveAsButton;
   @FXML Button printButton;
-  @FXML Button helpButton;
+  @FXML MenuButton helpButton;
   @FXML GridPane updatePane;
   @FXML Label gitUrlUI;
   private Stage helpStage;
+  private Stage aboutStage;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //
@@ -223,7 +225,6 @@ public class PrimaryController implements Initializable {
     System.out.println("Event: "+e.getEventType().getName());
   }
   
-
   /**
    * Save the current encoder to the specified file.
    * @param f is the File to which the encoder will be saved.
@@ -416,6 +417,21 @@ public class PrimaryController implements Initializable {
     }
   }
 
+  @FXML
+  public void about() {
+    Parent root;
+    try {
+      FXMLLoader loader = new FXMLLoader();
+      root = loader.load(getClass().getResource("about.fxml"));
+      aboutStage = new Stage();
+      aboutStage.setTitle("About WEG");
+      aboutStage.setScene(new Scene(root));
+      aboutStage.show();
+    } catch (IOException e) {
+      this.showErrorDialog("Error", "Error loading about window\n" + e);
+    }
+  }
+  
   /**
    * Copies the URL for GitHub Releases into the clipboard.
    */
