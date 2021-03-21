@@ -219,6 +219,30 @@ public class PrimaryController implements Initializable {
     return res;
   }
   
+  /**
+   * Checks if current file needs saving and if so, prompts user to save with Yes/No/Cancel,
+   * returning a boolean representing whether the calling method should continue or abort.
+   * @return true to continue, false to abort
+   */
+  private boolean saveAndContinue() {
+    SimpleBooleanProperty okToContinue = new SimpleBooleanProperty(false);
+    
+    if (saved.get()) {
+      okToContinue.set(true);
+    } else {
+      Optional<ButtonType> optional = 
+          this.showConfirmDialog("Save?", "Save changes before continuing?");
+      optional.filter(response -> response == ButtonType.YES)
+          .ifPresent(response -> okToContinue.set(saveFile()) );
+      optional.filter(response -> response == ButtonType.CANCEL)
+          .ifPresent(response -> okToContinue.set(false) );
+      optional.filter(response -> response == ButtonType.NO)
+          .ifPresent(response -> okToContinue.set(true));
+    }
+
+    return okToContinue.get();
+  }
+  
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //
   // EVENT HANDLERS
@@ -241,7 +265,7 @@ public class PrimaryController implements Initializable {
       currentFile = f; // only do this if save succeeds!
       filename.set(f.getName());
       saved.set(true);
-    } catch (IOException ex) { // TODO should really handle errors externally so we can e.g. cancel new/open/quit operation
+    } catch (IOException ex) {
       showErrorDialog("File Save Error", "Error saving " + f.getName() + "\n" + ex.getMessage());
       return false;
     }
@@ -296,15 +320,7 @@ public class PrimaryController implements Initializable {
     fc.getExtensionFilters().add(extensionFilter);
     SimpleBooleanProperty cancel = new SimpleBooleanProperty(false);
     
-    if (!saved.get()) {
-      Optional<ButtonType> optional = 
-          this.showConfirmDialog("Save?", "Save changes before opening a new file?");
-      optional.filter(response -> response == ButtonType.YES)
-          .ifPresent(response -> { cancel.set(!saveFile()); });
-      optional.filter(response -> response == ButtonType.CANCEL)
-          .ifPresent(response -> { cancel.set(true); });
-    }
-    if (cancel.get()) return;
+    if (!this.saveAndContinue()) return;
     
     File f = fc.showOpenDialog(App.stage);
 
@@ -331,15 +347,7 @@ public class PrimaryController implements Initializable {
   public void newFile() {
     SimpleBooleanProperty cancel = new SimpleBooleanProperty(false);
 
-    if (!saved.get()) {
-      Optional<ButtonType> optional = 
-          this.showConfirmDialog("Save?", "Save changes before creating a new encoder?");
-      optional.filter(response -> response == ButtonType.YES)
-          .ifPresent(response -> { cancel.set(!saveFile()); });
-      optional.filter(response -> response == ButtonType.CANCEL)
-          .ifPresent(response -> { cancel.set(true); });
-    }
-    if (cancel.get()) return; 
+    if (!saveAndContinue()) return;
     
     currentFile = null;
     filename.set("untitled" + EXT);
@@ -495,15 +503,11 @@ public class PrimaryController implements Initializable {
     // Handle exiting/quitting
     SimpleBooleanProperty cancel = new SimpleBooleanProperty(false);
     App.stage.setOnCloseRequest((event) -> {
-      if (!saved.get()) {
-        Optional<ButtonType> optional = this.showConfirmDialog("Save?", 
-            "Save changes before continuing?");
-        optional.filter(response -> response == ButtonType.CANCEL)
-            .ifPresent( response -> cancel.set(true) ); // consume close event
-        optional.filter(response -> response == ButtonType.YES)
-            .ifPresent( response -> cancel.set(!saveFile()) );
+      if (!saveAndContinue()) {
+        event.consume();
+      } else {
+        Platform.exit();
       }
-      if (!cancel.get()) Platform.exit();
     });
     
     typeUI.getItems().setAll(ep.getTypeOptions());
