@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
@@ -490,18 +491,19 @@ public class PrimaryController implements Initializable {
     ep = new EncoderProperties();
 
     System.out.println("PrimaryController: initialize()");
-    
+
+    // Handle exiting/quitting
+    SimpleBooleanProperty cancel = new SimpleBooleanProperty(false);
     App.stage.setOnCloseRequest((event) -> {
       if (!saved.get()) {
         Optional<ButtonType> optional = this.showConfirmDialog("Save?", 
             "Save changes before continuing?");
         optional.filter(response -> response == ButtonType.CANCEL)
-            .ifPresent( response -> event.consume() ); // consume close event
+            .ifPresent( response -> cancel.set(true) ); // consume close event
         optional.filter(response -> response == ButtonType.YES)
-            .ifPresent( response -> this.saveFile() );
-          // If ButtonType.NO, do nothing and continue closing
+            .ifPresent( response -> cancel.set(!saveFile()) );
       }
-      // FIXME: also close all other windows, if applicable
+      if (!cancel.get()) Platform.exit();
     });
     
     typeUI.getItems().setAll(ep.getTypeOptions());

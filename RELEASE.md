@@ -2,7 +2,7 @@
 
 ## v0.3.2 Release Notes
 
-*Minor update of WheelEncoderGenerator 0.3*
+*Feature enhancement and bugfixes for WheelEncoderGenerator 0.3*
 
 ### Fixes and Enhancements
  * Added help button accessing online help website
@@ -10,11 +10,14 @@
  * Changing units also changes the number of significant digits displayed (#.### for inch, #.# for mm)
  * Fixed input validation for diameter fields
  * Fixed input validation and formatting for resolution spinner
+ * Errors in dimensions are indicated and saving prevented along with displaying a warning dialog
  * Fixed window resize layout bug
+ * Added About screen
+ * Improved load time for help window
+ * Fixed bug with multiple windows not closing on exit
 
 ### Known Issues
  * Image export not yet implemented
- * No "About..." screen
 
 ## v0.3.1 Release Notes
 
