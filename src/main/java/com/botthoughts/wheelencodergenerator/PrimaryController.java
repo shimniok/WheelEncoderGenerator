@@ -516,7 +516,6 @@ public class PrimaryController implements Initializable {
 
     resolutionUI.setValueFactory(
         new ResolutionValueFactory(new IntegerStringConverter(), 
-            ep.minResolutionProperty(), ep.maxResolutionProperty(),
             ep.resolutionIncrementProperty(), ep.resolutionDecrementProperty()));
     resolutionUI.getValueFactory().valueProperty().bindBidirectional(ep.resolutionProperty());
     TextFormatter<Integer> tf = new TextFormatter(new BoundedIntegerTextFilter(ep.minResolutionProperty(), 
