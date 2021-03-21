@@ -16,7 +16,6 @@
 package com.botthoughts.wheelencodergenerator;
 
 import java.util.function.UnaryOperator;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.util.converter.IntegerStringConverter;
@@ -60,8 +59,6 @@ public class ResolutionValueFactory extends SpinnerValueFactory<Integer> {
     }
   }
 
-  // TODO: sync min/max in documentation
-  
   /**
    * Increment the value by specified number of steps using increment property and bounding the
    * result to the max property.

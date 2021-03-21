@@ -21,8 +21,6 @@ To make changes to your encoder design, you'll use the controls under the `Setti
 
 Make your selection in the `Encoder Type` pulldown menu.
 
-![encoder type](imgs/EncoderType.png)
-
 You have these options:
 
  * **Quadrature**: used to detect forward/reverse motion
@@ -30,26 +28,28 @@ You have these options:
  * **Binary**: detects motion and absolute position
  * **Gray**: same as binary, except only one bit changes at a time
  
- For more details on these encoder types, see Encoder Reference
+ For more details on these encoder types, see [Encoder Reference](https://shimniok.github.io/WheelEncoderGenerator/EncoderRef.md)
 
 ### Now specify the encoder resolution
 
 Specify the encoder resolution in the `Resolution` field.
 
-**Quadrature and Simple types:** the resolution corresponds to the number of black stripes on the outer track. For example, a resolution of `1` has one (1) black and one (1) white stripe while a resolution of `16` has sixteen (16) black stripes and sixteen (16) white stripes. An encoder with a resolution of `360` would detect down to 1 degree of rotation.
-**Binary and Gray types:** the resolution corresponds to the number of tracks on the encoder and the number of unique positions the encoder can detect is equal to **2<sup>r</sup>** where **r** is resolution. So an encoder with a resolution of 4 (bits) has 16 unique positions.
+**Quadrature and Simple types:** the resolution corresponds to the number of black stripes on the outer track. The value can range from 1 to 512. A resolution of `1` has 1 black and 1 white stripe while a resolution of `16` has 16 black stripes and 16 white stripes.
+**Binary and Gray types:** the resolution corresponds to the number of tracks on the encoder. The number of unique positions the encoder can detect is equal to **2<sup>R</sup>** where **R** is resolution. So an encoder with a resolution of 4 (bits) has 16 unique positions. The values can range from 1 bit (2 positions) to 11 bits (2048 positions).
 
 ### What units of measurement do you want to use?
 
-You can select `mm` or `inches` from the `Units` pulldown menu.
+You can select `mm` or `inches` from the `Units` pulldown menu. When you make a change, the current dimensions are automatically converted to the new units.
  
 ### Next, what size do you want your encoder to be?
 
-**Outer Diameter**. You can specify the outer diameter of the encoder disc in the`Outer Diameter` field.
+**Outer Diameter**. You can specify the outer diameter of the encoder disc in the`Outer Diameter` field. Must be larger than the inner diameter and the center diameter otherwise an error is indicated with a red outline on the text field and the design is invalid.
 
-**Inner Diameter**. The `Inner Diameter` field refers to the inner diameter of the innermost encoder track.
+**Inner Diameter**. The `Inner Diameter` field refers to the inner diameter of the innermost encoder track. Must be smaller than the outer diameter and larger than or equal to the center diameter otherwise an error is indicated with a red outline on the text field and the design is invalid.
 
-**Center Diameter**. Your encoder has to be mounted on some kind of shaft or axle, and so it needs a hole in the center. Specify the diameter of this axle shaft hole with the `Center Diameter` field.
+**Center Diameter**. Your encoder has to be mounted on some kind of shaft or axle, and so it needs a hole in the center. Specify the diameter of this axle shaft hole with the `Center Diameter` field. Must be less than or equal to inner diameter and less than outer diameter otherwise an error is indicated with a red outline on the text field and the design is invalid.
+
+If the encoder dimensions are invalid, it can't be saved or printed.
 
 ### Inverted or not?
 
