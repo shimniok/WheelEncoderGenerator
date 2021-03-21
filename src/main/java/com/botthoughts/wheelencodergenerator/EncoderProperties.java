@@ -75,6 +75,9 @@ public final class EncoderProperties implements ObservableValue {
   protected SimpleIntegerProperty resolutionMax;
   protected SimpleBooleanProperty directional; // true if encoder is directional
   protected SimpleBooleanProperty indexable; // true if index track possible
+  protected SimpleBooleanProperty outerValid; // true if outerDiameter is valid
+  protected SimpleBooleanProperty innerValid; // true if innerDiameter is valid
+  protected SimpleBooleanProperty centerValid; // true if centerDiameter is valid
   
   // Encoder type to EncoderModel mapping
   protected LinkedHashMap<String, EncoderModel> encoderMap = new LinkedHashMap(); 
@@ -249,6 +252,7 @@ public final class EncoderProperties implements ObservableValue {
    * @return true if valid, false if not
    */
   public boolean isValid() {
+    System.out.println("isValid()");
     return (this.outerDiameterProperty().get() > this.innerDiameterProperty().get())
         && (this.innerDiameterProperty().get() >= this.centerDiameterProperty().get());
   }

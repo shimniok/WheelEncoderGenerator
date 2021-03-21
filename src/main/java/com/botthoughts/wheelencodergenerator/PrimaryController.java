@@ -161,7 +161,22 @@ public class PrimaryController implements Initializable {
     }
 
   }
+ 
+  private void addDimensionValidator(TextField tf) {
+    tf.textProperty().addListener((obs, ov, nv) -> {
+      if (ep.isValid()) {
+        tf.getStyleClass().remove("error");
+      } else {
+        tf.getStyleClass().add("error");
+      }
+    });
+  }
+
+  private void invalidWarning() {
+    showErrorDialog("Invalid Encoder", "Please fix invalid encoder settings.");
+  }
   
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //
   // DIALOGS
@@ -212,45 +227,62 @@ public class PrimaryController implements Initializable {
   /**
    * Save the current encoder to the specified file.
    * @param f is the File to which the encoder will be saved.
+   * @return true if file save is successful, false if unsuccessful or file is null
    */
-  public void saveFile(File f) {
-    if (f != null) {
-      try {
-        FileOutputStream out = new FileOutputStream(f);
-        Properties p = ep.toProperties();
-        p.store(out, "Wheel Encoder Generator");
-        System.out.println("file=" + f.getCanonicalPath());
-        currentFile = f; // only do this if save succeeds!
-        filename.set(f.getName());
-        saved.set(true);
-      } catch (IOException ex) { // TODO should really handle errors externally so we can e.g. cancel new/open/quit operation
-        showErrorDialog("File Save Error", "Error saving " + f.getName() + "\n" + ex.getMessage());
-      }
+  public boolean saveFile(File f) {
+    if (f == null) return false;
+
+    try {
+      FileOutputStream out = new FileOutputStream(f);
+      Properties p = ep.toProperties();
+      p.store(out, "Wheel Encoder Generator");
+      System.out.println("file=" + f.getCanonicalPath());
+      currentFile = f; // only do this if save succeeds!
+      filename.set(f.getName());
+      saved.set(true);
+    } catch (IOException ex) { // TODO should really handle errors externally so we can e.g. cancel new/open/quit operation
+      showErrorDialog("File Save Error", "Error saving " + f.getName() + "\n" + ex.getMessage());
+      return false;
     }
+    return true;
   }
   
   /**
    * Handler for File Save calls saveFile() if the file has been saved previously and calls 
    * saveFileAs() if the file has never been saved before.
+   * @return result of SaveFile() or saveFileAs(); false if ep.isValid() is false
    */
   @FXML
-  public void saveFile() {
-    if (currentFile == null) {
-      saveFileAs();
+  public boolean saveFile() {
+    if (ep.isValid()) {
+      if (currentFile == null) {
+        return saveFileAs();
+      } else {
+        return saveFile(currentFile);
+      }
     } else {
-      saveFile(currentFile);
+      this.invalidWarning();
+      return false;
     }
   }
   
   /**
    * Save file into new file/location selected by user from dialog.
+   * @return result of SaveFile(); false if ep.isValid() is false
    */
   @FXML
-  public void saveFileAs() {
-    FileChooser fc = new FileChooser();
-    fc.setInitialFileName(filename.get());
-    fc.getExtensionFilters().add(extensionFilter);
-    saveFile(fc.showSaveDialog(App.stage));
+  public boolean saveFileAs() {
+    if (ep.isValid()) {
+      FileChooser fc = new FileChooser();
+      fc.setInitialFileName(filename.get());
+      fc.getExtensionFilters().add(extensionFilter);
+      File f = fc.showSaveDialog(App.stage);
+      System.out.println("filename: "+f);
+      return saveFile(f);
+    } else {
+      this.invalidWarning();
+      return false;
+    }
   }
   
   /**
@@ -267,7 +299,7 @@ public class PrimaryController implements Initializable {
       Optional<ButtonType> optional = 
           this.showConfirmDialog("Save?", "Save changes before opening a new file?");
       optional.filter(response -> response == ButtonType.YES)
-          .ifPresent(response -> saveFile());
+          .ifPresent(response -> { cancel.set(!saveFile()); });
       optional.filter(response -> response == ButtonType.CANCEL)
           .ifPresent(response -> { cancel.set(true); });
     }
@@ -302,11 +334,11 @@ public class PrimaryController implements Initializable {
       Optional<ButtonType> optional = 
           this.showConfirmDialog("Save?", "Save changes before creating a new encoder?");
       optional.filter(response -> response == ButtonType.YES)
-          .ifPresent(response -> saveFile());
+          .ifPresent(response -> { cancel.set(!saveFile()); });
       optional.filter(response -> response == ButtonType.CANCEL)
           .ifPresent(response -> { cancel.set(true); });
     }
-    if (cancel.get()) return;
+    if (cancel.get()) return; 
     
     currentFile = null;
     filename.set("untitled" + EXT);
@@ -320,7 +352,11 @@ public class PrimaryController implements Initializable {
    */
   @FXML
   public void print(Event e) {
-    print(encoderUI);
+    if (ep.isValid()) {
+      print(encoderUI);
+    } else {
+      this.invalidWarning();
+    }
   }
 
   /**
@@ -488,20 +524,21 @@ public class PrimaryController implements Initializable {
     outerUI.textProperty().bindBidirectional((Property) ep.outerDiameterProperty(), 
         outerFmt.getConverter());
     outerUI.setTextFormatter(outerFmt);
-    // TODO: Indicate invalid diameter values after entry
-   
+    addDimensionValidator(outerUI);
+    
     DoubleFormatter innerFmt = new DoubleFormatter();
     innerFmt.decimalsProperty().bind(decimals);
     innerUI.textProperty().bindBidirectional((Property) ep.innerDiameterProperty(), 
         innerFmt.getConverter());
     innerUI.setTextFormatter(innerFmt);
-    innerUI.getStyleClass().add("error");
-    
+    addDimensionValidator(innerUI);
+
     DoubleFormatter centerFmt = new DoubleFormatter();
     centerFmt.decimalsProperty().bind(decimals);
     centerUI.textProperty().bindBidirectional((Property) ep.centerDiameterProperty(), 
         centerFmt.getConverter());
     centerUI.setTextFormatter(centerFmt);
+    addDimensionValidator(centerUI);
     
     unitsUI.getItems().addAll(ep.getUnitOptions());
     unitsUI.valueProperty().bindBidirectional(ep.unitsProperty());
