@@ -481,8 +481,6 @@ public class PrimaryController implements Initializable {
         ep.maxResolutionProperty()));
     resolutionUI.getEditor().setTextFormatter(tf);
 
-    // TODO: Indicate invalid diameter values after entry
-    
     decimals.set(1); // units default to mm, so manually set decimal format 
     
     DoubleFormatter outerFmt = new DoubleFormatter();
@@ -490,19 +488,21 @@ public class PrimaryController implements Initializable {
     outerUI.textProperty().bindBidirectional((Property) ep.outerDiameterProperty(), 
         outerFmt.getConverter());
     outerUI.setTextFormatter(outerFmt);
+    // TODO: Indicate invalid diameter values after entry
    
     DoubleFormatter innerFmt = new DoubleFormatter();
     innerFmt.decimalsProperty().bind(decimals);
     innerUI.textProperty().bindBidirectional((Property) ep.innerDiameterProperty(), 
         innerFmt.getConverter());
     innerUI.setTextFormatter(innerFmt);
+    innerUI.getStyleClass().add("error");
     
     DoubleFormatter centerFmt = new DoubleFormatter();
     centerFmt.decimalsProperty().bind(decimals);
     centerUI.textProperty().bindBidirectional((Property) ep.centerDiameterProperty(), 
         centerFmt.getConverter());
     centerUI.setTextFormatter(centerFmt);
-
+    
     unitsUI.getItems().addAll(ep.getUnitOptions());
     unitsUI.valueProperty().bindBidirectional(ep.unitsProperty());
     unitsUI.valueProperty().addListener((obs, ov, nv) -> {
@@ -532,18 +532,17 @@ public class PrimaryController implements Initializable {
     indexUI.disableProperty().bind(ep.indexableProperty().not());
     indexUI.selectedProperty().addListener(this.toggleListener("Yes", "No", indexUI));
 
-    // FIXME: toggling ccwUI off doesn't toggle cwUI
-    // directionUI, two buttons, only one selected at once.
+    // Clockwise/Counter-clockwise buttons part of ToggleGroup
+    ToggleGroup direction = new ToggleGroup();
+    cwUI.toggleGroupProperty().set(direction);
+    ccwUI.toggleGroupProperty().set(direction);
     cwUI.selectedProperty().bindBidirectional(ep.directionProperty());
-    cwUI.selectedProperty().addListener((obs, ov, nv) -> {
-      ep.directionProperty().set(nv); // make sure
-      ccwUI.selectedProperty().set(ov); // make sure the other toggle toggles
-    });
+    // Disable if the current encoder type is non-directional
     cwUI.disableProperty().bind(ep.directionalProperty().not());
     ccwUI.disableProperty().bind(ep.directionalProperty().not());
 
+    // Dialogs
     alertDialog = new Alert(Alert.AlertType.ERROR);
-
     confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
     confirmDialog.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
     
@@ -554,27 +553,30 @@ public class PrimaryController implements Initializable {
       saved.set(false);
     });
 
+    // Current filename
     filename = new SimpleStringProperty();
     // Update App title on filename change
     filename.addListener((obs, ov, nv) -> {
       this.updateTitle();
     });
-
-    // set saved true so newFile() doesn't prompt
+    // Set saved true so calling newFile() to initialize doesn't prompt
     saved = new SimpleBooleanProperty(true); 
     // Update App title on saved change
     saved.addListener((obs, ov, nv) -> {
       this.updateTitle();
     });
+    // Only enable save button if unsaved changes
     saveButton.disableProperty().bind(saved);
     
+    // Initialize a new encoder
     newFile();
-    
+
+    // Force rendering since this doesn't seem to happen via listener for some reason
     encoderPreview.render();
 
     checkForUpdates();
     
-    // Initialize Help
+    // Initialize Help display to minimize load time later
     try {
       FXMLLoader loader = new FXMLLoader();
       Parent root = loader.load(getClass().getResource("help.fxml"));
@@ -584,11 +586,10 @@ public class PrimaryController implements Initializable {
     } catch (IOException e) {
 //      this.showErrorDialog("Error", "Error loading help window");
       System.out.println("Error loading help window: "+e.getMessage());
-      e.printStackTrace();
     }
 
+    // Initialize About display to minimize load time later
     aboutStage = new Stage();
-
     try {
       FXMLLoader loader = new FXMLLoader();
       Parent root = loader.load(getClass().getResource("about.fxml"));
@@ -597,7 +598,6 @@ public class PrimaryController implements Initializable {
     } catch (IOException e) {
 //        this.showErrorDialog("Error", "Error loading about window\n");
       System.out.println("IOException: " + e.getMessage());
-      e.printStackTrace();
     }
     
   }

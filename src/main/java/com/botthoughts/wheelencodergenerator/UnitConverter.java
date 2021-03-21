@@ -20,7 +20,7 @@ package com.botthoughts.wheelencodergenerator;
  * @author mes
  */
 public class UnitConverter {
-  private static Double MM_PER_INCH = 25.4;
+  private static final Double MM_PER_INCH = 25.4;
   
   public static final Double toInch(Double mmValue) {
     return mmValue / MM_PER_INCH;

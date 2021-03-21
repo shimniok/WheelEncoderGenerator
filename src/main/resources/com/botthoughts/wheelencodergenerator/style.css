@@ -22,3 +22,8 @@ limitations under the License.
     -fx-hgap: 5;
     -fx-vgap: 5;
 }
+
+.textfield.error {
+    -fx-text-box-border: firebrick;
+    -fx-focus-color: crimson;
+}
