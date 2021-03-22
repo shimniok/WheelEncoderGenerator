@@ -93,6 +93,7 @@
                         <Tooltip text="Print encoder" />
                      </tooltip>
                   </Button>
+                  <Button fx:id="exportButton" mnemonicParsing="false" onAction="#export" text="export" />
               </items>
             </ToolBar>
             <ToolBar HBox.hgrow="NEVER">

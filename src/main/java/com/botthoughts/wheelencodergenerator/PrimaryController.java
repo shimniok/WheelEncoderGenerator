@@ -53,6 +53,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import com.botthoughts.util.GitTagService;
 import com.botthoughts.util.AppInfo;
+import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import javafx.animation.KeyFrame;
@@ -61,18 +62,22 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
+import javax.imageio.ImageIO;
 
 /**
  * Primary controller for WheelEncoderGenerator app handles the main window and all related actions.
@@ -85,9 +90,11 @@ public class PrimaryController implements Initializable {
   
   private EncoderView encoderPreview;
   private File currentFile;
-  private static final String EXT = ".we2";
-  private static final ExtensionFilter extensionFilter
-      = new ExtensionFilter("Wheel Encoder Generator v2", "*" + EXT);
+  private static final String WEG_EXT = ".we2";
+  private static final ExtensionFilter wegExtFilter
+      = new ExtensionFilter("Wheel Encoder Generator v2", "*" + WEG_EXT);
+  private static final ExtensionFilter pngExtFilter
+      = new ExtensionFilter("Portable Network Graphics", "*.png");
   private SimpleStringProperty filename;
   private SimpleBooleanProperty saved;
   private final SimpleIntegerProperty decimals = new SimpleIntegerProperty();
@@ -300,7 +307,7 @@ public class PrimaryController implements Initializable {
     if (ep.isValid()) {
       FileChooser fc = new FileChooser();
       fc.setInitialFileName(filename.get());
-      fc.getExtensionFilters().add(extensionFilter);
+      fc.getExtensionFilters().add(wegExtFilter);
       File f = fc.showSaveDialog(App.stage);
       System.out.println("filename: "+f);
       return saveFile(f);
@@ -317,8 +324,7 @@ public class PrimaryController implements Initializable {
   @FXML
   public void openFile() {
     FileChooser fc = new FileChooser();
-    fc.getExtensionFilters().add(extensionFilter);
-    SimpleBooleanProperty cancel = new SimpleBooleanProperty(false);
+    fc.getExtensionFilters().add(wegExtFilter);
     
     if (!this.saveAndContinue()) return;
     
@@ -350,7 +356,7 @@ public class PrimaryController implements Initializable {
     if (!saveAndContinue()) return;
     
     currentFile = null;
-    filename.set("untitled" + EXT);
+    filename.set("untitled" + WEG_EXT);
     ep.initialize();
     saved.set(false);
   }
@@ -421,11 +427,24 @@ public class PrimaryController implements Initializable {
   }
 
   /**
-   * Export encoder as image. Not yet implemented.
+   * Export encoder as image.
    */
   @FXML
   public void export() {
-    // TODO file export Issue #7
+    WritableImage image = encoderUI.snapshot(new SnapshotParameters(), null);
+
+    FileChooser fc = new FileChooser();
+    fc.getExtensionFilters().add(pngExtFilter); // need png extension filter
+    File file = fc.showSaveDialog(App.stage);
+    
+    if (file == null) return;
+    
+    try {
+      BufferedImage x = SwingFXUtils.fromFXImage(image, null);
+      ImageIO.write(x, "png", file);
+    } catch (IOException e) {
+      System.out.println("IOException: "+e.getMessage());
+    }
   }
   
   /**
@@ -645,3 +664,6 @@ public class PrimaryController implements Initializable {
   }
 
 }
+
+
+//TODO: more padding around encoder on canvas

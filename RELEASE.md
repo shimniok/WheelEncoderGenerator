@@ -15,6 +15,7 @@
  * Added About screen
  * Improved load time for help window
  * Fixed bug with multiple windows not closing on exit
+ * Added custom application icon
 
 ### Known Issues
  * Image export not yet implemented
