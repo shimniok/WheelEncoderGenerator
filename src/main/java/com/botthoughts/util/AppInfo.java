@@ -49,7 +49,7 @@ public class AppInfo {
   /**
    * Private constructor for Singleton.
    * Create a new AppInfo object, loading info from properties file and populating fields.
-   * @throws java.io.IOException
+   * @throws IOException
    */
   private AppInfo() throws IOException {
     Properties properties = new Properties();
@@ -64,16 +64,9 @@ public class AppInfo {
     AppInfo.platform = properties.getProperty("platform");
     AppInfo.buildDate = properties.getProperty("build.date");
     AppInfo.description = properties.getProperty("description");
-
-    System.out.println("\tversion="+version);
-    System.out.println("\tauthor="+author);
-    System.out.println("\tname="+name);
-    System.out.println("\tname="+abbr);
-    System.out.println("\tplatform="+platform);
-    System.out.println("\tbuild date="+buildDate);
   }
-  
-  /**
+
+   /**
    * Return singleton instance
    * @return AppInfo instance
    * @throws IOException 
@@ -82,7 +75,7 @@ public class AppInfo {
     if (me == null) me = new AppInfo();
     return me;
   }
-  
+
   /**
    * Get app version as a String
    * @return version

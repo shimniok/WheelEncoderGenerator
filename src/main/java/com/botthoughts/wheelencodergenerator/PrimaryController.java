@@ -400,7 +400,7 @@ public class PrimaryController implements Initializable {
       //gc.setImageSmoothing(false);
 
       scale = dpi;
-      if (ep.unitsProperty().get().equals(EncoderProperties.UNITS_MM)) {
+      if (ep.unitsProperty().get().equals(EncoderProperties.Units.MM)) {
         scale /= 25.4;
       }
 
@@ -518,8 +518,8 @@ public class PrimaryController implements Initializable {
         new ResolutionValueFactory(new IntegerStringConverter(), 
             ep.resolutionIncrementProperty(), ep.resolutionDecrementProperty()));
     resolutionUI.getValueFactory().valueProperty().bindBidirectional(ep.resolutionProperty());
-    TextFormatter<Integer> tf = new TextFormatter(new BoundedIntegerTextFilter(ep.minResolutionProperty(), 
-        ep.maxResolutionProperty()));
+    TextFormatter<Integer> tf = new TextFormatter(
+        new BoundedIntegerTextFilter(ep.minResolutionProperty(), ep.maxResolutionProperty()));
     resolutionUI.getEditor().setTextFormatter(tf);
 
     decimals.set(1); // units default to mm, so manually set decimal format 
@@ -548,13 +548,13 @@ public class PrimaryController implements Initializable {
     unitsUI.getItems().addAll(ep.getUnitOptions());
     unitsUI.valueProperty().bindBidirectional(ep.unitsProperty());
     unitsUI.valueProperty().addListener((obs, ov, nv) -> {
-      if (nv.equals(EncoderProperties.UNITS_MM)) {
+      if (nv.equals(EncoderProperties.Units.MM)) {
         decimals.set(1);
         // Automatically convert current value
         ep.outerDiameterProperty().set(UnitConverter.toMillimeter(ep.outerDiameterProperty().get()));
         ep.innerDiameterProperty().set(UnitConverter.toMillimeter(ep.innerDiameterProperty().get()));
         ep.centerDiameterProperty().set(UnitConverter.toMillimeter(ep.centerDiameterProperty().get()));        
-      } else if (nv.equals(EncoderProperties.UNITS_INCH)) {
+      } else if (nv.equals(EncoderProperties.Units.INCH)) {
         decimals.set(3);
         // Automatically convert current value
         ep.outerDiameterProperty().set(UnitConverter.toInch(ep.outerDiameterProperty().get()));

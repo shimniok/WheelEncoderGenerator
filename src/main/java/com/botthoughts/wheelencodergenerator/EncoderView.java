@@ -145,7 +145,7 @@ public final class EncoderView {
   public void render() {
     EncoderModel enc = ep.getEncoder();
 
-    System.out.println("render()");
+//    System.out.println("render()");
 
     if (!ep.isValid()) {
       return;

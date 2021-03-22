@@ -79,4 +79,28 @@ public class GrayEncoderTest {
     assertEquals(1<<(resolution-2), t2.stripeCount, "t2 stripe count");
   }
   
+  /**
+   * Test of isIndexable method, of class BasicEncoder.
+   */
+  @Test
+  public void testIsIndexable() {
+    System.out.println("isIndexable");
+    BasicEncoder instance = new GrayEncoder();
+    boolean expResult = false;
+    boolean result = instance.isIndexable();
+    assertEquals(expResult, result);
+  }
+
+  /**
+   * Test of isDirectional method, of class BasicEncoder.
+   */
+  @Test
+  public void testIsDirectional() {
+    System.out.println("isDirectional");
+    BasicEncoder instance = new GrayEncoder();
+    boolean expResult = true;
+    boolean result = instance.isDirectional();
+    assertEquals(expResult, result);
+  }
+  
 }
