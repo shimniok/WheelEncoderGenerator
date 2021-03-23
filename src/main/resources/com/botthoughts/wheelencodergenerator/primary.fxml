@@ -93,7 +93,18 @@
                         <Tooltip text="Print encoder" />
                      </tooltip>
                   </Button>
-                  <Button fx:id="exportButton" mnemonicParsing="false" onAction="#export" text="export" />
+                  <Button fx:id="exportButton" accessibleHelp="Export encoder as a PNG image" accessibleText="Export image" alignment="BOTTOM_CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#export" prefHeight="40.0" prefWidth="40.0" text="Export">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/Camera.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Export encoder as a PNG image" />
+                     </tooltip>
+                  </Button>
               </items>
             </ToolBar>
             <ToolBar HBox.hgrow="NEVER">
