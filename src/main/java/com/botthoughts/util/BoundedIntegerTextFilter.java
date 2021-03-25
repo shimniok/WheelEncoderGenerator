@@ -88,7 +88,6 @@ public class BoundedIntegerTextFilter implements UnaryOperator<TextFormatter.Cha
       System.out.println("replaced");
     }
     
-    System.out.println("apply() newText="+change.getControlNewText());
     int r = Integer.parseInt(newText);
     if (r < min.get() || r > max.get()) {
       change.setText("");

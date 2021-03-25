@@ -53,8 +53,6 @@ public class AppInfo {
    */
   private AppInfo() throws IOException {
     Properties properties = new Properties();
-    System.out.println("MyInfo:");
-
     InputStream stream = App.class.getResourceAsStream("/app.properties");
     properties.load(stream);
     AppInfo.version = properties.getProperty("version");

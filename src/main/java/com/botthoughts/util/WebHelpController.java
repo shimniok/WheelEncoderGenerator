@@ -46,8 +46,6 @@ public class WebHelpController implements Initializable {
   public void initialize(URL url, ResourceBundle rb) {
     Properties props = new Properties();
     
-    System.out.println("HelpControler: initialize()");
-    
     try {
       InputStream stream = getClass().getResourceAsStream("/help.properties");
       props.load(stream);

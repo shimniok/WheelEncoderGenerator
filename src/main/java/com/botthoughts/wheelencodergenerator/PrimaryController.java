@@ -126,6 +126,7 @@ public class PrimaryController implements Initializable {
   @FXML MenuButton helpButton;
   @FXML GridPane updatePane;
   @FXML Label gitUrlUI;
+  @FXML Label updateMessageUI;
   
   private Stage helpStage;
   private Stage aboutStage;
@@ -148,8 +149,7 @@ public class PrimaryController implements Initializable {
     String latest = "";
     try {
       gts = new GitTagService("shimniok", "WheelEncoderGenerator");
-      ArrayList<String> names = gts.getNames();
-      System.out.println(names.get(0));
+      latest = gts.getNames().get(0);
     } catch (MalformedURLException ex) {
       System.out.println("PrimaryControler.initialize(): MalformedURLException: "+ex);
     } catch (IOException ex) {
@@ -158,12 +158,12 @@ public class PrimaryController implements Initializable {
 
     try {
 
-      String version = "v" + AppInfo.get().getVersion(); // Prefix with 'v' to match github tags
-      System.out.println(version);
+      String current = "v" + AppInfo.get().getVersion(); // Prefix with 'v' to match github tags
       // If the latest tag isn't equal to the current version, then either an update is available
       // (unless you're the developer working on a *newer* version.
-      updatePane.setVisible(!version.equals(latest)); // Show the update message
-
+      updatePane.setVisible(!current.equals(latest)); // Show the update message
+      updateMessageUI.setText("Update available: "+latest);
+      
     } catch (IOException e) {
       System.out.println("AppInfo: "+e);
     }

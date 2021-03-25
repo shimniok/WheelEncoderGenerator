@@ -254,7 +254,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <Label text="New version available" GridPane.columnIndex="1">
+                        <Label fx:id="updateMessageUI" text="New version available" GridPane.columnSpan="2147483647">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin>
