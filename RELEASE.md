@@ -1,5 +1,15 @@
 # WheelEncoderGenerator
 
+## v0.3.3 Release Notes
+
+*Feature enhancement and bugfixes for WheelEncoderGenerator 0.3*
+
+### Fixes and Enhancements
+ * Encoder preview growws and shrinks with App window resize
+ * Minimum app window size now enforced properly
+ * Issue with dimension error indicators not being cleared properly is fixed
+ * Image export now properly leaves adequate space around encoder
+
 ## v0.3.2 Release Notes
 
 *Feature enhancement and bugfixes for WheelEncoderGenerator 0.3*
