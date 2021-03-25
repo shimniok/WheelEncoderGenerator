@@ -36,9 +36,6 @@ import javafx.print.PrintQuality;
 import javafx.print.PrintResolution;
 import javafx.print.Printer;
 import javafx.print.PrinterJob;
-import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -64,6 +61,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -74,6 +72,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
@@ -88,7 +87,6 @@ public class PrimaryController implements Initializable {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Private fields
   
-  private EncoderView encoderPreview;
   private File currentFile;
   private static final String WEG_EXT = ".we2";
   private static final ExtensionFilter wegExtFilter
@@ -106,7 +104,8 @@ public class PrimaryController implements Initializable {
   // FXML UI Widgets
   
   // Main Window
-  @FXML Canvas encoderUI;
+  EncoderView encoderCanvas;
+  @FXML VBox app;
   @FXML ComboBox typeUI;
   @FXML Spinner resolutionUI;
   @FXML TextField outerUI;
@@ -118,7 +117,7 @@ public class PrimaryController implements Initializable {
   @FXML ToggleButton ccwUI;
   @FXML ToggleButton invertedUI;
   @FXML ToggleButton indexUI;
-  @FXML AnchorPane canvasContainer;
+  @FXML AnchorPane encoderContainer;
   @FXML Button newButton;
   @FXML Button saveButton;
   @FXML Button saveAsButton;
@@ -379,55 +378,56 @@ public class PrimaryController implements Initializable {
   @FXML
   public void print(Event e) {
     if (ep.isValid()) {
-      print(encoderUI);
+      print();
     } else {
       this.invalidWarning();
     }
   }
 
   /**
-   * Prints the specified encoder node.
-   * @param node is the node containing the encoder to be printed.
+   * Prints the encoder.
    */
   @FXML
-  public void print(Node node) {
-    PrinterJob job = PrinterJob.createPrinterJob();
+  public void print() {
+    PrinterJob job;
+    double scale;
+    double width;
+    double height;
+    double dpi;
+    PageLayout layout;
+    PrintResolution resolution;
 
+    job = PrinterJob.createPrinterJob();
+    
     if (job != null && job.showPrintDialog(App.stage)) {
       Printer printer = job.getPrinter();
 
-      PageLayout pageLayout = job.getJobSettings().getPageLayout();
-      PrintResolution resolution = printer.getPrinterAttributes()
+      layout = job.getJobSettings().getPageLayout();
+      resolution = printer.getPrinterAttributes()
           .getDefaultPrintResolution();
-      double dpi = resolution.getFeedResolution(); // dpi
+      dpi = resolution.getFeedResolution(); // dpi
       System.out.println("print dpi=" + dpi);
-      double scale = dpi / 72;
-      double width = scale * pageLayout.getPrintableWidth();
-      double height = scale * pageLayout.getPrintableHeight();
+      scale = dpi / 72;
+      width = scale * layout.getPrintableWidth();
+      height = scale * layout.getPrintableHeight();
       System.out.println("width=" + width + ", height=" + height);
-
-      Canvas c = new Canvas(width, height);
-      c.getTransforms().add(new Scale(1 / scale, 1 / scale));
-      c.setVisible(true); // won't print otherwise
-      AnchorPane pane = new AnchorPane();
-      pane.getChildren().add(c); // required to print/scale
-      pane.setVisible(true);
-
-      GraphicsContext gc = c.getGraphicsContext2D();
-      //gc.setImageSmoothing(false);
 
       scale = dpi;
       if (ep.unitsProperty().get().equals(EncoderProperties.Units.MM)) {
         scale /= 25.4;
       }
 
-      EncoderView ev = new EncoderView(c, scale, ep);
-      ev.render();
+      EncoderView ev = new EncoderView(scale, ep, width, height);
+      ev.draw();
+      ev.getTransforms().add(new Scale(1 / scale, 1 / scale));
+      ev.setVisible(true); // won't print otherwise
+      AnchorPane pane = new AnchorPane();
+      pane.getChildren().add(ev); // required to print/scale
+      pane.setVisible(true);
 
       job.getJobSettings().setPrintQuality(PrintQuality.HIGH);
 
-      boolean success = job.printPage(pane);
-      if (success) {
+      if (job.printPage(pane)) {
         job.endJob();
       } else {
         showErrorDialog("Printing Problem", "Status: " + job.getJobStatus().toString());
@@ -442,7 +442,7 @@ public class PrimaryController implements Initializable {
    */
   @FXML
   public void export() {
-    WritableImage image = encoderUI.snapshot(new SnapshotParameters(), null);
+    WritableImage image = encoderCanvas.snapshot(new SnapshotParameters(), null);
 
     FileChooser fc = new FileChooser();
     fc.getExtensionFilters().add(pngExtFilter); // need png extension filter
@@ -535,12 +535,27 @@ public class PrimaryController implements Initializable {
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
+//    System.out.println("PrimaryController: initialize()");
+
     ep = new EncoderProperties();
 
-    System.out.println("PrimaryController: initialize()");
+    // Update encoder preview and saved status on any settings change
+    encoderCanvas = new EncoderView(ep, 500, 500);
+    
+    ObservableList<Node> children = encoderContainer.getChildren();
+    children.add(encoderCanvas);
+    
+    // Set up canvas resizing
+    encoderCanvas.widthProperty().bind(encoderContainer.widthProperty());
+    encoderCanvas.heightProperty().bind(encoderContainer.heightProperty());
 
+    saved = new SimpleBooleanProperty();
+    ep.addListener((observable, oldvalue, newvalue) -> {
+      encoderCanvas.draw();
+      saved.set(false);
+    });
+    
     // Handle exiting/quitting
-    SimpleBooleanProperty cancel = new SimpleBooleanProperty(false);
     App.stage.setOnCloseRequest((event) -> {
       if (!saveAndContinue()) {
         event.consume();
@@ -627,21 +642,13 @@ public class PrimaryController implements Initializable {
     confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
     confirmDialog.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
     
-    // Update encoder preview and saved status on any settings change
-    encoderPreview = new EncoderView(encoderUI, ep);
-    ep.addListener((observable, oldvalue, newvalue) -> {
-      encoderPreview.render();
-      saved.set(false);
-    });
-
     // Current filename
     filename = new SimpleStringProperty();
     // Update App title on filename change
     filename.addListener((obs, ov, nv) -> {
       this.updateTitle();
     });
-    // Set saved true so calling newFile() to initialize doesn't prompt
-    saved = new SimpleBooleanProperty(true); 
+
     // Update App title on saved change
     saved.addListener((obs, ov, nv) -> {
       this.updateTitle();
@@ -650,10 +657,11 @@ public class PrimaryController implements Initializable {
     saveButton.disableProperty().bind(saved);
     
     // Initialize a new encoder
+    saved.set(true); // so we don't get prompted on launch
     newFile();
 
     // Force rendering since this doesn't seem to happen via listener for some reason
-    encoderPreview.render();
+    encoderCanvas.draw();
 
     checkForUpdates();
     
@@ -680,7 +688,7 @@ public class PrimaryController implements Initializable {
 //        this.showErrorDialog("Error", "Error loading about window\n");
       System.out.println("IOException: " + e.getMessage());
     }
-    
+   
   }
 
 }

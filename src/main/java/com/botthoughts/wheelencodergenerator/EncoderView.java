@@ -15,8 +15,8 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
+import com.botthoughts.util.ResizeableCanvas;
 import com.botthoughts.wheelencodergenerator.model.EncoderModel;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
@@ -26,57 +26,44 @@ import javafx.scene.shape.ArcType;
  *
  * @author mes
  */
-public final class EncoderView {
+public final class EncoderView extends ResizeableCanvas {
 
+  public static int PADDING = 2; // in pixels, each side
   public static int FIT_TO_CANVAS = 0;
-  private Canvas canvas;
   private GraphicsContext gc;
   private Color backgroundColor; // background
   private Color foregroundColor; // foreground
   private double scale;
   private boolean fit; // fit render to canvas?
   private EncoderProperties ep;
+  private boolean redraw;
 
   /**
    * Create a new object to render encoder
    *
-   * @param c canvas on which to render
    * @param scale scaling factor for drawing; 0 means fit to canvas
+   * @param ep
+   * @param width
+   * @param height
    */
-  EncoderView(Canvas c, double scale, EncoderProperties ep) {
-    this.canvas = c;
+  public EncoderView(double scale, EncoderProperties ep, Double width, Double height) {
     this.setScale(scale);
-    this.gc = c.getGraphicsContext2D();
+    this.gc = this.getGraphicsContext2D();
+    this.setEffect(null);
     this.ep = ep;
+    this.setWidth(width);
+    this.setHeight(height);
+    this.redraw = true;
+    this.widthProperty().addListener(e -> this.redraw = true);
+    this.heightProperty().addListener(e -> this.redraw = true);
   }
 
-  /**
-   * Create a new object to render encoder
-   *
-   * @param c canvas on which to render
-   */
-  EncoderView(Canvas c, EncoderProperties ep) {
-    this(c, FIT_TO_CANVAS, ep);
+  // TODO: documentation
+  public EncoderView(EncoderProperties ep, double width, double height) {
+    this(0, ep, width, height);
   }
-
-  /**
-   * Get the Canvas the object is using
-   *
-   * @return canvas
-   */
-  public Canvas getCanvas() {
-    return canvas;
-  }
-
-  /**
-   * Assign a Canvas on which to draw
-   *
-   * @param canvas is the canvas to use
-   */
-  public void setCanvas(Canvas canvas) {
-    this.canvas = canvas;
-  }
-
+  
+  
   /**
    * Set the scaling factor for drawing
    *
@@ -97,13 +84,12 @@ public final class EncoderView {
   }
 
   private void adjustScaleToFit() {
-    double padding = 2; // need 1px padding
     double od = ep.outerDiameterProperty().get();
     double width;
     double height;
-
-    width = this.canvas.getWidth() - padding;
-    height = this.canvas.getHeight() - padding;
+    
+    width = this.getWidth() - 2*PADDING;
+    height = this.getHeight() - 2*PADDING;
     this.scale = Math.min(width / od, height / od);
   }
 
@@ -122,7 +108,7 @@ public final class EncoderView {
     
     gc.setFill(backgroundColor);
     gc.fillOval(x1, y1, od, od);
-
+    
     // Draw the stripes for the track
     gc.setFill(foregroundColor);
     for (int s = 0; s < t.stripeCount; s += 2) {
@@ -142,7 +128,11 @@ public final class EncoderView {
     gc.strokeOval(x1 + trackWidth, y1 + trackWidth, id, id);
   }
 
-  public void render() {
+  /**
+   * Render the encoder on our canvas
+   */
+  @Override
+  public void draw() {
     EncoderModel enc = ep.getEncoder();
 
 //    System.out.println("render()");
@@ -164,11 +154,14 @@ public final class EncoderView {
       this.adjustScaleToFit();
     }
 
-    //gc.setImageSmoothing(false);
-    gc.getCanvas().setEffect(null);
+    if (redraw) {
+      gc.clearRect(0, 0, getWidth(), getHeight());
+    }
+    
+    double centerX = getWidth()/2.0;//ep.outerDiameterProperty().get() * scale / 2.0;
+    double centerY = getHeight()/2.0;//centerX;
+    System.out.println("canvas: x="+getWidth()+"y="+getHeight()+" cX="+centerX+" cY="+centerY);
 
-    double centerX = ep.outerDiameterProperty().get() * scale / 2.0;
-    double centerY = centerX;
     if (enc != null) {
       ep.getTracks().forEach(t -> {
         double od = t.outerDiameter * scale;
@@ -190,5 +183,6 @@ public final class EncoderView {
     gc.strokeLine(x, centerY, x + cd, centerY); // draw the horizontal line
 
   }
+
 
 }

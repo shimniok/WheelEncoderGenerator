@@ -30,8 +30,8 @@ public class App extends Application {
 
   public static Application app;
   public static Stage stage;
-  private static Scene scene;
-  private static FXMLLoader fxmlLoader;
+  protected static Scene scene;
+  protected static FXMLLoader fxmlLoader;
 
   @Override
   public void start(Stage stage) throws IOException {
@@ -42,6 +42,10 @@ public class App extends Application {
     Image icon = new Image(getClass().getResourceAsStream("icons/Icon.png"));
     stage.getIcons().add(icon);
     stage.show();
+//    stage.setMinWidth(scene.getRoot().minWidth(-1));
+//    stage.setMinHeight(scene.getRoot().minHeight(-1)+10);
+    stage.setMinWidth(832);
+    stage.setMinHeight(582);
   }
 
   static void setRoot(String fxml) throws IOException {
