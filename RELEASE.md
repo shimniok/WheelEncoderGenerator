@@ -5,6 +5,7 @@
 *Feature enhancement and bugfixes for WheelEncoderGenerator 0.3*
 
 ### Fixes and Enhancements
+ * Implemented encoder image export
  * Added help button accessing online help website
  * When changing units diameter dimensions are automatically converted to the new units (e.g. 1.000 inch -> 25.4 mm)
  * Changing units also changes the number of significant digits displayed (#.### for inch, #.# for mm)
@@ -18,7 +19,8 @@
  * Added custom application icon
 
 ### Known Issues
- * Image export not yet implemented
+ * Image export doesn't leave enough padding on top/left of encoder
+ * Resizing the app doesn't resize the encoder preview
 
 ## v0.3.1 Release Notes
 
