@@ -262,9 +262,16 @@ public final class EncoderProperties implements ObservableValue {
    * @return true if valid, false if not
    */
   public boolean isValid() {
-//    System.out.println("isValid()");
-    return (this.outerDiameterProperty().get() > this.innerDiameterProperty().get())
-        && (this.innerDiameterProperty().get() >= this.centerDiameterProperty().get());
+    Boolean valid = 
+        this.outerDiameterProperty().get() > this.innerDiameterProperty().get() &&
+        this.innerDiameterProperty().get() >= this.centerDiameterProperty().get();
+//    System.out.print("isValid():");
+//    System.out.print(" od="+this.outerDiameterProperty().get());
+//    System.out.print(" id="+this.innerDiameterProperty().get());
+//    System.out.print(" cd="+this.centerDiameterProperty().get());
+//    System.out.println(" valid? "+valid);
+
+    return valid;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////

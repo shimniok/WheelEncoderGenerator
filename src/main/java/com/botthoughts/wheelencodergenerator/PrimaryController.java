@@ -55,13 +55,13 @@ import com.botthoughts.util.GitTagService;
 import com.botthoughts.util.AppInfo;
 import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -157,7 +157,6 @@ public class PrimaryController implements Initializable {
     }
 
     try {
-
       String current = "v" + AppInfo.get().getVersion(); // Prefix with 'v' to match github tags
       // If the latest tag isn't equal to the current version, then either an update is available
       // (unless you're the developer working on a *newer* version.
@@ -169,14 +168,26 @@ public class PrimaryController implements Initializable {
     }
 
   }
+  
+  private void removeAllDimensionErrors() {
+    outerUI.getStyleClass().remove("error");
+    innerUI.getStyleClass().remove("error");
+    centerUI.getStyleClass().remove("error");
+  }
+  
  
   private void addDimensionValidator(TextField tf) {
     tf.textProperty().addListener((obs, ov, nv) -> {
+//      System.out.println(tf.getId()+" changed");
       if (ep.isValid()) {
-        tf.getStyleClass().remove("error");
+        removeAllDimensionErrors();
       } else {
-        tf.getStyleClass().add("error");
+//        System.out.println("error");
+        if (!tf.getStyleClass().contains("error")) tf.getStyleClass().add("error");
       }
+//      System.out.println("outer: "+outerUI.getStyleClass());
+//      System.out.println("inner: "+innerUI.getStyleClass());
+//      System.out.println("center: "+centerUI.getStyleClass());
     });
   }
 
@@ -498,6 +509,15 @@ public class PrimaryController implements Initializable {
     App.stage.setTitle(title);
   }
 
+  /**
+   * Returns a ChangeListener for use with toggle buttons to change the button text based on
+   * selected and not-selected status.
+   * 
+   * @param yes is the String to display when selected
+   * @param no is the String to display when not selected
+   * @param b is the button in question
+   * @return a ChangeListener lambda incorporating the other parameters
+   */
   private ChangeListener<Boolean> toggleListener(String yes, String no, ToggleButton b) {
     return (obs, ov, nv) -> { b.setText((nv)?yes:no); };
   }
