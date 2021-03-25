@@ -15,7 +15,6 @@
  */
 package com.botthoughts.wheelencodergenerator;
 
-import com.botthoughts.util.AboutController;
 import com.botthoughts.util.BoundedIntegerTextFilter;
 import com.botthoughts.util.DoubleFormatter;
 import java.io.File;
@@ -54,26 +53,31 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import com.botthoughts.util.GitTagService;
 import com.botthoughts.util.AppInfo;
-import java.io.InputStream;
+import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
+import javax.imageio.ImageIO;
 
 /**
  * Primary controller for WheelEncoderGenerator app handles the main window and all related actions.
@@ -86,9 +90,11 @@ public class PrimaryController implements Initializable {
   
   private EncoderView encoderPreview;
   private File currentFile;
-  private static final String EXT = ".we2";
-  private static final ExtensionFilter extensionFilter
-      = new ExtensionFilter("Wheel Encoder Generator v2", "*" + EXT);
+  private static final String WEG_EXT = ".we2";
+  private static final ExtensionFilter wegExtFilter
+      = new ExtensionFilter("Wheel Encoder Generator v2", "*" + WEG_EXT);
+  private static final ExtensionFilter pngExtFilter
+      = new ExtensionFilter("Portable Network Graphics", "*.png");
   private SimpleStringProperty filename;
   private SimpleBooleanProperty saved;
   private final SimpleIntegerProperty decimals = new SimpleIntegerProperty();
@@ -163,7 +169,22 @@ public class PrimaryController implements Initializable {
     }
 
   }
+ 
+  private void addDimensionValidator(TextField tf) {
+    tf.textProperty().addListener((obs, ov, nv) -> {
+      if (ep.isValid()) {
+        tf.getStyleClass().remove("error");
+      } else {
+        tf.getStyleClass().add("error");
+      }
+    });
+  }
+
+  private void invalidWarning() {
+    showErrorDialog("Invalid Encoder", "Please fix invalid encoder settings.");
+  }
   
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //
   // DIALOGS
@@ -205,6 +226,30 @@ public class PrimaryController implements Initializable {
     return res;
   }
   
+  /**
+   * Checks if current file needs saving and if so, prompts user to save with Yes/No/Cancel,
+   * returning a boolean representing whether the calling method should continue or abort.
+   * @return true to continue, false to abort
+   */
+  private boolean saveAndContinue() {
+    SimpleBooleanProperty okToContinue = new SimpleBooleanProperty(false);
+    
+    if (saved.get()) {
+      okToContinue.set(true);
+    } else {
+      Optional<ButtonType> optional = 
+          this.showConfirmDialog("Save?", "Save changes before continuing?");
+      optional.filter(response -> response == ButtonType.YES)
+          .ifPresent(response -> okToContinue.set(saveFile()) );
+      optional.filter(response -> response == ButtonType.CANCEL)
+          .ifPresent(response -> okToContinue.set(false) );
+      optional.filter(response -> response == ButtonType.NO)
+          .ifPresent(response -> okToContinue.set(true));
+    }
+
+    return okToContinue.get();
+  }
+  
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //
   // EVENT HANDLERS
@@ -212,55 +257,64 @@ public class PrimaryController implements Initializable {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   
   /**
-   * Temporary for handling events
-   */
-  @FXML
-  public void eventHandler(Event e) { // TODO: remove generic event handler
-    System.out.println("Event: "+e.getEventType().getName());
-  }
-  
-  /**
    * Save the current encoder to the specified file.
    * @param f is the File to which the encoder will be saved.
+   * @return true if file save is successful, false if unsuccessful or file is null
    */
-  public void saveFile(File f) {
-    if (f != null) {
-      try {
-        FileOutputStream out = new FileOutputStream(f);
-        Properties p = ep.toProperties();
-        p.store(out, "Wheel Encoder Generator");
-        System.out.println("file=" + f.getCanonicalPath());
-        currentFile = f; // only do this if save succeeds!
-        filename.set(f.getName());
-        saved.set(true);
-      } catch (IOException ex) { // TODO should really handle errors externally so we can e.g. cancel new/open/quit operation
-        showErrorDialog("File Save Error", "Error saving " + f.getName() + "\n" + ex.getMessage());
-      }
+  public boolean saveFile(File f) {
+    if (f == null) return false;
+
+    try {
+      FileOutputStream out = new FileOutputStream(f);
+      Properties p = ep.toProperties();
+      p.store(out, "Wheel Encoder Generator");
+      System.out.println("file=" + f.getCanonicalPath());
+      currentFile = f; // only do this if save succeeds!
+      filename.set(f.getName());
+      saved.set(true);
+    } catch (IOException ex) {
+      showErrorDialog("File Save Error", "Error saving " + f.getName() + "\n" + ex.getMessage());
+      return false;
     }
+    return true;
   }
   
   /**
    * Handler for File Save calls saveFile() if the file has been saved previously and calls 
    * saveFileAs() if the file has never been saved before.
+   * @return result of SaveFile() or saveFileAs(); false if ep.isValid() is false
    */
   @FXML
-  public void saveFile() {
-    if (currentFile == null) {
-      saveFileAs();
+  public boolean saveFile() {
+    if (ep.isValid()) {
+      if (currentFile == null) {
+        return saveFileAs();
+      } else {
+        return saveFile(currentFile);
+      }
     } else {
-      saveFile(currentFile);
+      this.invalidWarning();
+      return false;
     }
   }
   
   /**
    * Save file into new file/location selected by user from dialog.
+   * @return result of SaveFile(); false if ep.isValid() is false
    */
   @FXML
-  public void saveFileAs() {
-    FileChooser fc = new FileChooser();
-    fc.setInitialFileName(filename.get());
-    fc.getExtensionFilters().add(extensionFilter);
-    saveFile(fc.showSaveDialog(App.stage));
+  public boolean saveFileAs() {
+    if (ep.isValid()) {
+      FileChooser fc = new FileChooser();
+      fc.setInitialFileName(filename.get());
+      fc.getExtensionFilters().add(wegExtFilter);
+      File f = fc.showSaveDialog(App.stage);
+      System.out.println("filename: "+f);
+      return saveFile(f);
+    } else {
+      this.invalidWarning();
+      return false;
+    }
   }
   
   /**
@@ -270,18 +324,9 @@ public class PrimaryController implements Initializable {
   @FXML
   public void openFile() {
     FileChooser fc = new FileChooser();
-    fc.getExtensionFilters().add(extensionFilter);
-    SimpleBooleanProperty cancel = new SimpleBooleanProperty(false);
+    fc.getExtensionFilters().add(wegExtFilter);
     
-    if (!saved.get()) {
-      Optional<ButtonType> optional = 
-          this.showConfirmDialog("Save?", "Save changes before opening a new file?");
-      optional.filter(response -> response == ButtonType.YES)
-          .ifPresent(response -> saveFile());
-      optional.filter(response -> response == ButtonType.CANCEL)
-          .ifPresent(response -> { cancel.set(true); });
-    }
-    if (cancel.get()) return;
+    if (!this.saveAndContinue()) return;
     
     File f = fc.showOpenDialog(App.stage);
 
@@ -308,18 +353,10 @@ public class PrimaryController implements Initializable {
   public void newFile() {
     SimpleBooleanProperty cancel = new SimpleBooleanProperty(false);
 
-    if (!saved.get()) {
-      Optional<ButtonType> optional = 
-          this.showConfirmDialog("Save?", "Save changes before creating a new encoder?");
-      optional.filter(response -> response == ButtonType.YES)
-          .ifPresent(response -> saveFile());
-      optional.filter(response -> response == ButtonType.CANCEL)
-          .ifPresent(response -> { cancel.set(true); });
-    }
-    if (cancel.get()) return;
+    if (!saveAndContinue()) return;
     
     currentFile = null;
-    filename.set("untitled" + EXT);
+    filename.set("untitled" + WEG_EXT);
     ep.initialize();
     saved.set(false);
   }
@@ -330,7 +367,11 @@ public class PrimaryController implements Initializable {
    */
   @FXML
   public void print(Event e) {
-    print(encoderUI);
+    if (ep.isValid()) {
+      print(encoderUI);
+    } else {
+      this.invalidWarning();
+    }
   }
 
   /**
@@ -365,7 +406,7 @@ public class PrimaryController implements Initializable {
       //gc.setImageSmoothing(false);
 
       scale = dpi;
-      if (ep.unitsProperty().get().equals(EncoderProperties.UNITS_MM)) {
+      if (ep.unitsProperty().get().equals(EncoderProperties.Units.MM)) {
         scale /= 25.4;
       }
 
@@ -386,11 +427,24 @@ public class PrimaryController implements Initializable {
   }
 
   /**
-   * Export encoder as image. Not yet implemented.
+   * Export encoder as image.
    */
   @FXML
   public void export() {
-    // TODO file export Issue #7
+    WritableImage image = encoderUI.snapshot(new SnapshotParameters(), null);
+
+    FileChooser fc = new FileChooser();
+    fc.getExtensionFilters().add(pngExtFilter); // need png extension filter
+    File file = fc.showSaveDialog(App.stage);
+    
+    if (file == null) return;
+    
+    try {
+      BufferedImage x = SwingFXUtils.fromFXImage(image, null);
+      ImageIO.write(x, "png", file);
+    } catch (IOException e) {
+      System.out.println("IOException: "+e.getMessage());
+    }
   }
   
   /**
@@ -464,18 +518,15 @@ public class PrimaryController implements Initializable {
     ep = new EncoderProperties();
 
     System.out.println("PrimaryController: initialize()");
-    
+
+    // Handle exiting/quitting
+    SimpleBooleanProperty cancel = new SimpleBooleanProperty(false);
     App.stage.setOnCloseRequest((event) -> {
-      if (!saved.get()) {
-        Optional<ButtonType> optional = this.showConfirmDialog("Save?", 
-            "Save changes before continuing?");
-        optional.filter(response -> response == ButtonType.CANCEL)
-            .ifPresent( response -> event.consume() ); // consume close event
-        optional.filter(response -> response == ButtonType.YES)
-            .ifPresent( response -> this.saveFile() );
-          // If ButtonType.NO, do nothing and continue closing
+      if (!saveAndContinue()) {
+        event.consume();
+      } else {
+        Platform.exit();
       }
-      // TODO: also close help window, if applicable
     });
     
     typeUI.getItems().setAll(ep.getTypeOptions());
@@ -484,15 +535,12 @@ public class PrimaryController implements Initializable {
 
     resolutionUI.setValueFactory(
         new ResolutionValueFactory(new IntegerStringConverter(), 
-            ep.minResolutionProperty(), ep.maxResolutionProperty(),
             ep.resolutionIncrementProperty(), ep.resolutionDecrementProperty()));
     resolutionUI.getValueFactory().valueProperty().bindBidirectional(ep.resolutionProperty());
-    TextFormatter<Integer> tf = new TextFormatter(new BoundedIntegerTextFilter(ep.minResolutionProperty(), 
-        ep.maxResolutionProperty()));
+    TextFormatter<Integer> tf = new TextFormatter(
+        new BoundedIntegerTextFilter(ep.minResolutionProperty(), ep.maxResolutionProperty()));
     resolutionUI.getEditor().setTextFormatter(tf);
 
-    // TODO: Indicate invalid diameter values after entry
-    
     decimals.set(1); // units default to mm, so manually set decimal format 
     
     DoubleFormatter outerFmt = new DoubleFormatter();
@@ -500,29 +548,32 @@ public class PrimaryController implements Initializable {
     outerUI.textProperty().bindBidirectional((Property) ep.outerDiameterProperty(), 
         outerFmt.getConverter());
     outerUI.setTextFormatter(outerFmt);
-   
+    addDimensionValidator(outerUI);
+    
     DoubleFormatter innerFmt = new DoubleFormatter();
     innerFmt.decimalsProperty().bind(decimals);
     innerUI.textProperty().bindBidirectional((Property) ep.innerDiameterProperty(), 
         innerFmt.getConverter());
     innerUI.setTextFormatter(innerFmt);
-    
+    addDimensionValidator(innerUI);
+
     DoubleFormatter centerFmt = new DoubleFormatter();
     centerFmt.decimalsProperty().bind(decimals);
     centerUI.textProperty().bindBidirectional((Property) ep.centerDiameterProperty(), 
         centerFmt.getConverter());
     centerUI.setTextFormatter(centerFmt);
-
+    addDimensionValidator(centerUI);
+    
     unitsUI.getItems().addAll(ep.getUnitOptions());
     unitsUI.valueProperty().bindBidirectional(ep.unitsProperty());
     unitsUI.valueProperty().addListener((obs, ov, nv) -> {
-      if (nv.equals(EncoderProperties.UNITS_MM)) {
+      if (nv.equals(EncoderProperties.Units.MM)) {
         decimals.set(1);
         // Automatically convert current value
         ep.outerDiameterProperty().set(UnitConverter.toMillimeter(ep.outerDiameterProperty().get()));
         ep.innerDiameterProperty().set(UnitConverter.toMillimeter(ep.innerDiameterProperty().get()));
         ep.centerDiameterProperty().set(UnitConverter.toMillimeter(ep.centerDiameterProperty().get()));        
-      } else if (nv.equals(EncoderProperties.UNITS_INCH)) {
+      } else if (nv.equals(EncoderProperties.Units.INCH)) {
         decimals.set(3);
         // Automatically convert current value
         ep.outerDiameterProperty().set(UnitConverter.toInch(ep.outerDiameterProperty().get()));
@@ -542,17 +593,17 @@ public class PrimaryController implements Initializable {
     indexUI.disableProperty().bind(ep.indexableProperty().not());
     indexUI.selectedProperty().addListener(this.toggleListener("Yes", "No", indexUI));
 
-    // directionUI, two buttons, only one selected at once.
+    // Clockwise/Counter-clockwise buttons part of ToggleGroup
+    ToggleGroup direction = new ToggleGroup();
+    cwUI.toggleGroupProperty().set(direction);
+    ccwUI.toggleGroupProperty().set(direction);
     cwUI.selectedProperty().bindBidirectional(ep.directionProperty());
-    cwUI.selectedProperty().addListener((obs, ov, nv) -> {
-      ep.directionProperty().set(nv); // make sure
-      ccwUI.selectedProperty().set(ov); // make sure the other toggle toggles
-    });
+    // Disable if the current encoder type is non-directional
     cwUI.disableProperty().bind(ep.directionalProperty().not());
     ccwUI.disableProperty().bind(ep.directionalProperty().not());
 
+    // Dialogs
     alertDialog = new Alert(Alert.AlertType.ERROR);
-
     confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
     confirmDialog.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
     
@@ -563,41 +614,43 @@ public class PrimaryController implements Initializable {
       saved.set(false);
     });
 
+    // Current filename
     filename = new SimpleStringProperty();
     // Update App title on filename change
     filename.addListener((obs, ov, nv) -> {
       this.updateTitle();
     });
-
-    // set saved true so newFile() doesn't prompt
+    // Set saved true so calling newFile() to initialize doesn't prompt
     saved = new SimpleBooleanProperty(true); 
     // Update App title on saved change
     saved.addListener((obs, ov, nv) -> {
       this.updateTitle();
     });
+    // Only enable save button if unsaved changes
     saveButton.disableProperty().bind(saved);
     
+    // Initialize a new encoder
     newFile();
-    
+
+    // Force rendering since this doesn't seem to happen via listener for some reason
     encoderPreview.render();
 
     checkForUpdates();
     
-    // Initialize Help
+    // Initialize Help display to minimize load time later
     try {
       FXMLLoader loader = new FXMLLoader();
-      Parent root = loader.load(getClass().getResource("help.fxml")); // TODO: broken, not loading fxml
+      Parent root = loader.load(getClass().getResource("help.fxml"));
       helpStage = new Stage();
       helpStage.setTitle("WEG - Online Help");
       helpStage.setScene(new Scene(root));
     } catch (IOException e) {
 //      this.showErrorDialog("Error", "Error loading help window");
       System.out.println("Error loading help window: "+e.getMessage());
-      e.printStackTrace();
     }
 
+    // Initialize About display to minimize load time later
     aboutStage = new Stage();
-
     try {
       FXMLLoader loader = new FXMLLoader();
       Parent root = loader.load(getClass().getResource("about.fxml"));
@@ -606,9 +659,11 @@ public class PrimaryController implements Initializable {
     } catch (IOException e) {
 //        this.showErrorDialog("Error", "Error loading about window\n");
       System.out.println("IOException: " + e.getMessage());
-      e.printStackTrace();
     }
     
   }
 
 }
+
+
+//TODO: more padding around encoder on canvas

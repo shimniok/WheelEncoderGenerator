@@ -21,7 +21,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
-import java.net.URL;
+import javafx.scene.image.Image;
 
 /**
  * JavaFX App
@@ -39,6 +39,8 @@ public class App extends Application {
     App.app = this;
     scene = new Scene(loadFXML("primary"));
     stage.setScene(scene);
+    Image icon = new Image(getClass().getResourceAsStream("icons/Icon.png"));
+    stage.getIcons().add(icon);
     stage.show();
   }
 

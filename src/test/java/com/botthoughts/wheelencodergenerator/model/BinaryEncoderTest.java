@@ -16,7 +16,6 @@
 package com.botthoughts.wheelencodergenerator.model;
 
 import com.botthoughts.wheelencodergenerator.EncoderTrack;
-import com.botthoughts.wheelencodergenerator.model.BinaryEncoder;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -58,7 +57,6 @@ public class BinaryEncoderTest {
   @Test
   public void testValidResolution() {
     System.out.println("validResolution");
-    int resolution = 0;
     BinaryEncoder instance = new BinaryEncoder();
     boolean result;
 
@@ -131,18 +129,29 @@ public class BinaryEncoderTest {
     assertEquals(expResult, result);
   }
 
-  // TODO: update BinaryEncoder test cases
-//  /**
-//   * Test of getResolutionIncrement method, of class BinaryEncoder.
-//   */
-//  @Test
-//  public void testGetResolutionIncrement() {
-//    System.out.println("getResolutionIncrement");
-//    BinaryEncoder instance = new BinaryEncoder();
-//    int expResult = instance.INCREMENT;
-//    int result = instance.getResolutionIncrement();
-//    assertEquals(expResult, result);
-//    assertEquals(1, result);
-//  }
+  /**
+   * Test of isIndexable method, of class BasicEncoder.
+   */
+  @Test
+  public void testIsIndexable() {
+    System.out.println("isIndexable");
+    BasicEncoder instance = new BinaryEncoder();
+    boolean expResult = false;
+    boolean result = instance.isIndexable();
+    assertEquals(expResult, result);
+  }
+
+  /**
+   * Test of isDirectional method, of class BasicEncoder.
+   */
+  @Test
+  public void testIsDirectional() {
+    System.out.println("isDirectional");
+    BasicEncoder instance = new BinaryEncoder();
+    boolean expResult = true;
+    boolean result = instance.isDirectional();
+    assertEquals(expResult, result);
+  }
+
   
 }

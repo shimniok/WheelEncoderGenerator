@@ -15,7 +15,6 @@
  */
 package com.botthoughts.util;
 
-import com.botthoughts.util.FixedFormatDoubleConverter;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.TextFormatter;
 
@@ -56,7 +55,7 @@ public class DoubleFormatter extends TextFormatter {
   public DoubleFormatter(int decimals) {
     this(decimals, 0.0);
   }
-  
+     
   /**
    * Default constructor where default decimal format of 2 is used and default value is 0
    */
@@ -95,5 +94,5 @@ public class DoubleFormatter extends TextFormatter {
   public UnsignedDoubleTextFilter getTextFilter() {
     return filter;
   }
-
+  
 }

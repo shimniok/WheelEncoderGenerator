@@ -93,6 +93,18 @@
                         <Tooltip text="Print encoder" />
                      </tooltip>
                   </Button>
+                  <Button fx:id="exportButton" accessibleHelp="Export encoder as a PNG image" accessibleText="Export image" alignment="BOTTOM_CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#export" prefHeight="40.0" prefWidth="40.0" text="Export">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/Camera.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Export encoder as a PNG image" />
+                     </tooltip>
+                  </Button>
               </items>
             </ToolBar>
             <ToolBar HBox.hgrow="NEVER">
@@ -157,7 +169,7 @@
                            <children>
                               <Label text="Outer Diameter" textAlignment="RIGHT" GridPane.rowIndex="2" />
                               <Label text="Inner Diameter" GridPane.rowIndex="3" />
-                              <TextField fx:id="outerUI" alignment="CENTER_RIGHT" onAction="#eventHandler" onInputMethodTextChanged="#eventHandler" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                              <TextField fx:id="outerUI" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                  <tooltip>
                                     <Tooltip text="Outer diameter of encoder" />
                                  </tooltip>
@@ -223,7 +235,7 @@
                                  </tooltip>
                               </ComboBox>
                               <Label text="Encoder Type" />
-                              <Spinner fx:id="resolutionUI" editable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onInputMethodTextChanged="#eventHandler" onKeyTyped="#eventHandler" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                              <Spinner fx:id="resolutionUI" editable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <tooltip>
                                     <Tooltip text="Set encoder resolution" />
                                  </tooltip>

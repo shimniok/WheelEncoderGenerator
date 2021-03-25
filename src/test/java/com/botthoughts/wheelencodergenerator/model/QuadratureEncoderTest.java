@@ -16,7 +16,6 @@
 package com.botthoughts.wheelencodergenerator.model;
 
 import com.botthoughts.wheelencodergenerator.EncoderTrack;
-import com.botthoughts.wheelencodergenerator.model.QuadratureEncoder;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -77,4 +76,28 @@ public class QuadratureEncoderTest {
     assertEquals(360.0/(2*resolution), t0.stripeAngle, "index stripeAngle");
   }
   
+  /**
+   * Test of isIndexable method, of class BasicEncoder.
+   */
+  @Test
+  public void testIsIndexable() {
+    System.out.println("isIndexable");
+    BasicEncoder instance = new QuadratureEncoder();
+    boolean expResult = true;
+    boolean result = instance.isIndexable();
+    assertEquals(expResult, result);
+  }
+
+  /**
+   * Test of isDirectional method, of class BasicEncoder.
+   */
+  @Test
+  public void testIsDirectional() {
+    System.out.println("isDirectional");
+    BasicEncoder instance = new QuadratureEncoder();
+    boolean expResult = true;
+    boolean result = instance.isDirectional();
+    assertEquals(expResult, result);
+  }
+
 }

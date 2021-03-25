@@ -51,7 +51,7 @@ public class QuadratureEncoder extends BasicEncoder {
     int r = resolution * 2;
     double angle = 360.0 / r;
 
-    List<EncoderTrack> tracks = new ArrayList<>();
+    tracks = new ArrayList<>();
 
     if (index) {
       tc = 3;

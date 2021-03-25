@@ -17,6 +17,7 @@ package com.botthoughts.wheelencodergenerator.model;
 
 import com.botthoughts.wheelencodergenerator.EncoderTrack;
 import java.util.List;
+import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -166,18 +167,58 @@ public class BasicEncoderTest {
     assertEquals(expResult, result);
   }
 
-  // TODO: update BasicEncoder test case
-//  /**
-//   * Test of getResolutionIncrement method, of class BasicEncoder.
-//   */
-//  @Test
-//  public void testGetResolutionIncrement() {
-//    System.out.println("getResolutionIncrement");
-//    BasicEncoder instance = new BasicEncoder();
-//    int expResult = instance.INCREMENT;
-//    int result = instance.getResolutionIncrement();
-//    assertEquals(expResult, result);
-//    assertEquals(1, result);
-//  }
-//  
+  /**
+   * Test of getResolutionIncrement method, of class BasicEncoder.
+   */
+  @Test
+  public void testGetResolutionIncrement() {
+    System.out.println("getResolutionIncrement");
+    BasicEncoder instance = new BasicEncoder();
+    int expResult = instance.RESOLUTION_MAX;
+    UnaryOperator<Integer> inc = instance.getResolutionIncrement();
+    // simple test
+    assertEquals(expResult, inc.apply(expResult - instance.INCREMENT));
+    // test max bounds limiting
+    assertEquals(expResult, inc.apply(expResult));
+  }
+
+  /**
+   * Test of getResolutionDecrement method, of class BasicEncoder.
+   */
+  @Test
+  public void testGetResolutionDecrement() {
+    System.out.println("getResolutionDecrement");
+    BasicEncoder instance = new BasicEncoder();
+    int expResult = instance.RESOLUTION_MIN;
+    UnaryOperator<Integer> dec = instance.getResolutionDecrement();
+    // simple test
+    assertEquals(expResult, dec.apply(expResult + instance.INCREMENT));
+    // test min bounds limiting
+    assertEquals(expResult, dec.apply(expResult));
+  }
+
+  /**
+   * Test of isIndexable method, of class BasicEncoder.
+   */
+  @Test
+  public void testIsIndexable() {
+    System.out.println("isIndexable");
+    BasicEncoder instance = new BasicEncoder();
+    boolean expResult = true;
+    boolean result = instance.isIndexable();
+    assertEquals(expResult, result);
+  }
+
+  /**
+   * Test of isDirectional method, of class BasicEncoder.
+   */
+  @Test
+  public void testIsDirectional() {
+    System.out.println("isDirectional");
+    BasicEncoder instance = new BasicEncoder();
+    boolean expResult = false;
+    boolean result = instance.isDirectional();
+    assertEquals(expResult, result);
+  }
+  
 }

@@ -28,6 +28,7 @@ import java.util.Properties;
 import java.util.function.UnaryOperator;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -44,28 +45,37 @@ public final class EncoderProperties implements ObservableValue {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // "constants"
-  public static final String UNITS_MM = "mm";// TODO: move these to subclass
-  public static final String UNITS_INCH = "inch";
   
-  public static final Boolean DIRECTION_CLOCKWISE = true; // TODO: move these to subclass
-  public static final Boolean DIRECTION_COUNTERCLOCKWISE = false;
+  public static final class Units {
+    public static final String MM = "mm";
+    public static final String INCH = "inch";
+    // Options for units
+    protected static List<String> OPTIONS = Arrays.asList(Units.MM, Units.INCH);
+  }
   
-  public static final String TYPE_QUADRATURE = "Quadrature"; // TODO: move these to subclass
-  public static final String TYPE_SIMPLE = "Simple";
-  public static final String TYPE_BINARY = "Binary";
-  public static final String TYPE_GRAY = "Gray";
+  public static final class Directions {
+    public static final Boolean CLOCKWISE = true;
+    public static final Boolean COUNTERCLOCKWISE = false;
+  }
+  
+  public static final class Type {
+    public static final String SIMPLE = "Simple";
+    public static final String QUADRATURE = "Quadrature";
+    public static final String GRAY = "Gray";
+    public static final String BINARY = "Binary";
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Primary Properties
   protected SimpleStringProperty type; // see TYPE_*
-  protected SimpleStringProperty units; // see UNITS_MM or UNITS_INCH
+  protected SimpleStringProperty units; // see MM or INCH
   protected SimpleDoubleProperty outerDiameter; // outer diameter of encoder
   protected SimpleDoubleProperty innerDiameter; // inner diameter of innermost encoder track
   protected SimpleDoubleProperty centerDiameter; // axle/shaft diameter
   protected SimpleIntegerProperty resolution; // encoder resolution
   protected SimpleBooleanProperty inverted; // black on white vs white on black
   protected SimpleBooleanProperty indexed; // true if has index track
-  protected SimpleBooleanProperty direction; // DIRECTION_CLOCKWISE / DIRECTION_COUNTERCLOCKWISE
+  protected SimpleBooleanProperty direction; // CLOCKWISE / COUNTERCLOCKWISE
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Properties dependent on primary properties
@@ -75,20 +85,20 @@ public final class EncoderProperties implements ObservableValue {
   protected SimpleIntegerProperty resolutionMax;
   protected SimpleBooleanProperty directional; // true if encoder is directional
   protected SimpleBooleanProperty indexable; // true if index track possible
+  protected SimpleBooleanProperty outerValid; // true if outerDiameter is valid
+  protected SimpleBooleanProperty innerValid; // true if innerDiameter is valid
+  protected SimpleBooleanProperty centerValid; // true if centerDiameter is valid
   
   // Encoder type to EncoderModel mapping
   protected LinkedHashMap<String, EncoderModel> encoderMap = new LinkedHashMap(); 
 
-  // Options for units
-  protected static List<String> unitOptions = Arrays.asList(EncoderProperties.UNITS_MM, EncoderProperties.UNITS_INCH);
-
   // Observable stuff
   private List<ChangeListener> changeListeners;
-  private final List<InvalidationListener> invalidationListeners; // TODO remove?
+  private final List<InvalidationListener> invalidationListeners;
   private ChangeListener changed = (obs, ov, nv) -> {
-    System.out.println("EncoderProperties changed()");
+//    System.out.println("EncoderProperties changed()");
     changeListeners.forEach((ChangeListener cl) -> {
-      System.out.println("notify "+cl.getClass().getName());
+//      System.out.println("notify "+cl.getClass().getName());
       cl.changed(obs, ov, nv);
     });
   };
@@ -109,6 +119,7 @@ public final class EncoderProperties implements ObservableValue {
     this.invalidationListeners = new ArrayList();
 
     // Primary properties
+    this.type = new SimpleStringProperty();
     this.units = new SimpleStringProperty();
     this.outerDiameter = new SimpleDoubleProperty();
     this.innerDiameter = new SimpleDoubleProperty();
@@ -126,31 +137,15 @@ public final class EncoderProperties implements ObservableValue {
     this.incrementProperty = new SimpleObjectProperty();
     this.decrementProperty = new SimpleObjectProperty();
 
-    this.encoderMap.put(TYPE_QUADRATURE, new QuadratureEncoder());
-    this.encoderMap.put(TYPE_SIMPLE, new BasicEncoder());
-    this.encoderMap.put(TYPE_BINARY, new BinaryEncoder());
-    this.encoderMap.put(TYPE_GRAY, new GrayEncoder());
+    // Map of encoder types to encoder models
+    this.encoderMap.put(Type.QUADRATURE, new QuadratureEncoder());
+    this.encoderMap.put(Type.SIMPLE, new BasicEncoder());
+    this.encoderMap.put(Type.BINARY, new BinaryEncoder());
+    this.encoderMap.put(Type.GRAY, new GrayEncoder());
 
-    this.type = new SimpleStringProperty();
-    // Listener to set indexable and directional properties based on encoder type
+    // Type changeListener to set indexable and directional properties based on encoder type
     this.type.addListener((obs, ov, nv) -> {
       System.out.println("type changed ");
-//      switch (nv) {
-//        case TYPE_QUADRATURE:
-//          this.indexable.set(true);
-//          this.directional.set(true);
-//          break;
-//        case TYPE_SIMPLE:
-//          this.indexable.set(true);
-//          this.directional.set(false);
-//          break;
-//        case TYPE_BINARY:
-//        case TYPE_GRAY:
-//          this.indexable.set(false);
-//          this.directional.set(true);
-//          break;
-//      }
-//      
       // Ensure dependent properties are updated
       this.incrementProperty.set(getEncoder().getResolutionIncrement());
       this.decrementProperty.set(getEncoder().getResolutionDecrement());
@@ -167,6 +162,7 @@ public final class EncoderProperties implements ObservableValue {
       }
     });
 
+    // Changes to primary property notifies observers of this object
     this.units.addListener(changed);
     this.outerDiameter.addListener(changed);
     this.innerDiameter.addListener(changed);
@@ -177,6 +173,7 @@ public final class EncoderProperties implements ObservableValue {
     this.direction.addListener(changed);
     this.type.addListener(changed);
     
+    // Default values
     this.initialize();
   }
   
@@ -189,11 +186,11 @@ public final class EncoderProperties implements ObservableValue {
     this.outerDiameter.set(100);
     this.innerDiameter.set(50);
     this.centerDiameter.set(5);
-    this.units.set(unitOptions.get(0));
+    this.units.set(Units.OPTIONS.get(0));
     this.resolution.set(8);
     this.inverted.set(false);
     this.indexed.set(false);
-    this.direction.set(DIRECTION_CLOCKWISE);
+    this.direction.set(Directions.CLOCKWISE);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,7 +214,7 @@ public final class EncoderProperties implements ObservableValue {
    * @return list of options
    */
   final public List<String> getUnitOptions() {
-    return unitOptions;
+    return Units.OPTIONS;
   }
 
   /**
@@ -265,6 +262,7 @@ public final class EncoderProperties implements ObservableValue {
    * @return true if valid, false if not
    */
   public boolean isValid() {
+//    System.out.println("isValid()");
     return (this.outerDiameterProperty().get() > this.innerDiameterProperty().get())
         && (this.innerDiameterProperty().get() >= this.centerDiameterProperty().get());
   }
@@ -446,8 +444,6 @@ public final class EncoderProperties implements ObservableValue {
   // OBSERVABLE METHODS
   //
   /////////////////////////////////////////////////////////////////////////////////////////////////
-  
-  // TODO: inherit this shit from ObjectProperty or something?
   
   /**
    * Add a ChangeListener to be notified if any changes are made to the encoder's properties
