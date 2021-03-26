@@ -16,13 +16,9 @@
 package com.botthoughts.util;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import javax.crypto.KeyAgreement;
-import javax.net.ssl.SSLContext;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -30,28 +26,10 @@ import org.json.JSONArray;
  * Service provider for Git Repository Tags API
  * @author mes
  */
-public class GitTagService {
-  final URL url;
+public class GitTagService extends GitService {
   
-  /**
-   * Create new GitTagService
-   * @param username is the username owning the repository 
-   * @param repo is the name of the repository
-   * @throws MalformedURLException 
-   */
   public GitTagService(String username, String repo) throws MalformedURLException {
-    this.url = new URL(String.format("https://api.github.com/repos/%s/%s/tags", 
-        GitTagService.sanitize(username), GitTagService.sanitize(repo)));
-//    System.out.println("url: "+this.url.toString());
-  }
-  
-  /**
-   * Sanitizes string using an whitelist of allowed characters: alphanumeric, "-" and "_".
-   * @param s
-   * @return s with illegal characters removed
-   */
-  private static String sanitize(String s) {
-    return s.replaceAll("[^a-zA-Z0-9_-]", "");
+    super(username, repo, "tags");
   }
   
   /**
@@ -63,25 +41,12 @@ public class GitTagService {
     ArrayList<String> list = new ArrayList();
    
     try {
-      KeyAgreement.getInstance("X25519");
-      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-      conn.setRequestMethod("GET");
-      conn.setRequestProperty("Accept", "application/json");
-
-      String[] protocols = SSLContext.getDefault().getSupportedSSLParameters().getProtocols();
-
-      if (conn.getResponseCode() != 200) {
-        throw new RuntimeException("Failed : HTTP error code : "
-            + conn.getResponseCode());
-      }
-
-      JSONArray ja = new JSONArray(new String(conn.getInputStream().readAllBytes()));
-
-      conn.disconnect();
+      JSONArray data = this.get();
       
-      for (int i=0; i < ja.length(); i++) {
-        JSONObject jo = ja.getJSONObject(i);
+      for (int i=0; i < data.length(); i++) {
+        JSONObject jo = data.getJSONObject(i);
         list.add(jo.getString("name"));
+//        System.out.println(jo.getString("name"));
       }
     } catch (javax.net.ssl.SSLHandshakeException ex) {
       System.out.println("getNames(): SSLHandshakeException: " + ex);

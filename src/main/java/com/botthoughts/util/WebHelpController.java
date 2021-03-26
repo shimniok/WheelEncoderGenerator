@@ -28,7 +28,9 @@ import javafx.scene.web.WebView;
 /**
  * FXML Controller class to display web-based Help documentation in a separate window. The URL
  * for the help website is specified by the property help.url in /web.properties file. The
- * injectables include WebView helpView and AnchorPane helpWindow.
+ * FXML injectable widgets include:
+ *   WebView helpView
+ *   AnchorPane helpWindow
  *
  * @author mes
  */
